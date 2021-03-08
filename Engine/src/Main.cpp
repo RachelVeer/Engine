@@ -1,3 +1,5 @@
+// Copyright (c) 2021 Rachel Veer.
+
 #include <Windows.h>
 
 LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
