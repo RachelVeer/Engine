@@ -1,7 +1,6 @@
 #include <Windows.h>
 
 LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-bool running = true;
 
 int WINAPI wWinMain(
     _In_ HINSTANCE hInstance, 
@@ -81,8 +80,8 @@ LRESULT CALLBACK WindowProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
             PAINTSTRUCT ps;
             HDC hdc = BeginPaint(hWnd, &ps);
 
-            // Generating a green background.
-            HBRUSH brush = CreateSolidBrush(RGB(0, 255, 0));
+            // Generating a white background.
+            HBRUSH brush = CreateSolidBrush(RGB(255, 255, 255));
             FillRect(hdc, &ps.rcPaint, brush);
 
             EndPaint(hWnd, &ps);
