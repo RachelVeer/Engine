@@ -55,7 +55,7 @@ Window::~Window()
 {
 }
 
-LRESULT Window::s_WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK Window::s_WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     Window* pThis = {}; // Our "this" pointer will go here. 
     
