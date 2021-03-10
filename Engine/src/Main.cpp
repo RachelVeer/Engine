@@ -3,7 +3,7 @@
 // Licensed under the Apache-2.0 License.
 //*********************************************************
 
-#include <Windows.h>
+#include "pch.h"
 #include "Window.h"
 
 int WINAPI wWinMain(
@@ -13,7 +13,6 @@ int WINAPI wWinMain(
     _In_ int nCmdShow) 
 {
     Window wnd;
-
 
     // Message loop.
     MSG msg = {};
