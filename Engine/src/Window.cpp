@@ -25,7 +25,7 @@ Window::Window()
     RegisterClassEx(&wc);
 
     // Create the window.
-    HWND m_hWnd = CreateWindowEx(
+    m_hWnd = CreateWindowEx(
         0,                              // Optional window styles
         m_wndClass.c_str(),             // Window class
         wndProps.Title.c_str(),         // Window text

@@ -26,6 +26,7 @@ public:
     // The static callback recovers the "this" pointer and then
     // calls this member function. 
     LRESULT WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+    HWND GetHwnd() { return m_hWnd; }
 private:
     HINSTANCE m_hInstance;
     HWND m_hWnd;
