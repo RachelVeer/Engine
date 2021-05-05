@@ -29,7 +29,8 @@ Window::Window()
         0,                              // Optional window styles
         m_wndClass.c_str(),             // Window class
         wndProps.Title.c_str(),         // Window text
-        WS_OVERLAPPEDWINDOW,            // Window style
+        (WS_OVERLAPPED | WS_CAPTION 
+        | WS_SYSMENU | WS_MINIMIZEBOX), // Window style
         CW_USEDEFAULT, CW_USEDEFAULT,   // Position 
         CW_USEDEFAULT, CW_USEDEFAULT,   // Size
         nullptr,                        // Parent window
