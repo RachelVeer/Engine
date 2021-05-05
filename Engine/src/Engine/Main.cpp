@@ -6,11 +6,11 @@
 #include "pch.h"
 #include <wrl.h>    // For COM pointers. 
 #include <d3d12.h>
-#include "d3dx12.h" // D3D12 Helper functions. 
+#include "Utils/d3dx12.h" // D3D12 Helper functions. 
 #include <dxgi1_6.h>
 
-#include "Window.h"
-#include "DXHelper.h"
+#include "Platform/Window.h"
+#include "Utils/DXHelper.h"
 
 #pragma comment (lib, "D3d12.lib")
 #pragma comment (lib, "dxgi.lib")
