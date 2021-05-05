@@ -1,3 +1,8 @@
+//*********************************************************
+// Copyright (c) 2021 Rachel Veer.
+// Licensed under the Apache-2.0 License.
+//*********************************************************
+
 #include "pch.h"
 #include "Window.h"
 
@@ -5,7 +10,6 @@ Window::Window()
     : m_hInstance(nullptr), m_hWnd(nullptr)
 {
     WindowProps wndProps = {};
-
     // Register the window class.
     WNDCLASSEX wc = {};
     SecureZeroMemory(&wc, sizeof(wc));
