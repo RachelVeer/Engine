@@ -31,28 +31,28 @@ public:
     void OnRender();
 
 private:
-    static const uint32_t FrameCount = 2;
+    static const uint32_t m_FrameCount = 2;
 
     // Pipeline objects.
-    Microsoft::WRL::ComPtr<IDXGISwapChain3> g_SwapChain;
-    Microsoft::WRL::ComPtr<ID3D12Device4> g_Device;
-    Microsoft::WRL::ComPtr<IDXGIFactory4> g_Factory;
-    Microsoft::WRL::ComPtr<ID3D12CommandQueue> g_CommandQueue;
-    Microsoft::WRL::ComPtr<ID3D12Resource> g_RenderTargets[FrameCount];
-    Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> g_rtvHeap;
-    Microsoft::WRL::ComPtr<ID3D12CommandAllocator> g_CommandAllocator;
-    Microsoft::WRL::ComPtr<ID3D12RootSignature> g_RootSignature;
-    Microsoft::WRL::ComPtr<ID3D12PipelineState> g_PipelineState;
-    Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> g_CommandList;
-    uint32_t rtvDescriptorSize;
+    Microsoft::WRL::ComPtr<IDXGISwapChain3> m_SwapChain;
+    Microsoft::WRL::ComPtr<ID3D12Device4> m_Device;
+    Microsoft::WRL::ComPtr<IDXGIFactory4> m_Factory;
+    Microsoft::WRL::ComPtr<ID3D12CommandQueue> m_CommandQueue;
+    Microsoft::WRL::ComPtr<ID3D12Resource> m_RenderTargets[m_FrameCount];
+    Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> m_rtvHeap;
+    Microsoft::WRL::ComPtr<ID3D12CommandAllocator> m_CommandAllocator;
+    Microsoft::WRL::ComPtr<ID3D12RootSignature> m_RootSignature;
+    Microsoft::WRL::ComPtr<ID3D12PipelineState> m_PipelineState;
+    Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> m_CommandList;
+    uint32_t m_rtvDescriptorSize;
 
     // Synchronization objects.
-    uint32_t g_FrameIndex;
-    HANDLE g_FenceEvent;
-    Microsoft::WRL::ComPtr<ID3D12Fence> g_Fence;
-    uint64_t FenceValue = 0;
+    uint32_t m_FrameIndex;
+    HANDLE m_FenceEvent;
+    Microsoft::WRL::ComPtr<ID3D12Fence> m_Fence;
+    uint64_t m_FenceValue = 0;
 
-    HWND storedHwnd;
+    HWND m_StoredHwnd;
 
     void GetHardwareAdapter(IDXGIFactory1* pFactory, IDXGIAdapter1** ppAdapter,
         bool requestHighPerformanceAdapter);

@@ -7,7 +7,7 @@
 
 Direct3D::Direct3D(Window& wnd)
 {
-    storedHwnd = wnd.GetHwnd();
+    m_StoredHwnd = wnd.GetHwnd();
 
     LoadPipeline();
     LoadAssets();
@@ -33,13 +33,13 @@ void Direct3D::LoadPipeline()
     // Create the device. 
     {
         // Don't mix the use of DXGI 1.0 (IDXGIFactory) and DXGI 1.1 (IDXGIFactory1) in an application.
-        ThrowIfFailed(CreateDXGIFactory2(0, IID_PPV_ARGS(&g_Factory)));
+        ThrowIfFailed(CreateDXGIFactory2(0, IID_PPV_ARGS(&m_Factory)));
 
         Microsoft::WRL::ComPtr<IDXGIAdapter1> hardwareAdapter;
-        GetHardwareAdapter(g_Factory.Get(), &hardwareAdapter, true);
+        GetHardwareAdapter(m_Factory.Get(), &hardwareAdapter, true);
 
         ThrowIfFailed(D3D12CreateDevice(hardwareAdapter.Get(), D3D_FEATURE_LEVEL_11_0,
-            IID_PPV_ARGS(&g_Device)));
+            IID_PPV_ARGS(&m_Device)));
     }
 
     // Create the command queue. 
@@ -48,7 +48,7 @@ void Direct3D::LoadPipeline()
         cmdQueueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
         cmdQueueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
 
-        ThrowIfFailed(g_Device->CreateCommandQueue(&cmdQueueDesc, IID_PPV_ARGS(&g_CommandQueue)));
+        ThrowIfFailed(m_Device->CreateCommandQueue(&cmdQueueDesc, IID_PPV_ARGS(&m_CommandQueue)));
     }
 
     // Create the swap chain
@@ -60,16 +60,16 @@ void Direct3D::LoadPipeline()
     swapChainDesc.SampleDesc.Count = 1;
     swapChainDesc.SampleDesc.Quality = 0;
     swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-    swapChainDesc.BufferCount = FrameCount;
+    swapChainDesc.BufferCount = m_FrameCount;
     swapChainDesc.Scaling = DXGI_SCALING_NONE;
     swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
     swapChainDesc.AlphaMode = DXGI_ALPHA_MODE_IGNORE; // Don't worry about transparency (for now).
     swapChainDesc.Flags = 0;
 
     Microsoft::WRL::ComPtr<IDXGISwapChain1> swapChain;
-    ThrowIfFailed(g_Factory->CreateSwapChainForHwnd(
-        g_CommandQueue.Get(), // In D3D12, it points to a direct Command Queue.
-        storedHwnd,
+    ThrowIfFailed(m_Factory->CreateSwapChainForHwnd(
+        m_CommandQueue.Get(), // In D3D12, it points to a direct Command Queue.
+        m_StoredHwnd,
         &swapChainDesc,
         nullptr,              // Not worrying about fullscreen capabilities as of now. 
         nullptr,
@@ -77,54 +77,54 @@ void Direct3D::LoadPipeline()
     ));
 
     // This sample does not support fullscreen transitions.
-    ThrowIfFailed(g_Factory->MakeWindowAssociation(storedHwnd, DXGI_MWA_NO_ALT_ENTER));
+    ThrowIfFailed(m_Factory->MakeWindowAssociation(m_StoredHwnd, DXGI_MWA_NO_ALT_ENTER));
 
-    ThrowIfFailed(swapChain.As(&g_SwapChain));
-    g_FrameIndex = g_SwapChain->GetCurrentBackBufferIndex();
+    ThrowIfFailed(swapChain.As(&m_SwapChain));
+    m_FrameIndex = m_SwapChain->GetCurrentBackBufferIndex();
 
     // Create a render target view (RTV) descriptor heap.
     {
         D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
-        rtvHeapDesc.NumDescriptors = FrameCount;
+        rtvHeapDesc.NumDescriptors = m_FrameCount;
         rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
         rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-        ThrowIfFailed(g_Device->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&g_rtvHeap)));
+        ThrowIfFailed(m_Device->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&m_rtvHeap)));
 
-        rtvDescriptorSize = g_Device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+        m_rtvDescriptorSize = m_Device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
     }
 
     // Create frame resources (RTV for each frame).
     {
-        CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(g_rtvHeap->GetCPUDescriptorHandleForHeapStart());
+        CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart());
 
         // Create a RTV for each frame.
-        for (uint32_t n = 0; n < FrameCount; n++)
+        for (uint32_t n = 0; n < m_FrameCount; n++)
         {
-            ThrowIfFailed(g_SwapChain->GetBuffer(n, IID_PPV_ARGS(&g_RenderTargets[n])));
-            g_Device->CreateRenderTargetView(g_RenderTargets[n].Get(), nullptr, rtvHandle);
-            rtvHandle.Offset(1, rtvDescriptorSize);
+            ThrowIfFailed(m_SwapChain->GetBuffer(n, IID_PPV_ARGS(&m_RenderTargets[n])));
+            m_Device->CreateRenderTargetView(m_RenderTargets[n].Get(), nullptr, rtvHandle);
+            rtvHandle.Offset(1, m_rtvDescriptorSize);
         }
     }
 
     // Create command allocator.
     {
-        ThrowIfFailed(g_Device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&g_CommandAllocator)));
+        ThrowIfFailed(m_Device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&m_CommandAllocator)));
     }
 }
 
 void Direct3D::LoadAssets()
 {
     // Create command list.
-    g_Device->CreateCommandList1(0, D3D12_COMMAND_LIST_TYPE_DIRECT, D3D12_COMMAND_LIST_FLAG_NONE, IID_PPV_ARGS(&g_CommandList));
+    m_Device->CreateCommandList1(0, D3D12_COMMAND_LIST_TYPE_DIRECT, D3D12_COMMAND_LIST_FLAG_NONE, IID_PPV_ARGS(&m_CommandList));
 
     // Create synchronization objects and wait until assets have been uploaded to the GPU.
     {
-        ThrowIfFailed(g_Device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&g_Fence)));
-        FenceValue = 1;
+        ThrowIfFailed(m_Device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&m_Fence)));
+        m_FenceValue = 1;
 
         // Create an event handle to use for frame synchronization.
-        g_FenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
-        if (g_FenceEvent == nullptr)
+        m_FenceEvent = CreateEvent(nullptr, FALSE, FALSE, nullptr);
+        if (m_FenceEvent == nullptr)
         {
             ThrowIfFailed(HRESULT_FROM_WIN32(GetLastError()));
         }
@@ -147,11 +147,11 @@ void Direct3D::OnRender()
     PopulateCommandList();
 
     // Execute the command list.
-    ID3D12CommandList* ppCommandLists[] = { g_CommandList.Get() };
-    g_CommandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
+    ID3D12CommandList* ppCommandLists[] = { m_CommandList.Get() };
+    m_CommandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
 
     // Present the frame.
-    ThrowIfFailed(g_SwapChain->Present(1, 0));
+    ThrowIfFailed(m_SwapChain->Present(1, 0));
 
     WaitForPreviousFrame();
 }
@@ -161,23 +161,23 @@ void Direct3D::PopulateCommandList()
     // Command list allocators can only be reset when the associated
     // command lists have finished execution on the GPU; apps should use
     // fences to determine GPU execution progress.
-    ThrowIfFailed(g_CommandAllocator->Reset());
+    ThrowIfFailed(m_CommandAllocator->Reset());
 
     // However, when ExecuteCommandList() is called on a particular command
     // list, that command list can then be reset at any time and must be before
     // re-recording. 
-    ThrowIfFailed(g_CommandList->Reset(g_CommandAllocator.Get(), g_PipelineState.Get()));
+    ThrowIfFailed(m_CommandList->Reset(m_CommandAllocator.Get(), m_PipelineState.Get()));
 
     // Indicate that the back buffer will be used as a render target.
-    g_CommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(g_RenderTargets[g_FrameIndex].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET));
+    m_CommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(m_RenderTargets[m_FrameIndex].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET));
 
-    CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(g_rtvHeap->GetCPUDescriptorHandleForHeapStart(), g_FrameIndex, rtvDescriptorSize);
+    CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart(), m_FrameIndex, m_rtvDescriptorSize);
 
     // Record commands.
     const float clearColor[] = { 1.0f, 0.3f, 0.4f, 1.0f };
-    g_CommandList->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
+    m_CommandList->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
 
-    ThrowIfFailed(g_CommandList->Close());
+    ThrowIfFailed(m_CommandList->Close());
 }
 
 void Direct3D::WaitForPreviousFrame()
@@ -187,18 +187,18 @@ void Direct3D::WaitForPreviousFrame()
     // example from the D3D12 samples repository. 
 
     // Signal and increment the fence value.
-    const uint64_t fence = FenceValue;
-    ThrowIfFailed(g_CommandQueue->Signal(g_Fence.Get(), fence));
-    FenceValue++;
+    const uint64_t fence = m_FenceValue;
+    ThrowIfFailed(m_CommandQueue->Signal(m_Fence.Get(), fence));
+    m_FenceValue++;
 
     // Wait until the previous frame is finished.
-    if (g_Fence->GetCompletedValue() < fence)
+    if (m_Fence->GetCompletedValue() < fence)
     {
-        ThrowIfFailed(g_Fence->SetEventOnCompletion(fence, g_FenceEvent));
-        WaitForSingleObject(g_FenceEvent, INFINITE);
+        ThrowIfFailed(m_Fence->SetEventOnCompletion(fence, m_FenceEvent));
+        WaitForSingleObject(m_FenceEvent, INFINITE);
     }
 
-    g_FrameIndex = g_SwapChain->GetCurrentBackBufferIndex();
+    m_FrameIndex = m_SwapChain->GetCurrentBackBufferIndex();
 }
 
 // Check adapter support.

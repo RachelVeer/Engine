@@ -98,17 +98,10 @@ LRESULT Window::WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     switch (uMsg)
     {
-        case WM_PAINT:
+        case WM_ERASEBKGND:
         {
-            PAINTSTRUCT ps;
-            HDC hdc = BeginPaint(hWnd, &ps);
-
-            // Generating a white background.
-            HBRUSH brush = CreateSolidBrush(RGB(255, 255, 255));
-            FillRect(hdc, &ps.rcPaint, brush);
-
-            EndPaint(hWnd, &ps);
-            break;
+            // Notify the OS that erasing will be handled by the application to prevent flicker.
+            return 1;
         }
         case WM_DESTROY:
         {
