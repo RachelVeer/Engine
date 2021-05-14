@@ -5,10 +5,8 @@
 #include "pch.h"
 #include "D3D12Context.h"
 
-Direct3D::Direct3D(Window& wnd)
+Direct3D::Direct3D()
 {
-    m_StoredHwnd = wnd.GetHwnd();
-
     LoadPipeline();
     LoadAssets();
 }

@@ -18,12 +18,13 @@
 #include "Engine/Utils/d3dx12.h" 
 #include "Engine/Utils/DXHelper.h"
 
-#include "Platform/Windows/Window.h"
+//#include "Platform/Windows/Window.h"
+#include "Platform/Platform.h"
 
 class Direct3D
 {
 public:
-    Direct3D(Window& wnd);
+    Direct3D();
     ~Direct3D();
     void LoadPipeline();
     void LoadAssets();

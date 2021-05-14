@@ -5,7 +5,7 @@
 
 #include "pch.h"
 
-#include "Platform/Windows/Window.h"
+#include "Platform/Platform.h"
 #include "Platform/Direct3D/D3D12Context.h"
 
 int WINAPI wWinMain(
@@ -14,27 +14,21 @@ int WINAPI wWinMain(
     _In_ PWSTR pCmdLine,
     _In_ int nCmdShow)
 {
-    // Init window.
-    Window wnd;
-
-    // Init D3D12.
-    Direct3D direct3d(wnd);
-
-    // Message loop.
-    MSG msg = {};
-    while (msg.message != WM_QUIT)
+    // Configure current platform. 
+    Platform::PlatformState state = {};
+    Platform platform = {};
+    
+    platform.PlatformStartup(&state, L"Seacrest", 100, 100, 1280, 720);
+    
+    while (platform.platformRunning)
     {
-        if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
-        {
-            TranslateMessage(&msg);
-            DispatchMessage(&msg);
-        }
-        else
-        {
-            direct3d.OnUpdate();
-            direct3d.OnRender();
-        }
+        platform.PlatformPumpMessages(&state);
     }
 
-    return (int)msg.wParam;
+    platform.PlatformShutdown(&state);
+
+    // Init D3D12.
+    //Direct3D direct3d();
+
+    return 0;
 }
