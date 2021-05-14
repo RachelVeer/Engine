@@ -7,6 +7,7 @@
 
 Direct3D::Direct3D()
 {
+    m_StoredHwnd = GetActiveWindow();
     LoadPipeline();
     LoadAssets();
 }
@@ -175,6 +176,9 @@ void Direct3D::PopulateCommandList()
     const float clearColor[] = { 1.0f, 0.3f, 0.4f, 1.0f };
     m_CommandList->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
 
+    // Indicate that the back buffer will now be used to present.
+    m_CommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(m_RenderTargets[m_FrameIndex].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT));
+    
     ThrowIfFailed(m_CommandList->Close());
 }
 

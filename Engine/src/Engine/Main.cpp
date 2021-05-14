@@ -20,15 +20,17 @@ int WINAPI wWinMain(
     
     platform.PlatformStartup(&state, L"Seacrest", 100, 100, 1280, 720);
     
+    // Init D3D12.
+    Direct3D direct3d;
+
     while (platform.platformRunning)
     {
         platform.PlatformPumpMessages(&state);
+        direct3d.OnUpdate();
+        direct3d.OnRender();
     }
 
     platform.PlatformShutdown(&state);
-
-    // Init D3D12.
-    //Direct3D direct3d();
 
     return 0;
 }
