@@ -10,27 +10,39 @@
 #include "Platform/Platform.h"
 #include "Platform/Direct3D/D3D12Context.h"
 
+static void removeTrailingCharacters(std::string& str) {
+    str.erase(4, std::string::npos);
+}
+
+
 int main()
 {
     std::cout << "This is a test." << '\n';
 
     // Configure current platform. 
     Platform::PlatformState state = {};
-    Platform platform = {};
+    Platform* platform;
+    platform = platform->Create();
     
-    platform.PlatformStartup(&state, L"Seacrest", 100, 100, 1280, 720);
+    platform->Startup(&state, L"Seacrest", 100, 100, 1280, 720);
     
     // Init D3D12.
     Direct3D direct3d;
-
-    while (platform.platformRunning)
+    
+    while (platform->IsRunning())
     {
-        platform.PlatformPumpMessages(&state);
+        auto test = platform->Peek();
+        std::string s = std::to_string(test);
+        removeTrailingCharacters(s);
+        std::cout << s << "/s" << '\n';
+
+        platform->PumpMessages(&state);
+        
         direct3d.OnUpdate();
         direct3d.OnRender();
     }
 
-    platform.PlatformShutdown(&state);
+    platform->Shutdown(&state);
 
     return 0;
 }

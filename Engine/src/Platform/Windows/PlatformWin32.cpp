@@ -4,24 +4,19 @@
 //*********************************************************
 
 #include "pch.h"
-#include "Platform/Platform.h"
 
-typedef struct InternalState
+#include <chrono>
+#include "PlatformWin32.h"
+
+double PlatformWin32::m_ClockFrequency = {};
+LARGE_INTEGER PlatformWin32::m_StartTime = {};
+
+Platform* Platform::Create()
 {
-    HINSTANCE hInstance;
-    HWND hWnd;
-} InternalState;
+    return new PlatformWin32;
+}
 
-static const std::wstring s_wndClass = L"Engine Window Class";
-static HINSTANCE s_hInstance;
-
-// Clock
-static double ClockFrequency;
-static LARGE_INTEGER StartTime;
-
-LRESULT CALLBACK Win32ProcessMessage(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-
-void Platform::PlatformStartup(
+void PlatformWin32::Startup(
     PlatformState* platState,
     const wchar_t* applicationName,
     int32_t x,
@@ -33,15 +28,15 @@ void Platform::PlatformStartup(
     platState->InternalState = malloc(sizeof(InternalState));
     InternalState* state = (InternalState*)platState->InternalState;
 
-    //s_hInstance = GetModuleHandle(0);
-    state->hInstance = s_hInstance;
+    m_hInstance = GetModuleHandle(0);
+    state->hInstance = m_hInstance;
     
     // Register the window class.
     WNDCLASSEX wc = {};
     SecureZeroMemory(&wc, sizeof(wc));
     wc.cbSize = sizeof(WNDCLASSEX);
     wc.style = CS_HREDRAW | CS_VREDRAW;
-    wc.lpfnWndProc = Win32ProcessMessage;
+    wc.lpfnWndProc = s_Win32ProcessMessages;
     wc.cbClsExtra = 0;
     wc.cbWndExtra = 0;
     wc.hInstance = state->hInstance;
@@ -49,7 +44,7 @@ void Platform::PlatformStartup(
     wc.hCursor = LoadCursor(NULL, IDC_ARROW);
     wc.hbrBackground = NULL;
     wc.lpszMenuName = NULL;
-    wc.lpszClassName = s_wndClass.c_str();
+    wc.lpszClassName = m_wndClass.c_str();
     wc.hIconSm = NULL;
 
     if (!RegisterClassEx(&wc))
@@ -61,16 +56,16 @@ void Platform::PlatformStartup(
     HWND handle;
     handle = CreateWindowExW(
         0,                              // Optional window styles
-        s_wndClass.c_str(),             // Window class
+        m_wndClass.c_str(),             // Window class
         applicationName,                // Window text
         (WS_OVERLAPPED | WS_CAPTION
         | WS_SYSMENU | WS_MINIMIZEBOX), // Window style
         CW_USEDEFAULT, CW_USEDEFAULT,   // Position 
-        width, height,   // Size
+        width, height,                  // Size
         nullptr,                        // Parent window
         nullptr,                        // Menu
         state->hInstance,               // Instance handle
-        0                               // Additional application data
+        this                            // Additional application data
     );
 
     // Quick and dirty error checking. 
@@ -81,7 +76,7 @@ void Platform::PlatformStartup(
     else
     {
         state->hWnd = handle;
-        platformRunning = true;
+        m_Running = true;
     }
 
     // Window is hidden by default, thus we have to specify showing it.
@@ -91,11 +86,11 @@ void Platform::PlatformStartup(
     // Clock setup.
     LARGE_INTEGER frequency;
     QueryPerformanceFrequency(&frequency);
-    ClockFrequency = 1.0f / (double)frequency.QuadPart;
-    QueryPerformanceCounter(&StartTime);
+    m_ClockFrequency = 1.0f / (double)frequency.QuadPart;
+    QueryPerformanceCounter(&m_StartTime);
 }
 
-void Platform::PlatformShutdown(PlatformState* platState)
+void PlatformWin32::Shutdown(const PlatformState* platState)
 {
     // Simply cold-cast to the known type.
     InternalState* state = (InternalState*)platState->InternalState;
@@ -104,11 +99,11 @@ void Platform::PlatformShutdown(PlatformState* platState)
     {
         DestroyWindow(state->hWnd);
         state->hWnd = 0;
-        platformRunning = false;
+        m_Running = false;
     }
 }
 
-void Platform::PlatformPumpMessages(PlatformState* platState)
+void PlatformWin32::PumpMessages(const PlatformState* platState)
 {
     MSG msg = {};
     while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
@@ -118,19 +113,60 @@ void Platform::PlatformPumpMessages(PlatformState* platState)
 
         if (msg.message == WM_QUIT)
         {
-            platformRunning = false;
+            m_Running = false;
         }
     }
 }
 
-double Platform::PlatformGetAbsoluteTime()
+double PlatformWin32::GetAbsoluteTime() const
 {
     LARGE_INTEGER currentTime;
     QueryPerformanceCounter(&currentTime);
-    return (double)currentTime.QuadPart * ClockFrequency;
+    return (double)currentTime.QuadPart * m_ClockFrequency;
 }
 
-LRESULT CALLBACK Win32ProcessMessage(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+double PlatformWin32::Peek() const
+{
+    LARGE_INTEGER currentTime;
+    QueryPerformanceCounter(&currentTime);
+    auto elapsedTime = (currentTime.QuadPart - m_StartTime.QuadPart) * m_ClockFrequency;
+    return elapsedTime;
+}
+
+LRESULT CALLBACK PlatformWin32::s_Win32ProcessMessages(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+    PlatformWin32* pThis = {}; // Our "this" pointer will go here. 
+
+    if (uMsg == WM_NCCREATE)
+    {
+        // Recover the "this" pointer which we passed as a parameter
+        // to CreateWindow(Ex).
+        LPCREATESTRUCT lpcs = reinterpret_cast<LPCREATESTRUCT>(lParam);
+        pThis = static_cast<PlatformWin32*>(lpcs->lpCreateParams);
+
+        // Put the value in a safe place for future use.
+        SetWindowLongPtr(hWnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(pThis));
+    }
+    else
+    {
+        // Recover "this" pointer from where our WM_NCCREATE handler
+        // stashed it.
+        pThis = reinterpret_cast<PlatformWin32*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
+    }
+
+    if (pThis)
+    {
+        // Now that we have recovered our "this" pointer, 
+        // let the member function finish the job.
+        return pThis->Win32ProcessMessages(hWnd, uMsg, wParam, lParam);
+    }
+
+    // We don't know what our "this" pointer is, 
+    // so just do the default thing.
+    return DefWindowProc(hWnd, uMsg, wParam, lParam);
+}
+
+LRESULT PlatformWin32::Win32ProcessMessages(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     switch (uMsg)
     {
@@ -141,7 +177,7 @@ LRESULT CALLBACK Win32ProcessMessage(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM
         }
         //case WM_CLOSE:
         //{
-         //   return 0;
+        //  return 0; (We're letting application handle the closing). 
         //}
         case WM_DESTROY:
         {

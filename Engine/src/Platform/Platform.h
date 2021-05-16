@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdint>
+
 class Platform
 {
 public:
@@ -8,19 +10,25 @@ public:
         void* InternalState;
     } PlatformState;
 public:
-    void PlatformStartup(
+    virtual void Startup(
         PlatformState* platState,
         const wchar_t* applicationName,
         int32_t x,
         int32_t y,
         int32_t width,
-        int32_t height);
+        int32_t height) = 0;
 
-    void PlatformShutdown(PlatformState* platState);
+    virtual void Shutdown(const PlatformState* platState) = 0;
 
-    void PlatformPumpMessages(PlatformState* platState);
+    virtual void PumpMessages(const PlatformState* platState) = 0;
 
-    double PlatformGetAbsoluteTime();
+    virtual double GetAbsoluteTime() const = 0;
+    virtual double Peek() const = 0;
 
-    bool platformRunning;
+    bool IsRunning() const { return m_Running; }
+
+    static Platform* Create();
+
+protected:
+    bool m_Running;
 };
