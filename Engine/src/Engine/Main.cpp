@@ -34,7 +34,7 @@ int main()
         auto test = platform->Peek();
         std::string s = std::to_string(test);
         removeTrailingCharacters(s);
-        std::cout << s << "/s" << '\n';
+        std::cout << "Application's life-time: " << s << "/s" << '\r';
 
         platform->PumpMessages(&state);
         
