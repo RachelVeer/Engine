@@ -64,7 +64,8 @@
       <AdditionalIncludeDirectories>$(SolutionDir)\Engine\src\</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>
+      </SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
@@ -81,7 +82,8 @@
       <AdditionalIncludeDirectories>$(SolutionDir)\Engine\src\</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
-      <SubSystem>Windows</SubSystem>
+      <SubSystem>
+      </SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -98,8 +100,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Platform\Direct3D\D3D12Context.h" />
-    <ClInclude Include="src\Engine\Utils\d3dx12.h" />
-    <ClInclude Include="src\Engine\Utils\DXHelper.h" />
+    <ClInclude Include="src\Platform\Direct3D\Utils\d3dx12.h" />
+    <ClInclude Include="src\Platform\Direct3D\Utils\DXHelper.h" />
     <ClInclude Include="src\pch.h" />
     <ClInclude Include="src\Platform\Platform.h" />
   </ItemGroup>

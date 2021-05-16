@@ -15,8 +15,8 @@
 #include <dxgi1_6.h>
 
 // D3D12 Helper functions.
-#include "Engine/Utils/d3dx12.h" 
-#include "Engine/Utils/DXHelper.h"
+#include "Platform/Direct3D/Utils/d3dx12.h" 
+#include "Platform/Direct3D/Utils/DXHelper.h"
 
 //#include "Platform/Windows/Window.h"
 #include "Platform/Platform.h"

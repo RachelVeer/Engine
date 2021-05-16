@@ -32,10 +32,10 @@
     <ClInclude Include="src\pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Engine\Utils\d3dx12.h">
+    <ClInclude Include="src\Platform\Direct3D\Utils\d3dx12.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Engine\Utils\DXHelper.h">
+    <ClInclude Include="src\Platform\Direct3D\Utils\DXHelper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Platform\Direct3D\D3D12Context.h">

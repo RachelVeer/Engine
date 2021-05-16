@@ -7,6 +7,7 @@
 
 Direct3D::Direct3D()
 {
+    // TEMP: that's platform specific code. 
     m_StoredHwnd = GetActiveWindow();
     LoadPipeline();
     LoadAssets();
