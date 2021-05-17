@@ -36,10 +36,6 @@ void Application::Run()
         direct3d.OnUpdate();
         direct3d.OnRender();
     }
-
-    // In any event where the while loop 
-    // is broken out of - shutdown. 
-    Shutdown();
 }
 
 void Application::Shutdown()
