@@ -18,7 +18,7 @@ void Application::Create()
 
     m_Platform = m_Platform->Create();
 
-    m_Platform->Startup(&state, L"Seacrest", 100, 100, 1280, 720);
+    m_Platform->Startup(L"Seacrest", 100, 100, 1280, 720);
 
     // Platform setups time, thus time
     // thread comes after its initialization.
@@ -33,7 +33,7 @@ void Application::Run()
     while (m_Running)
     {
         // Exit code (ecode) is only processed from platform-side Quit message.
-        if(const auto ecode = m_Platform->PumpMessages(&state)) {
+        if(const auto ecode = m_Platform->PumpMessages()) {
             if (ecode) {
                 m_Running = false;
             }
@@ -50,7 +50,7 @@ void Application::Shutdown()
     m_Peeking = false;
     thread.join();
 
-    m_Platform->Shutdown(&state);
+    m_Platform->Shutdown();
 }
 
 void Application::DoTime()

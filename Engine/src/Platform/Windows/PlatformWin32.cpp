@@ -25,19 +25,13 @@ PlatformWin32::~PlatformWin32()
 {}
 
 void PlatformWin32::Startup(
-    PlatformState* platState,
     const wchar_t* applicationName,
     int32_t x,
     int32_t y,
     int32_t width,
     int32_t height)
 {
-    // Performing a "cold-cast". 
-    platState->InternalState = malloc(sizeof(InternalState));
-    InternalState* state = (InternalState*)platState->InternalState;
-
     m_hInstance = GetModuleHandle(0);
-    state->hInstance = m_hInstance;
     
     // Register the window class.
     WNDCLASSEX wc = {};
@@ -47,7 +41,7 @@ void PlatformWin32::Startup(
     wc.lpfnWndProc = s_Win32ProcessMessages;
     wc.cbClsExtra = 0;
     wc.cbWndExtra = 0;
-    wc.hInstance = state->hInstance;
+    wc.hInstance = m_hInstance;
     wc.hIcon = NULL;
     wc.hCursor = LoadCursor(NULL, IDC_ARROW);
     wc.hbrBackground = NULL;
@@ -61,8 +55,7 @@ void PlatformWin32::Startup(
     };
 
     // Create the window.
-    HWND handle;
-    handle = CreateWindowExW(
+    m_hWnd = CreateWindowExW(
         0,                              // Optional window styles
         m_wndClass.c_str(),             // Window class
         applicationName,                // Window text
@@ -72,23 +65,22 @@ void PlatformWin32::Startup(
         width, height,                  // Size
         nullptr,                        // Parent window
         nullptr,                        // Menu
-        state->hInstance,               // Instance handle
+        m_hInstance,               // Instance handle
         this                            // Additional application data
     );
 
-    // Quick and dirty error checking. 
-    if (handle == 0)
+    // Quick and dirty error checking.
+    // If failed, indicate via message box, otherwise show now created window. 
+    if (m_hWnd == NULL)
     {
         MessageBox(NULL, L"Window creation failed", L"Error", 0);
     }
     else
     {
-        state->hWnd = handle;
+        // Window is hidden by default, thus we have to specify showing it.
+        // Could be SW_SHOW instead of nCmdShow.
+        ShowWindow(m_hWnd, SW_SHOW);
     }
-
-    // Window is hidden by default, thus we have to specify showing it.
-    // Could be SW_SHOW instead of nCmdShow.
-    ShowWindow(state->hWnd, SW_SHOW);
 
     // Clock setup.
     LARGE_INTEGER frequency;
@@ -97,19 +89,16 @@ void PlatformWin32::Startup(
     QueryPerformanceCounter(&m_StartTime);
 }
 
-void PlatformWin32::Shutdown(const PlatformState* platState)
+void PlatformWin32::Shutdown()
 {
-    // Simply cold-cast to the known type.
-    InternalState* state = (InternalState*)platState->InternalState;
-
-    if (state->hWnd)
+    if (m_hWnd)
     {
-        DestroyWindow(state->hWnd);
-        state->hWnd = 0;
+        DestroyWindow(m_hWnd);
+        m_hWnd = 0;
     }
 }
 
-std::optional<int> PlatformWin32::PumpMessages(const PlatformState* platState)
+std::optional<int> PlatformWin32::PumpMessages()
 {
     MSG msg = {};
     while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
@@ -154,6 +143,10 @@ LRESULT CALLBACK PlatformWin32::s_Win32ProcessMessages(HWND hWnd, UINT uMsg, WPA
         // to CreateWindow(Ex).
         LPCREATESTRUCT lpcs = reinterpret_cast<LPCREATESTRUCT>(lParam);
         pThis = static_cast<PlatformWin32*>(lpcs->lpCreateParams);
+
+        // Properly save window handle upon creation.
+        // Otherwise it's "too late", advised from Raymond Chen. 
+        pThis->m_hWnd = hWnd;
 
         // Put the value in a safe place for future use.
         SetWindowLongPtr(hWnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(pThis));

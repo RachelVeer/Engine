@@ -19,6 +19,4 @@ private:
     bool m_Running;
     std::thread thread;
     std::unique_ptr<Platform> m_Platform;
-    // Configure current platform. 
-    Platform::PlatformState state = {};
 };

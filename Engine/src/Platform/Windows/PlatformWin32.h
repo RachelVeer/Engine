@@ -5,26 +5,19 @@
 class PlatformWin32 : public Platform
 {
 public:
-    typedef struct InternalState
-    {
-        HINSTANCE hInstance;
-        HWND hWnd;
-    } InternalState;
-public:
     PlatformWin32();
     virtual ~PlatformWin32();
     
     void Startup(
-        PlatformState* platState,
         const wchar_t* applicationName,
         int32_t x,
         int32_t y,
         int32_t width,
         int32_t height) override;
 
-    void Shutdown(const PlatformState* platState) override;
+    void Shutdown() override;
 
-    std::optional<int> PumpMessages(const PlatformState* platState) override;
+    std::optional<int> PumpMessages() override;
 
     double GetAbsoluteTime() const override;
     double Peek() const override;
@@ -39,6 +32,7 @@ private:
     static double m_ClockFrequency;
     static LARGE_INTEGER m_StartTime;
     // Win32 properties.
-    const std::wstring m_wndClass = L"Engine Window Class";
+    HWND m_hWnd;
     HINSTANCE m_hInstance;
+    const std::wstring m_wndClass = L"Engine Window Class";
 };
