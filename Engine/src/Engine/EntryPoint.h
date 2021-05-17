@@ -6,7 +6,7 @@
 #include "pch.h"
 #include "Application.h"
 
-int main()
+int main(void)
 {   
     Application app;
 

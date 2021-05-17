@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "Application.h"
 
+#include "EntryPoint.h"
+
 #include <iomanip> // for std::setprecision()
 
 Application::Application()
