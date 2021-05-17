@@ -1,8 +1,21 @@
 #include "pch.h"
 #include "Application.h"
 
-static void removeTrailingCharacters(std::string& str) {
-    str.erase(4, std::string::npos);
+static std::string removeTrailingCharacters(std::string& str) {
+    
+    std::string newStr;
+    
+    if (str.find(".") == 1)
+    {
+        newStr = str.erase(4, std::string::npos);
+    }
+    else if (str.find(".") == 2)
+    {
+        newStr = str.erase(5, std::string::npos);
+        return newStr;
+    }
+
+    return str;
 }
 
 Application::Application()
@@ -59,7 +72,6 @@ void Application::DoTime()
     {
         auto test = m_Platform->Peek();
         std::string s = std::to_string(test);
-        removeTrailingCharacters(s);
-        std::cout << "Application's life-time: " << s << "/s" << '\r';
+        std::cout << "Application's life-time: " << removeTrailingCharacters(s) << "/s" << '\r';
     }
 }
