@@ -83,7 +83,6 @@ void PlatformWin32::Startup(
     else
     {
         state->hWnd = handle;
-        m_Running = true;
     }
 
     // Window is hidden by default, thus we have to specify showing it.
@@ -106,23 +105,27 @@ void PlatformWin32::Shutdown(const PlatformState* platState)
     {
         DestroyWindow(state->hWnd);
         state->hWnd = 0;
-        m_Running = false;
     }
 }
 
-void PlatformWin32::PumpMessages(const PlatformState* platState)
+std::optional<int> PlatformWin32::PumpMessages(const PlatformState* platState)
 {
     MSG msg = {};
     while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
     {
-        TranslateMessage(&msg);
-        DispatchMessage(&msg);
-
+        // Std::optional setup inspired by ChiliTomatoNoodle.
+        // Check for quit because peekmessage does not signal this via return value.
         if (msg.message == WM_QUIT)
         {
-            m_Running = false;
+            // Return optional wrapping int (arg to PostQuitMessage is in wparam) signals quit.
+            return (int)msg.wParam;
         }
+
+        TranslateMessage(&msg);
+        DispatchMessage(&msg);
     }
+    // Return empty optional when not quitting app.
+    return {};
 }
 
 double PlatformWin32::GetAbsoluteTime() const

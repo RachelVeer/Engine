@@ -21,7 +21,7 @@ public:
         int32_t width,
         int32_t height) override;
     void Shutdown(const PlatformState* platState) override;
-    void PumpMessages(const PlatformState* platState) override;
+    std::optional<int> PumpMessages(const PlatformState* platState) override;
     double GetAbsoluteTime() const override;
     double Peek() const;
 private:

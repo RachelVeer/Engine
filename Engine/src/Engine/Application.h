@@ -16,6 +16,7 @@ public:
     void DoTime();
 private:
     bool m_Peeking;
+    bool m_Running;
     std::thread thread;
     Platform* m_Platform;
     // Configure current platform. 

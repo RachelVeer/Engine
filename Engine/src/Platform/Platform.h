@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <optional>
 
 class Platform
 {
@@ -20,15 +21,10 @@ public:
 
     virtual void Shutdown(const PlatformState* platState) = 0;
 
-    virtual void PumpMessages(const PlatformState* platState) = 0;
+    virtual std::optional<int> PumpMessages(const PlatformState* platState) = 0;
 
     virtual double GetAbsoluteTime() const = 0;
     virtual double Peek() const = 0;
 
-    bool IsRunning() const { return m_Running; }
-
     static Platform* Create();
-
-protected:
-    bool m_Running;
 };

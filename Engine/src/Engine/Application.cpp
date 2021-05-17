@@ -6,7 +6,7 @@ static void removeTrailingCharacters(std::string& str) {
 }
 
 Application::Application()
-    :m_Peeking(true)
+    :m_Peeking(true), m_Running(true)
 {}
 
 Application::~Application()
@@ -29,10 +29,15 @@ void Application::Run()
 {
     // Temporary start of D3D.
     Direct3D direct3d;
-    
-    while (m_Platform->IsRunning())
+
+    while (m_Running)
     {
-        m_Platform->PumpMessages(&state);
+        // Exit code (ecode) is only processed from platform-side Quit message.
+        if(const auto ecode = m_Platform->PumpMessages(&state)) {
+            if (ecode) {
+                m_Running = false;
+            }
+        }
         direct3d.OnUpdate();
         direct3d.OnRender();
     }
