@@ -1,5 +1,7 @@
 #pragma once
 
+// Standard Libraries.
+#include <iostream>
 #include <string>
 
 // Reduce size of windows header files. 

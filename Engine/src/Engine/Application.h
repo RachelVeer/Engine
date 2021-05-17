@@ -1,0 +1,22 @@
+#pragma once
+
+#include <thread>
+
+#include "Platform/Platform.h"
+#include "Platform/Direct3D/D3D12Context.h"
+
+class Application
+{
+public:
+    Application();
+    ~Application();
+    void Create();
+    void Run();
+    void DoTime();
+private:
+    bool m_Peeking;
+    std::thread thread;
+    Platform* m_Platform;
+    // Configure current platform. 
+    Platform::PlatformState state = {};
+};
