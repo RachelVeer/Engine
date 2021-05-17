@@ -67,11 +67,11 @@ void PlatformWin32::Startup(
         applicationName,                // Window text
         (WS_OVERLAPPED | WS_CAPTION
         | WS_SYSMENU | WS_MINIMIZEBOX), // Window style
-        CW_USEDEFAULT, CW_USEDEFAULT,   // Position 
+        x, y,                           // Position
         width, height,                  // Size
         nullptr,                        // Parent window
         nullptr,                        // Menu
-        m_hInstance,               // Instance handle
+        m_hInstance,                    // Instance handle
         this                            // Additional application data
     );
 

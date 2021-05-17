@@ -18,7 +18,7 @@ void Application::Create()
 
     m_Platform = m_Platform->Create();
 
-    m_Platform->Startup(L"Seacrest", 100, 100, 1280, 720);
+    m_Platform->Startup(L"Seacrest", 200, 250, 1280, 720);
 
     // Platform setups time, thus time
     // thread comes after its initialization.
