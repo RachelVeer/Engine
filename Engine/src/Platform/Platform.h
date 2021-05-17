@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <optional>
+#include <memory>
 
 class Platform
 {
@@ -26,5 +27,5 @@ public:
     virtual double GetAbsoluteTime() const = 0;
     virtual double Peek() const = 0;
 
-    static Platform* Create();
+    static std::unique_ptr<Platform> Create();
 };

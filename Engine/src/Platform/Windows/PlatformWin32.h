@@ -12,7 +12,8 @@ public:
     } InternalState;
 public:
     PlatformWin32();
-    ~PlatformWin32();
+    virtual ~PlatformWin32();
+    
     void Startup(
         PlatformState* platState,
         const wchar_t* applicationName,
@@ -20,10 +21,13 @@ public:
         int32_t y,
         int32_t width,
         int32_t height) override;
+
     void Shutdown(const PlatformState* platState) override;
+
     std::optional<int> PumpMessages(const PlatformState* platState) override;
+
     double GetAbsoluteTime() const override;
-    double Peek() const;
+    double Peek() const override;
 private:
     // This is the static callback that we register.
     static LRESULT CALLBACK s_Win32ProcessMessages(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);

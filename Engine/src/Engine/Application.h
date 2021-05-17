@@ -18,7 +18,7 @@ private:
     bool m_Peeking;
     bool m_Running;
     std::thread thread;
-    Platform* m_Platform;
+    std::unique_ptr<Platform> m_Platform;
     // Configure current platform. 
     Platform::PlatformState state = {};
 };

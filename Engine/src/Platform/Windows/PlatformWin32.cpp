@@ -6,14 +6,15 @@
 #include "pch.h"
 
 #include <chrono>
+
 #include "PlatformWin32.h"
 
 double PlatformWin32::m_ClockFrequency = {};
 LARGE_INTEGER PlatformWin32::m_StartTime = {};
 
-Platform* Platform::Create()
+std::unique_ptr<Platform> Platform::Create()
 {
-    return new PlatformWin32;
+    return std::make_unique<PlatformWin32>();
 }
 
 PlatformWin32::PlatformWin32()
