@@ -12,6 +12,7 @@ public:
     ~Application();
     void Create();
     void Run();
+    void Shutdown();
     void DoTime();
 private:
     bool m_Peeking;

@@ -19,16 +19,17 @@ void Application::Create()
     m_Platform = m_Platform->Create();
 
     m_Platform->Startup(&state, L"Seacrest", 100, 100, 1280, 720);
+
+    // Platform setups time, thus time
+    // thread comes after its initialization.
+    thread = std::thread(&Application::DoTime, this);
 }
 
 void Application::Run()
 {
-    // Platform setups time, thus time
-    // thread comes after its initialization.
-    thread = std::thread(&Application::DoTime, this);
-
+    // Temporary start of D3D.
     Direct3D direct3d;
-
+    
     while (m_Platform->IsRunning())
     {
         m_Platform->PumpMessages(&state);
@@ -36,6 +37,13 @@ void Application::Run()
         direct3d.OnRender();
     }
 
+    // In any event where the while loop 
+    // is broken out of - shutdown. 
+    Shutdown();
+}
+
+void Application::Shutdown()
+{
     // Make sure to break separate while loop and suspend thread 
     // before shutting application down.  
     m_Peeking = false;

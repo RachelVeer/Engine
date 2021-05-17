@@ -96,7 +96,7 @@
   <ItemGroup>
     <ClCompile Include="src\Engine\Application.cpp" />
     <ClCompile Include="src\Platform\Direct3D\D3D12Context.cpp" />
-    <ClCompile Include="src\Engine\Main.cpp" />
+    <ClCompile Include="src\Engine\EntryPoint.h" />
     <ClCompile Include="src\pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
