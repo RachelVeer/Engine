@@ -11,6 +11,8 @@ public:
         HWND hWnd;
     } InternalState;
 public:
+    PlatformWin32();
+    ~PlatformWin32();
     void Startup(
         PlatformState* platState,
         const wchar_t* applicationName,

@@ -16,6 +16,13 @@ Platform* Platform::Create()
     return new PlatformWin32;
 }
 
+PlatformWin32::PlatformWin32()
+    :m_hInstance(nullptr)
+{}
+
+PlatformWin32::~PlatformWin32()
+{}
+
 void PlatformWin32::Startup(
     PlatformState* platState,
     const wchar_t* applicationName,
