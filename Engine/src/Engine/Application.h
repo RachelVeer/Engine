@@ -17,6 +17,6 @@ public:
 private:
     bool m_Peeking;
     bool m_Running;
-    std::thread thread;
+    std::thread m_ThreadTimer;
     std::unique_ptr<Platform> m_Platform;
 };

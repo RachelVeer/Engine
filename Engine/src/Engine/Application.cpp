@@ -1,22 +1,7 @@
 #include "pch.h"
 #include "Application.h"
 
-static std::string removeTrailingCharacters(std::string& str) {
-    
-    std::string newStr;
-    
-    if (str.find(".") == 1)
-    {
-        newStr = str.erase(4, std::string::npos);
-    }
-    else if (str.find(".") == 2)
-    {
-        newStr = str.erase(5, std::string::npos);
-        return newStr;
-    }
-
-    return str;
-}
+#include <iomanip> // for std::setprecision()
 
 Application::Application()
     :m_Peeking(true), m_Running(true)
@@ -35,7 +20,7 @@ void Application::Create()
 
     // Platform setups time, thus time
     // thread comes after its initialization.
-    thread = std::thread(&Application::DoTime, this);
+    m_ThreadTimer = std::thread(&Application::DoTime, this);
 }
 
 void Application::Run()
@@ -61,17 +46,21 @@ void Application::Shutdown()
     // Make sure to break separate while loop and suspend thread 
     // before shutting application down.  
     m_Peeking = false;
-    thread.join();
+    m_ThreadTimer.join();
 
     m_Platform->Shutdown();
 }
 
 void Application::DoTime()
 {
+    // To "peek" is to get a glimpse at time. 
     while (m_Peeking)
     {
-        auto test = m_Platform->Peek();
-        std::string s = std::to_string(test);
-        std::cout << "Application's life-time: " << removeTrailingCharacters(s) << "/s" << '\r';
+        auto elapsedTime = m_Platform->Peek();
+        
+        // The results of Peek() undergo formatting for readablitiy.
+        std::cout << "Application's life-time: " << 
+            std::fixed << std::setprecision(2) << 
+            elapsedTime << " /s" << '\r';
     }
 }
