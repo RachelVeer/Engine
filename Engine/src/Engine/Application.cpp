@@ -3,8 +3,6 @@
 
 #include "EntryPoint.h"
 
-#include <iomanip> // for std::setprecision()
-
 Application::Application()
     :m_Peeking(true), m_Running(true)
 {}
@@ -59,10 +57,7 @@ void Application::DoTime()
     while (m_Peeking)
     {
         auto elapsedTime = m_Platform->Peek();
-        
         // The results of Peek() undergo formatting for readablitiy.
-        std::cout << "Application's life-time: " << 
-            std::fixed << std::setprecision(2) << 
-            elapsedTime << " /s" << '\r';
+        printf("Application's life-time %.2f \r", elapsedTime);
     }
 }

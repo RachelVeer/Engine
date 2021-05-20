@@ -135,7 +135,7 @@ double PlatformWin32::Peek() const
 {
     LARGE_INTEGER currentTime;
     QueryPerformanceCounter(&currentTime);
-    auto elapsedTime = (currentTime.QuadPart - m_StartTime.QuadPart) * m_ClockFrequency;
+    double elapsedTime = (currentTime.QuadPart - m_StartTime.QuadPart) * m_ClockFrequency;
     return elapsedTime;
 }
 
