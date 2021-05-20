@@ -110,7 +110,6 @@
     <ClInclude Include="src\Platform\Direct3D\Utils\DXHelper.h" />
     <ClInclude Include="src\pch.h" />
     <ClInclude Include="src\Platform\Platform.h" />
-    <ClInclude Include="src\Platform\Windows\PlatformWin32.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

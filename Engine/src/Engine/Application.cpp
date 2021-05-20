@@ -3,6 +3,8 @@
 
 #include "EntryPoint.h"
 
+Platform* platform;
+
 Application::Application()
     :m_Peeking(true), m_Running(true)
 {}
@@ -14,9 +16,7 @@ void Application::Create()
 {
     std::cout << "This is a test." << '\n';
 
-    m_Platform = m_Platform->Create();
-
-    m_Platform->Startup(L"Seacrest", 200, 250, 1280, 720);
+    platform->Startup(L"Seacrest", 200, 250, 1280, 720);
 
     // Platform setups time, thus time
     // thread comes after its initialization.
@@ -31,7 +31,7 @@ void Application::Run()
     while (m_Running)
     {
         // Exit code (ecode) is only processed from platform-side Quit message.
-        if(const auto ecode = m_Platform->PumpMessages()) {
+        if(const auto ecode = platform->PumpMessages()) {
             if (ecode) {
                 m_Running = false;
             }
@@ -48,7 +48,7 @@ void Application::Shutdown()
     m_Peeking = false;
     m_ThreadTimer.join();
 
-    m_Platform->Shutdown();
+    platform->Shutdown();
 }
 
 void Application::DoTime()
@@ -56,7 +56,7 @@ void Application::DoTime()
     // To "peek" is to get a glimpse at time. 
     while (m_Peeking)
     {
-        auto elapsedTime = m_Platform->Peek();
+        auto elapsedTime = platform->Peek();
         // The results of Peek() undergo formatting for readablitiy.
         printf("Application's life-time %.2f \r", elapsedTime);
     }
