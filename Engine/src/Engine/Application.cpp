@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "Application.h"
 
-#include "EntryPoint.h"
+//#include "EntryPoint.h"
 
 typedef std::thread thread;
 
@@ -78,5 +78,5 @@ void Application::DoTime()
         // The results of Peek() undergo formatting for readablitiy.
         printf("Application's life-time %.2f \r", elapsedTime);
     }
-    printf("DoTime Thread Shutting down.\n");
+    printf("\nDoTime Thread Shutting down.\n");
 }

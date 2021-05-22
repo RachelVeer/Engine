@@ -4,11 +4,15 @@
 //*********************************************************
 
 #include "pch.h"
+#include "Application.h"
 
-int main(void)
+extern void Sandbox();
+
+int main()
 {   
     Application app;
-
+    
+    Sandbox();
     app.Create();
     app.Run();
     // In any event where the application  
