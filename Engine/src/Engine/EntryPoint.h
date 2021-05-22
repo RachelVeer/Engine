@@ -12,6 +12,8 @@ int main()
 {   
     Application app;
     
+    // While Sandbox is only test code for now, this will 
+    // eventually serve to separate game from engine code. 
     Sandbox();
 
     app.Create();
