@@ -6,6 +6,8 @@
 class Platform
 {
 public:
+    Platform() = default;
+    ~Platform() = default;
     void Startup(
         const wchar_t* applicationName,
         int32_t x,

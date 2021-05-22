@@ -36,19 +36,22 @@ void Application::Create()
 
 void Application::Run()
 {
-    // Temporary start of D3D.
-    Direct3D direct3d;
-
-    while (appState.Running)
+    if (appState.Initialized)
     {
-        // Exit code (ecode) is only processed from platform-side Quit message.
-        if(const auto ecode = platform->PumpMessages()) {
-            if (ecode) {
-                appState.Running = false;
+        // Temporary start of D3D.
+        Direct3D direct3d;
+
+        while (appState.Running)
+        {
+            // Exit code (ecode) is only processed from platform-side Quit message.
+            if (const auto ecode = platform->PumpMessages()) {
+                if (ecode) {
+                    appState.Running = false;
+                }
             }
+            direct3d.OnUpdate();
+            direct3d.OnRender();
         }
-        direct3d.OnUpdate();
-        direct3d.OnRender();
     }
 }
 
