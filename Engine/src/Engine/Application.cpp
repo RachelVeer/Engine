@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "Application.h"
 
+#include <fstream>
+
 typedef std::thread thread;
 
 typedef struct ApplicationState
@@ -71,9 +73,16 @@ void Application::DoTime()
     // To "peek" is to get a glimpse at time. 
     while (appState.Running)
     {
-        auto elapsedTime = platform->Peek();
+        appState.ElapsedTime = platform->Peek();
         // The results of Peek() undergo formatting for readablitiy.
-        printf("Application's life-time %.2f \r", elapsedTime);
+        printf("Application's life-time %.2f \r", appState.ElapsedTime);
     }
+
+    std::ofstream myFile;
+    myFile.open("example.txt");
+    myFile << "Writing elapsedTime to a file.\n" << "Elapsed Time: "
+        << appState.ElapsedTime;
+    myFile.close();
+
     printf("\nDoTime Thread Shutting down.\n");
 }
