@@ -3,24 +3,35 @@
 
 #include "EntryPoint.h"
 
+typedef std::thread thread;
+
+typedef struct ApplicationState
+{
+    bool Initialized;
+    bool Running;
+    thread ThreadTimer;
+    double ElapsedTime;
+} ApplicationState;
+
+static ApplicationState appState;
 Platform* platform;
-
-Application::Application()
-    :m_Peeking(true), m_Running(true)
-{}
-
-Application::~Application()
-{}
 
 void Application::Create()
 {
-    std::cout << "This is a test." << '\n';
+    printf("This is a test.\n");
+
+    appState.Running = true;
+
+    printf("Application State Running?: ");
+    printf(appState.Running? "true\n" : "false\n");
 
     platform->Startup(L"Seacrest", 200, 250, 1280, 720);
 
     // Platform setups time, thus time
     // thread comes after its initialization.
-    m_ThreadTimer = std::thread(&Application::DoTime, this);
+    appState.ThreadTimer = std::thread(&Application::DoTime, this);
+
+    appState.Initialized = true;
 }
 
 void Application::Run()
@@ -28,12 +39,12 @@ void Application::Run()
     // Temporary start of D3D.
     Direct3D direct3d;
 
-    while (m_Running)
+    while (appState.Running)
     {
         // Exit code (ecode) is only processed from platform-side Quit message.
         if(const auto ecode = platform->PumpMessages()) {
             if (ecode) {
-                m_Running = false;
+                appState.Running = false;
             }
         }
         direct3d.OnUpdate();
@@ -45,8 +56,12 @@ void Application::Shutdown()
 {
     // Make sure to break separate while loop and suspend thread 
     // before shutting application down.  
-    m_Peeking = false;
-    m_ThreadTimer.join();
+    if (appState.Running)
+    {
+        appState.Running = false;
+    }
+
+    appState.ThreadTimer.join();
 
     platform->Shutdown();
 }
@@ -54,10 +69,11 @@ void Application::Shutdown()
 void Application::DoTime()
 {
     // To "peek" is to get a glimpse at time. 
-    while (m_Peeking)
+    while (appState.Running)
     {
         auto elapsedTime = platform->Peek();
         // The results of Peek() undergo formatting for readablitiy.
         printf("Application's life-time %.2f \r", elapsedTime);
     }
+    printf("DoTime Thread Shutting down.\n");
 }

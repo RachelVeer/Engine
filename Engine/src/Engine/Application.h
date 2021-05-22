@@ -8,14 +8,10 @@
 class Application
 {
 public:
-    Application();
-    ~Application();
+    Application() = default;
+    ~Application() = default;
     void Create();
     void Run();
     void Shutdown();
     void DoTime();
-private:
-    bool m_Peeking;
-    bool m_Running;
-    std::thread m_ThreadTimer;
 };

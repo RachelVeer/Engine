@@ -108,7 +108,7 @@ void Platform::Shutdown()
 std::optional<int> Platform::PumpMessages()
 {
     MSG msg = {};
-    while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))
+    while (PeekMessage(&msg, 0, 0, 0, PM_REMOVE))
     {
         // Std::optional setup inspired by ChiliTomatoNoodle.
         // Check for quit because peekmessage does not signal this via return value.
@@ -151,7 +151,7 @@ LRESULT CALLBACK Win32ProcessMessages(HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
         }
         //case WM_CLOSE:
         //{
-        //  return 0; (We're letting application handle the closing). 
+        //    return 0; //(We're letting application handle the closing). 
         //}
         case WM_DESTROY:
         {
