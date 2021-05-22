@@ -1,3 +1,3 @@
 #include <iostream>
 
-extern void testPrint();
+extern void testPrint(int test);

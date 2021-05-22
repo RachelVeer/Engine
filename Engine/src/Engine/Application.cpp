@@ -1,8 +1,6 @@
 #include "pch.h"
 #include "Application.h"
 
-//#include "EntryPoint.h"
-
 typedef std::thread thread;
 
 typedef struct ApplicationState

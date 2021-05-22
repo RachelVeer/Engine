@@ -1,7 +1,7 @@
 #include <Engine/Engine.h>
-//#include <Test.h>
 
 void Sandbox()
 {
-    testPrint();
+    int test = 6;
+    testPrint(test);
 }

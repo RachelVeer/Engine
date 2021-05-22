@@ -13,6 +13,7 @@ int main()
     Application app;
     
     Sandbox();
+
     app.Create();
     app.Run();
     // In any event where the application  
