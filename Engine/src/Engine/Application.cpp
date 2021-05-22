@@ -61,10 +61,9 @@ void Application::Shutdown()
     {
         appState.Running = false;
     }
-
     appState.ThreadTimer.join();
-
     platform->Shutdown();
+    delete platform;
 }
 
 void Application::DoTime()
