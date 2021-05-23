@@ -48,9 +48,6 @@ void Application::Run()
 
     if (appState.Initialized)
     {
-        // Temporary start of D3D.
-        Direct3D direct3d;
-
         while (appState.Running)
         {
             // Exit code (ecode) is only processed from platform-side Quit message.
@@ -59,8 +56,6 @@ void Application::Run()
                     appState.Running = false;
                 }
             }
-            direct3d.OnUpdate();
-            direct3d.OnRender();
 
             appState.gameInstance->Update(appState.gameInstance, 0.0f);
             appState.gameInstance->Render(appState.gameInstance, 0.0f);

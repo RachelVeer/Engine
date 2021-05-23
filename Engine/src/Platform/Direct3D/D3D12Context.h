@@ -26,6 +26,7 @@ class Direct3D
 public:
     Direct3D();
     ~Direct3D();
+    void Init();
     void LoadPipeline();
     void LoadAssets();
     void OnUpdate();

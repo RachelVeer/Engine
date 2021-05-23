@@ -6,15 +6,17 @@
 #include "D3D12Context.h"
 
 Direct3D::Direct3D()
+{}
+
+Direct3D::~Direct3D()
+{}
+
+void Direct3D::Init()
 {
     // TEMP: that's platform specific code. 
     m_StoredHwnd = GetActiveWindow();
     LoadPipeline();
     LoadAssets();
-}
-
-Direct3D::~Direct3D()
-{
 }
 
 void Direct3D::LoadPipeline()
