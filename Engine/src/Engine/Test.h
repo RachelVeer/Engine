@@ -1,3 +1,4 @@
 #include <iostream>
+#include <stdint.h>
 
-extern void testPrint(int test);
+void testPrint(int test);

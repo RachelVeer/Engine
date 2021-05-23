@@ -1,7 +1,17 @@
-#include <Engine/Engine.h>
+#include "Sandbox.h"
 
-void Sandbox()
+bool SandboxInitialize(Game* gameInstance)
 {
-    int test = 6;
-    testPrint(test);
+    printf("SandboxInitialized() called!\n");
+    return true;
+}
+
+bool SandboxUpdate(Game* gameInstance, float deltaTime)
+{
+    return true;
+}
+
+bool SandboxRender(Game* gameInstance, float deltaTime)
+{
+    return true;
 }

@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "Application.h"
+#include "GameTypes.h"
 
 #include <fstream>
 
@@ -7,6 +8,7 @@ typedef std::thread thread;
 
 typedef struct ApplicationState
 {
+    Game* gameInstance;
     bool Initialized = false;
     bool Running = false;
     thread ThreadTimer;
@@ -16,26 +18,34 @@ typedef struct ApplicationState
 static ApplicationState appState;
 Platform* platform;
 
-void Application::Create()
+void Application::Create(Game* gameInstance)
 {
     printf("This is a test.\n");
 
+    appState.gameInstance = gameInstance;
     appState.Running = true;
-
-    printf("Application State Running?: ");
-    printf(appState.Running? "true\n" : "false\n");
-
-    platform->Startup(L"Seacrest", 200, 250, 1280, 720);
+    
+    platform->Startup(
+        gameInstance->appConfig.Name, 
+        gameInstance->appConfig.startPosX,
+        gameInstance->appConfig.startPosY,
+        gameInstance->appConfig.startWidth,
+        gameInstance->appConfig.startHeight);
 
     // Platform setups time, thus time
     // thread comes after its initialization.
     appState.ThreadTimer = std::thread(&Application::DoTime, this);
+
+    appState.gameInstance->Initialize(appState.gameInstance);
 
     appState.Initialized = true;
 }
 
 void Application::Run()
 {
+    printf("Application State Running?: ");
+    printf(appState.Running ? "true\n" : "false\n");
+
     if (appState.Initialized)
     {
         // Temporary start of D3D.
@@ -51,6 +61,9 @@ void Application::Run()
             }
             direct3d.OnUpdate();
             direct3d.OnRender();
+
+            appState.gameInstance->Update(appState.gameInstance, 0.0f);
+            appState.gameInstance->Render(appState.gameInstance, 0.0f);
         }
     }
 }
@@ -80,7 +93,7 @@ void Application::DoTime()
 
     std::ofstream myFile;
     myFile.open("example.txt");
-    myFile << "Writing elapsedTime to a file.\n" << "Elapsed Time: "
+    std::cout << "\nWriting elapsedTime to a file.\n" << "Elapsed Time: "
         << appState.ElapsedTime;
     myFile.close();
 
