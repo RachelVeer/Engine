@@ -8,7 +8,7 @@ typedef std::thread thread;
 
 typedef struct ApplicationState
 {
-    Game* gameInstance;
+    Game* gameInstance = {};
     bool Initialized = false;
     bool Running = false;
     thread ThreadTimer;
@@ -56,7 +56,6 @@ void Application::Run()
                     appState.Running = false;
                 }
             }
-
             appState.gameInstance->Update(appState.gameInstance, 0.0f);
             appState.gameInstance->Render(appState.gameInstance, 0.0f);
         }
