@@ -7,10 +7,10 @@ typedef std::thread thread;
 
 typedef struct ApplicationState
 {
-    bool Initialized;
-    bool Running;
+    bool Initialized = false;
+    bool Running = false;
     thread ThreadTimer;
-    double ElapsedTime;
+    double ElapsedTime = { 0.0 };
 } ApplicationState;
 
 static ApplicationState appState;
