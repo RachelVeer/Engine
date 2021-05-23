@@ -1,2 +1,0 @@
-Writing elapsedTime to a file.
-Elapsed Time: 12.6801
