@@ -1,2 +1,2 @@
 Writing elapsedTime to a file.
-Elapsed Time: 12.6801
+Elapsed Time: 65.3962
