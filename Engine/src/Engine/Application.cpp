@@ -87,8 +87,8 @@ void Application::DoTime()
 
     std::ofstream myFile;
     myFile.open("example.txt");
-    std::cout << "\nWriting elapsedTime to a file.\n" << "Elapsed Time: "
-        << appState.ElapsedTime;
+    printf("\nWriting elapsedTime to a file.\n");
+    printf("Elapsed Time: %.2f", appState.ElapsedTime);
     myFile.close();
 
     printf("\nDoTime Thread Shutting down.\n");
