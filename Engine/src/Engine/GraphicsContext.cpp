@@ -2,24 +2,57 @@
 #include "GraphicsContext.h"
 #include "Platform/Direct3D/D3D12Context.h"
 
-typedef struct GraphicsAPI
-{
+typedef struct GraphicsAPI {
     Direct3D D3D12;
 } GraphicsAPI;
 
-static GraphicsAPI gfxAPI;
+GraphicsAPI validAPI;
 
-void Graphics::Init()
+void Graphics::Init(GFXAPI& gfxAPI)
 {
-    gfxAPI.D3D12.Init();
+    switch (gfxAPI)
+    {
+        case GFXAPI::Unknown:
+        {
+            printf("Return type unknown!");
+            break;
+        }
+        case GFXAPI::Direct3D12:
+        {
+            validAPI.D3D12.Init();
+        }
+    }
 }
 
-void Graphics::Update()
+
+void Graphics::Update(GFXAPI& gfxAPI)
 {
-    gfxAPI.D3D12.Update();
+    switch (gfxAPI)
+    {
+        case GFXAPI::Unknown:
+        {
+            printf("Return type unknown!");
+            break;
+        }
+        case GFXAPI::Direct3D12:
+        {
+            validAPI.D3D12.Update();
+        }
+    }
 }
 
-void Graphics::Render()
+void Graphics::Render(GFXAPI& gfxAPI)
 {
-    gfxAPI.D3D12.Render();
+    switch (gfxAPI)
+    {
+        case GFXAPI::Unknown:
+        {
+            printf("Return type unknown!");
+            break;
+        }
+        case GFXAPI::Direct3D12:
+        {
+            validAPI.D3D12.Render();
+        }
+    }
 }

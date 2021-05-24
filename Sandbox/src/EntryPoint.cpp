@@ -10,6 +10,8 @@ void CreateGame(Game* OutGame)
     OutGame->appConfig.startWidth = 1280;
     OutGame->appConfig.startHeight = 720;
     OutGame->appConfig.Name = L"Seacrest Engine Sandbox";
+    OutGame->gfx = GFXAPI::Direct3D12;
+    OutGame->gfxContext = {};
     // Function pointers. 
     OutGame->Update = SandboxUpdate;
     OutGame->Render = SandboxRender;

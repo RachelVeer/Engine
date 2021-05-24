@@ -3,6 +3,7 @@
 #include "Engine/Application.h"
 #include "Engine/GraphicsContext.h"
 
+
 // Represents the basic game state in a game.
 // Called for creation by the application.
 
@@ -10,6 +11,9 @@ typedef struct Game
 {
     // The application configuration.
     ApplicationConfiguration appConfig;
+
+    GFXAPI gfx;
+    Graphics* gfxContext;
 
     // Function pointer to game's initialize function.
     bool (*Initialize)(struct Game* gameInstance);

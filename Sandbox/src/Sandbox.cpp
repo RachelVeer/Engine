@@ -1,23 +1,20 @@
 #include "Sandbox.h"
-#include "GraphicsContext.h"
-
-Graphics gfxContext;
 
 bool SandboxInitialize(Game* gameInstance)
 {
     printf("SandboxInitialized() called!\n");
-    gfxContext.Init();
+    gameInstance->gfxContext->Init(gameInstance->gfx);
     return true;
 }
 
 bool SandboxUpdate(Game* gameInstance, float deltaTime)
 {
-    gfxContext.Update();
+    gameInstance->gfxContext->Update(gameInstance->gfx);
     return true;
 }
 
 bool SandboxRender(Game* gameInstance, float deltaTime)
 {
-    gfxContext.Render();
+    gameInstance->gfxContext->Render(gameInstance->gfx);
     return true;
 }
