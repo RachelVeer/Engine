@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Engine/Application.h"
+#include "Engine/GraphicsContext.h"
 
 // Represents the basic game state in a game.
 // Called for creation by the application.

@@ -18,10 +18,10 @@
 #include "Platform/Direct3D/Utils/d3dx12.h" 
 #include "Platform/Direct3D/Utils/DXHelper.h"
 
-//#include "Platform/Windows/Window.h"
 #include "Platform/Platform.h"
+#include "Engine/GraphicsContext.h"
 
-class Direct3D
+class Direct3D : public Graphics
 {
 public:
     Direct3D();
@@ -29,9 +29,8 @@ public:
     void Init();
     void LoadPipeline();
     void LoadAssets();
-    void OnUpdate();
-    void OnRender();
-
+    void Update();
+    void Render();
 private:
     static const uint32_t m_FrameCount = 2;
 

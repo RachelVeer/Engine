@@ -1,24 +1,23 @@
 #include "Sandbox.h"
-#include "Platform/Direct3D/D3D12Context.h"
+#include "GraphicsContext.h"
 
-Direct3D direct3d;
+Graphics gfxContext;
 
 bool SandboxInitialize(Game* gameInstance)
 {
     printf("SandboxInitialized() called!\n");
-    // Temp init of D3D.
-    direct3d.Init();
+    gfxContext.Init();
     return true;
 }
 
 bool SandboxUpdate(Game* gameInstance, float deltaTime)
 {
-    direct3d.OnUpdate();
+    gfxContext.Update();
     return true;
 }
 
 bool SandboxRender(Game* gameInstance, float deltaTime)
 {
-    direct3d.OnRender();
+    gfxContext.Render();
     return true;
 }

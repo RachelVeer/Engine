@@ -10,6 +10,7 @@ void CreateGame(Game* OutGame)
     OutGame->appConfig.startWidth = 1280;
     OutGame->appConfig.startHeight = 720;
     OutGame->appConfig.Name = L"Seacrest Engine Sandbox";
+    // Function pointers. 
     OutGame->Update = SandboxUpdate;
     OutGame->Render = SandboxRender;
     OutGame->Initialize = SandboxInitialize;

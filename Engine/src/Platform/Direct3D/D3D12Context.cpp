@@ -138,12 +138,12 @@ void Direct3D::LoadAssets()
     }
 }
 
-void Direct3D::OnUpdate()
+void Direct3D::Update()
 {
 
 }
 
-void Direct3D::OnRender()
+void Direct3D::Render()
 {
     // Record all the commands we need to render the scene into the command list.
     PopulateCommandList();

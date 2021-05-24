@@ -95,6 +95,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\Engine\Application.cpp" />
+    <ClCompile Include="src\Engine\GraphicsContext.cpp" />
     <ClCompile Include="src\Engine\Test.cpp" />
     <ClCompile Include="src\Platform\Direct3D\D3D12Context.cpp" />
     <ClInclude Include="src\Engine\Engine.h" />
@@ -107,6 +108,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Engine\Application.h" />
+    <ClInclude Include="src\Engine\GraphicsContext.h" />
     <ClInclude Include="src\Engine\Test.h" />
     <ClInclude Include="src\GameTypes.h" />
     <ClInclude Include="src\Platform\Direct3D\D3D12Context.h" />

@@ -3,7 +3,6 @@
 #include <thread>
 
 #include "Platform/Platform.h"
-#include "Platform/Direct3D/D3D12Context.h"
 
 struct Game;
 
