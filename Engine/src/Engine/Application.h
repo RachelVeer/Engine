@@ -4,7 +4,7 @@
 
 #include "Platform/Platform.h"
 
-struct Game;
+struct Sandbox;
 
 // Application configuration.
 typedef struct ApplicationConfiguration
@@ -32,7 +32,7 @@ class Application
 public:
     Application() = default;
     ~Application() = default;
-    void Create(struct Game* gameInstance);
+    void Create(struct Sandbox* sandboxInstance);
     void Run();
     void Shutdown();
     void DoTime();

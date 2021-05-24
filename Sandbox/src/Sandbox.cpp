@@ -1,20 +1,20 @@
 #include "Sandbox.h"
 
-bool SandboxInitialize(Game* gameInstance)
+bool SandboxInitialize(Sandbox* sandboxInstance)
 {
     printf("SandboxInitialized() called!\n");
-    gameInstance->gfxContext->Init(gameInstance->gfx);
+    sandboxInstance->gfxContext->Init(sandboxInstance->gfx);
     return true;
 }
 
-bool SandboxUpdate(Game* gameInstance, float deltaTime)
+bool SandboxUpdate(Sandbox* sandboxInstance, float deltaTime)
 {
-    gameInstance->gfxContext->Update(gameInstance->gfx);
+    sandboxInstance->gfxContext->Update(sandboxInstance->gfx);
     return true;
 }
 
-bool SandboxRender(Game* gameInstance, float deltaTime)
+bool SandboxRender(Sandbox* sandboxInstance, float deltaTime)
 {
-    gameInstance->gfxContext->Render(gameInstance->gfx);
+    sandboxInstance->gfxContext->Render(sandboxInstance->gfx);
     return true;
 }

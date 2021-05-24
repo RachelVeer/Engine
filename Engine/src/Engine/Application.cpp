@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "Application.h"
-#include "GameTypes.h"
+#include "SandboxTypes.h"
 
 #include <fstream>
 
@@ -8,7 +8,7 @@ typedef std::thread thread;
 
 typedef struct ApplicationState
 {
-    Game* gameInstance = {};
+    Sandbox* sandboxInstance = {};
     bool Initialized = false;
     bool Running = false;
     thread ThreadTimer;
@@ -18,25 +18,25 @@ typedef struct ApplicationState
 static ApplicationState appState;
 Platform* platform;
 
-void Application::Create(Game* gameInstance)
+void Application::Create(Sandbox* sandboxInstance)
 {
     printf("This is a test.\n");
 
-    appState.gameInstance = gameInstance;
+    appState.sandboxInstance = sandboxInstance;
     appState.Running = true;
     
     platform->Startup(
-        gameInstance->appConfig.Name, 
-        gameInstance->appConfig.startPosX,
-        gameInstance->appConfig.startPosY,
-        gameInstance->appConfig.startWidth,
-        gameInstance->appConfig.startHeight);
+        sandboxInstance->appConfig.Name, 
+        sandboxInstance->appConfig.startPosX,
+        sandboxInstance->appConfig.startPosY,
+        sandboxInstance->appConfig.startWidth,
+        sandboxInstance->appConfig.startHeight);
 
     // Platform setups time, thus time
     // thread comes after its initialization.
     appState.ThreadTimer = std::thread(&Application::DoTime, this);
 
-    appState.gameInstance->Initialize(appState.gameInstance);
+    appState.sandboxInstance->Initialize(appState.sandboxInstance);
 
     appState.Initialized = true;
 }
@@ -56,8 +56,8 @@ void Application::Run()
                     appState.Running = false;
                 }
             }
-            appState.gameInstance->Update(appState.gameInstance, 0.0f);
-            appState.gameInstance->Render(appState.gameInstance, 0.0f);
+            appState.sandboxInstance->Update(appState.sandboxInstance, 0.0f);
+            appState.sandboxInstance->Render(appState.sandboxInstance, 0.0f);
         }
     }
 }

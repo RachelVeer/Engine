@@ -1,13 +1,13 @@
 #pragma once
-#include "GameTypes.h"
+#include "SandboxTypes.h"
 
 typedef struct SandboxState
 {
     float deltaTime;
 } SandboxState;
 
-bool SandboxInitialize(Game* gameInstance);
+bool SandboxInitialize(Sandbox* sandboxInstance);
 
-bool SandboxUpdate(Game* gameInstance, float deltaTime);
+bool SandboxUpdate(Sandbox* sandboxInstance, float deltaTime);
 
-bool SandboxRender(Game* gameInstance, float deltaTime);
+bool SandboxRender(Sandbox* sandboxInstance, float deltaTime);

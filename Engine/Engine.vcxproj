@@ -110,7 +110,7 @@
     <ClInclude Include="src\Engine\Application.h" />
     <ClInclude Include="src\Engine\GraphicsContext.h" />
     <ClInclude Include="src\Engine\Test.h" />
-    <ClInclude Include="src\GameTypes.h" />
+    <ClInclude Include="src\SandboxTypes.h" />
     <ClInclude Include="src\Platform\Direct3D\D3D12Context.h" />
     <ClInclude Include="src\Platform\Direct3D\Utils\d3dx12.h" />
     <ClInclude Include="src\Platform\Direct3D\Utils\DXHelper.h" />

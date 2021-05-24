@@ -1,6 +1,9 @@
 #include "Sandbox.h"
 #include <EntryPoint.h>
 
+// Note(rachel): Sandbox is simply an alias for a game;
+// or any desirable application.
+
 typedef struct SandboxConfiguration
 {
     int16_t startPosX = 100;
@@ -10,27 +13,27 @@ typedef struct SandboxConfiguration
     const wchar_t* Name = L"Seacrest Engine Sandbox";
 } SandboxConfiguration;
 
-// Define the function to create a game.
-void CreateGame(Game* OutGame)
+// Define the function to create a sandbox.
+void CreateSandbox(Sandbox* OutSandbox)
 {
     // Sandbox has its own "config", to 
     // prevent passing in "magic" numbers. 
     SandboxConfiguration sandboxConfig;
 
     // Application configuration.
-    OutGame->appConfig.startPosX   = sandboxConfig.startPosX;
-    OutGame->appConfig.startPosY   = sandboxConfig.startPosY;
-    OutGame->appConfig.startWidth  = sandboxConfig.startWidth;
-    OutGame->appConfig.startHeight = sandboxConfig.startHeight;
-    OutGame->appConfig.Name        = sandboxConfig.Name;
+    OutSandbox->appConfig.startPosX   = sandboxConfig.startPosX;
+    OutSandbox->appConfig.startPosY   = sandboxConfig.startPosY;
+    OutSandbox->appConfig.startWidth  = sandboxConfig.startWidth;
+    OutSandbox->appConfig.startHeight = sandboxConfig.startHeight;
+    OutSandbox->appConfig.Name        = sandboxConfig.Name;
     // Renderer.
-    OutGame->gfx                   = GFXAPI::Direct3D12;
-    OutGame->gfxContext            = {};
+    OutSandbox->gfx                   = GFXAPI::Direct3D12;
+    OutSandbox->gfxContext            = {};
     // Function pointers. 
-    OutGame->Update                = SandboxUpdate;
-    OutGame->Render                = SandboxRender;
-    OutGame->Initialize            = SandboxInitialize;
+    OutSandbox->Update                = SandboxUpdate;
+    OutSandbox->Render                = SandboxRender;
+    OutSandbox->Initialize            = SandboxInitialize;
 
-    // Create the game state.
-    OutGame->state = malloc(sizeof(SandboxState));
+    // Create the sandbox state.
+    OutSandbox->state = malloc(sizeof(SandboxState));
 }

@@ -5,26 +5,26 @@
 
 #include "pch.h"
 #include "Application.h"
-#include "GameTypes.h"
+#include "SandboxTypes.h"
 
-// Externally defined function to create a game.
-extern void CreateGame(Game* OutGame);
+// Externally defined function to create a sandbox.
+extern void CreateSandbox(Sandbox* OutSandbox);
 // Define application.
 Application app;
 
 int main()
 {      
-    // Request the game instance from the application.
-    Game gameInstance;
-    CreateGame(&gameInstance);
+    // Request the sandbox instance from the application.
+    Sandbox sandboxInstance;
+    CreateSandbox(&sandboxInstance);
 
     // Ensure the function pointers exist.
-    if (!gameInstance.Render || !gameInstance.Update || !gameInstance.Initialize)
+    if (!sandboxInstance.Render || !sandboxInstance.Update || !sandboxInstance.Initialize)
     {
         return -1;
     }
 
-    app.Create(&gameInstance);
+    app.Create(&sandboxInstance);
     app.Run();
     // In any event where the application  
     // loop is broken out of - shutdown. 

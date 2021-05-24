@@ -62,10 +62,10 @@
     <ClInclude Include="src\Engine\Engine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\GameTypes.h">
+    <ClInclude Include="src\Engine\GraphicsContext.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\Engine\GraphicsContext.h">
+    <ClInclude Include="src\SandboxTypes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
