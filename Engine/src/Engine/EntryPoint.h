@@ -9,11 +9,11 @@
 
 // Externally defined function to create a sandbox.
 extern void CreateSandbox(Sandbox* OutSandbox);
-// Define application.
-Application app;
 
 int main()
-{      
+{
+    // Define application.
+    auto app = new Application();
     // Request the sandbox instance from the application.
     Sandbox sandboxInstance;
     CreateSandbox(&sandboxInstance);
@@ -24,11 +24,12 @@ int main()
         return -1;
     }
 
-    app.Create(&sandboxInstance);
-    app.Run();
+    app->Create(&sandboxInstance);
+    app->Run();
     // In any event where the application  
     // loop is broken out of - shutdown. 
-    app.Shutdown();
+    app->Shutdown();
+    delete app;
 
     return 0;
 }
