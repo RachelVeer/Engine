@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "Application.h"
 #include "SandboxTypes.h"
+#include "GraphicsContext.h"
 
 #include <fstream>
 
@@ -8,7 +9,7 @@ typedef std::thread thread;
 
 typedef struct ApplicationState
 {
-    Sandbox* sandboxInstance = {};
+    SandboxState* sandboxInstance = {};
     bool Initialized = false;
     bool Running = false;
     thread ThreadTimer;
@@ -17,8 +18,9 @@ typedef struct ApplicationState
 
 static ApplicationState appState;
 Platform* platform;
+Graphics* gfx;
 
-void Application::Create(Sandbox* sandboxInstance)
+void Application::Create(SandboxState* sandboxInstance)
 {
     printf("This is a test.\n");
 
@@ -26,17 +28,17 @@ void Application::Create(Sandbox* sandboxInstance)
     appState.Running = true;
     
     platform->Startup(
-        sandboxInstance->appConfig.Name, 
+        sandboxInstance->appConfig.Name,
         sandboxInstance->appConfig.startPosX,
         sandboxInstance->appConfig.startPosY,
         sandboxInstance->appConfig.startWidth,
         sandboxInstance->appConfig.startHeight);
 
+    gfx = gfx->CreateGraphics();
+    gfx->Init();
     // Platform setups time, thus time
     // thread comes after its initialization.
     appState.ThreadTimer = std::thread(&Application::DoTime, this);
-
-    appState.sandboxInstance->Initialize(appState.sandboxInstance);
 
     appState.Initialized = true;
 }
@@ -56,8 +58,8 @@ void Application::Run()
                     appState.Running = false;
                 }
             }
-            appState.sandboxInstance->Update(appState.sandboxInstance, 0.0f);
-            appState.sandboxInstance->Render(appState.sandboxInstance, 0.0f);
+            gfx->Update();
+            gfx->Render();
         }
     }
 }
@@ -73,6 +75,7 @@ void Application::Shutdown()
     appState.ThreadTimer.join();
     platform->Shutdown();
     delete platform;
+    delete gfx;
 }
 
 void Application::DoTime()

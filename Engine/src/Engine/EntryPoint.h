@@ -8,21 +8,14 @@
 #include "SandboxTypes.h"
 
 // Externally defined function to create a sandbox.
-extern void CreateSandbox(Sandbox* OutSandbox);
+extern Application* CreateApplication(SandboxState* OutSandbox);
 
 int main()
 {
-    // Define application.
-    auto app = new Application();
     // Request the sandbox instance from the application.
-    Sandbox sandboxInstance;
-    CreateSandbox(&sandboxInstance);
-
-    // Ensure the function pointers exist.
-    if (!sandboxInstance.Render || !sandboxInstance.Update || !sandboxInstance.Initialize)
-    {
-        return -1;
-    }
+    SandboxState sandboxInstance;
+    // Define & allocate memory for application.
+    auto app = CreateApplication(&sandboxInstance);
 
     app->Create(&sandboxInstance);
     app->Run();

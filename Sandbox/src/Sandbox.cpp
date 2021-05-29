@@ -1,20 +1,47 @@
-#include "Sandbox.h"
+#include <Engine.h>
 
-bool SandboxInitialize(Sandbox* sandboxInstance)
-{
-    printf("SandboxInitialized() called!\n");
-    sandboxInstance->gfxContext->Init(sandboxInstance->gfx);
-    return true;
-}
+// Note(rachel): Sandbox is simply an alias for a game;
+// or any desirable application.
 
-bool SandboxUpdate(Sandbox* sandboxInstance, float deltaTime)
+typedef struct SandboxConfiguration
 {
-    sandboxInstance->gfxContext->Update(sandboxInstance->gfx);
-    return true;
-}
+    int16_t startPosX   = 100;
+    int16_t startPosY   = 100;
+    int16_t startWidth  = 1280;
+    int16_t startHeight = 720;
+    const wchar_t* Name = L"Seacrest Engine Sandbox";
+} SandboxConfiguration;
 
-bool SandboxRender(Sandbox* sandboxInstance, float deltaTime)
+class Sandbox : public Application
 {
-    sandboxInstance->gfxContext->Render(sandboxInstance->gfx);
-    return true;
+public:
+    Sandbox()
+    {
+        printf("Default Sandbox constructor!\n");
+    }
+    Sandbox(SandboxState* OutSandbox)
+    {
+        printf("Custom Sandbox constructor!\n");
+
+        // Sandbox has its own "config", to 
+        // prevent passing in "magic" numbers. 
+        SandboxConfiguration sandboxConfig;
+
+        // Application configuration.
+        OutSandbox->appConfig.startPosX   = sandboxConfig.startPosX;
+        OutSandbox->appConfig.startPosY   = sandboxConfig.startPosY;
+        OutSandbox->appConfig.startWidth  = sandboxConfig.startWidth;
+        OutSandbox->appConfig.startHeight = sandboxConfig.startHeight;
+        OutSandbox->appConfig.Name        = sandboxConfig.Name;
+
+        // Create the sandbox state.
+        OutSandbox->state = malloc(sizeof(SandboxState));
+    }
+    ~Sandbox()
+    {}
+};
+
+Application* CreateApplication(SandboxState* sandboxInstance)
+{
+    return new Sandbox(sandboxInstance);
 }

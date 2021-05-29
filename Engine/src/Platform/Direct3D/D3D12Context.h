@@ -26,11 +26,11 @@ class Direct3D : public Graphics
 public:
     Direct3D();
     ~Direct3D();
-    void Init();
+    void Init() override;
     void LoadPipeline();
     void LoadAssets();
-    void Update();
-    void Render();
+    void Update() override;
+    void Render() override;
 private:
     static const uint32_t m_FrameCount = 2;
 

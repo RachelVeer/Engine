@@ -1,15 +1,12 @@
 #pragma once
 
-enum class GFXAPI
-{
-    Unknown = 0,
-    Direct3D12 = 1,
-};
-
 class Graphics
 {
 public:
-    void Init(GFXAPI& gfxAPI);
-    void Update(GFXAPI& gfxAPI);
-    void Render(GFXAPI& gfxAPI);
+    virtual void Init() = 0;
+    virtual void Update() = 0;
+    virtual void Render() = 0;
+    virtual ~Graphics() {}
+
+    Graphics* CreateGraphics();
 };
