@@ -56,6 +56,7 @@ void PopulateCommandList();
 
 void Graphics::Init()
 {
+    ENGINE_CORE_DEBUG("Current Graphics API: Direct3D12\n");
     // TEMP: that's platform specific code. 
     m_StoredHwnd = GetActiveWindow();
     LoadPipeline();

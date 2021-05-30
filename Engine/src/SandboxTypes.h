@@ -11,8 +11,6 @@ struct SandboxState
     // The application configuration.
     ApplicationConfiguration appConfig;
 
-    GraphicsAPI gfxAPI;
-
     // Sandbox-specific sandbox state. Created and managed by the sandbox.
     void* state;
 };
