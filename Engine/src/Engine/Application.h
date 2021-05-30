@@ -7,7 +7,7 @@
 struct SandboxState;
 
 // Application configuration.
-typedef struct ApplicationConfiguration
+struct ApplicationConfiguration
 {
     // Note: variables could be applicable or not via platform.
     // App starting position.
@@ -18,14 +18,14 @@ typedef struct ApplicationConfiguration
 
     // App starting width.
     int16_t startWidth;
-    
+
     // App starting height.
     int16_t startHeight;
 
     // App name, if viewable.
     const wchar_t* Name;
 
-} ApplicationConfiguration;
+};
 
 class Application
 {

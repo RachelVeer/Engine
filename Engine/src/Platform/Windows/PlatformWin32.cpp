@@ -6,18 +6,18 @@
 #include "pch.h"
 #include "Platform/Platform.h"
 
-typedef struct Clock
+struct Clock
 {
     double ClockFrequency;
     LARGE_INTEGER StartTime;
-} Clock;
+};
 
-typedef struct Win32Props // Win32 Properties. 
+struct Win32Props // Win32 Properties. 
 {
     HWND hWnd;
     HINSTANCE hInstance;
     const std::wstring wndClass = L"Engine Window Class";
-} Win32Props;
+};
 
 Win32Props win32props;
 Clock winclock;

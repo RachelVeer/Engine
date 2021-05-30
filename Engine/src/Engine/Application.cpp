@@ -5,16 +5,16 @@
 
 #include <fstream> // For file functions. 
 
-typedef std::thread thread;
+typedef std::thread Thread;
 
-typedef struct ApplicationState
+struct ApplicationState
 {
     SandboxState* sandboxInstance = {};
     bool Initialized   = false;
     bool Running       = false;
     double ElapsedTime = { 0.0 };
-    thread ThreadTimer;
-} ApplicationState;
+    Thread ThreadTimer;
+};
 
 static ApplicationState appState;
 
@@ -107,11 +107,15 @@ void Application::DoTime()
     }
 
     // TODO(rachel): Make this a function. 
-    std::ofstream myFile;
-    myFile.open("example.txt");
-    printf("\nWriting elapsedTime to a file.\n");
-    printf("Elapsed Time: %.2f", appState.ElapsedTime);
-    myFile.close();
+    {
+        std::ofstream myFile;
+        myFile.open("example.txt");
+        printf("\nWriting elapsedTime to a file.\n");
+        // This is what's actually written to the file.
+        myFile << "Elapsed Time: "
+            << appState.ElapsedTime;
+        myFile.close();
+    }
 
-    printf("\nDoTime Thread Shutting down.\n");
+    printf("DoTime Thread Shutting down.\n");
 }
