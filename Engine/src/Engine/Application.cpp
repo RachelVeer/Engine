@@ -48,7 +48,7 @@ void Application::Create(SandboxState* sandboxInstance)
     appState.ThreadTimer = std::thread(&Application::DoTime, this);
 
     // Allocate memory for graphics. 
-    gfx = gfx->CreateGraphics();
+    gfx = gfx->CreateGraphics(appState.sandboxInstance);
     // Initiate the actual graphics pipeline. 
     gfx->Init();
 
@@ -103,7 +103,7 @@ void Application::DoTime()
     {
         appState.ElapsedTime = platform.Peek();
         // The results of Peek() undergo formatting for readablitiy.
-        printf("Application's life-time %.2f \r", appState.ElapsedTime);
+        printf("Application's life-time: %.2f \r", appState.ElapsedTime);
     }
 
     // TODO(rachel): Make this a function. 

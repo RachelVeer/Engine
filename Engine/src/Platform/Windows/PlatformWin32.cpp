@@ -14,8 +14,8 @@ struct Clock
 
 struct Win32Props // Win32 Properties. 
 {
-    HWND hWnd;
-    HINSTANCE hInstance;
+    HWND hWnd = nullptr;
+    HINSTANCE hInstance = nullptr;
     const std::wstring wndClass = L"Engine Window Class";
 };
 

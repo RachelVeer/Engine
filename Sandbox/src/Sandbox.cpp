@@ -26,6 +26,8 @@ public:
         // Sandbox has its own "config", to 
         // prevent passing in "magic" numbers. 
         SandboxConfiguration sandboxConfig;
+        // Choose your API (only D3D12 available). 
+        GraphicsAPI preferredAPI = { GraphicsAPI::Direct3D12 };
 
         // Application configuration.
         OutSandbox->appConfig.startPosX   = sandboxConfig.startPosX;
@@ -34,7 +36,7 @@ public:
         OutSandbox->appConfig.startHeight = sandboxConfig.startHeight;
         OutSandbox->appConfig.Name        = sandboxConfig.Name;
 
-        // TODO(rachel): remake renderer config. GFXAPI enum.
+        OutSandbox->gfxAPI                = preferredAPI;
 
         // Create the sandbox state.
         OutSandbox->state = malloc(sizeof(SandboxState));

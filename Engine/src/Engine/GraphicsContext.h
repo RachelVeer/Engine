@@ -1,4 +1,13 @@
 #pragma once
+//#include "SandboxTypes.h"
+
+struct SandboxState;
+
+enum class GraphicsAPI
+{
+    Unknown = 0,
+    Direct3D12 = 1
+};
 
 class Graphics
 {
@@ -8,5 +17,5 @@ public:
     virtual void Render() = 0;
     virtual ~Graphics() {}
 
-    Graphics* CreateGraphics();
+    Graphics* CreateGraphics(struct SandboxState* sandboxInstance);
 };
