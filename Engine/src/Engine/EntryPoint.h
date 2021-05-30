@@ -12,6 +12,10 @@ extern Application* CreateApplication(SandboxState* OutSandbox);
 
 int main()
 {
+    Log::Init();
+    ENGINE_CORE_WARN("Initialized Info!");
+    int a = 5;
+    ENGINE_INFO("Hello! Var={0}", a);
     // Request the sandbox instance from the application.
     SandboxState sandboxInstance;
     // Define & allocate memory for application.
