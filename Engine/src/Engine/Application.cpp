@@ -2,6 +2,8 @@
 #include "Application.h"
 #include "SandboxTypes.h"
 #include "GraphicsContext.h"
+#include "Log.h"
+#include "spdlog/stopwatch.h"
 
 #include <fstream> // For file functions. 
 
@@ -24,7 +26,7 @@ Graphics* gfx;     // Whereas Graphics is an abstract class.
 
 void Application::Create(SandboxState* sandboxInstance)
 {
-    printf("This is a test.\n");
+    ENGINE_CORE_INFO("This is a test.\n");
 
     // Retrieve the original Sandbox instance & store it here.
     appState.sandboxInstance = sandboxInstance;
@@ -32,6 +34,9 @@ void Application::Create(SandboxState* sandboxInstance)
     // If instance successfully retrieved, we're 
     // officially up and running at this point. 
     appState.Running = true;
+
+    ENGINE_CORE_WARN("Application State Running?: \n");
+    ENGINE_CORE_DEBUG(appState.Running ? "true\n" : "false\n");
 
     // App in this case simply encapsulates its configuration.
     auto app = appState.sandboxInstance->appConfig;
@@ -59,9 +64,6 @@ void Application::Create(SandboxState* sandboxInstance)
 
 void Application::Run()
 {
-    printf("Application State Running?: ");
-    printf(appState.Running ? "true\n" : "false\n");
-
     if (appState.Initialized)
     {
         while (appState.Running)
@@ -103,7 +105,7 @@ void Application::DoTime()
     {
         appState.ElapsedTime = platform.Peek();
         // The results of Peek() undergo formatting for readablitiy.
-        printf("Application's life-time: %.2f \r", appState.ElapsedTime);
+        ENGINE_CORE_DEBUG("Application's life-time: {:.2f} \r", appState.ElapsedTime);
     }
 
     // TODO(rachel): Make this a function. 

@@ -23,6 +23,7 @@ private:
 #define ENGINE_CORE_WARN(...)  Log::GetCoreLogger()->warn(__VA_ARGS__)
 #define ENGINE_CORE_ERROR(...) Log::GetCoreLogger()->error(__VA_ARGS__)
 #define ENGINE_CORE_FATAL(...) Log::GetCoreLogger()->fatal(__VA_ARGS__)
+#define ENGINE_CORE_DEBUG(...) Log::GetCoreLogger()->debug(__VA_ARGS__)
 
 // Client macros
 #define ENGINE_TRACE(...)      Log::GetClientLogger()->trace(__VA_ARGS__)

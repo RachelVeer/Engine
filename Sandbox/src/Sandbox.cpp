@@ -17,11 +17,11 @@ class Sandbox : public Application
 public:
     Sandbox()
     {
-        printf("Default Sandbox constructor!\n");
+        ENGINE_INFO("Default Sandbox constructor!\n");
     }
     Sandbox(SandboxState* OutSandbox)
     {
-        printf("Custom Sandbox constructor!\n");
+        ENGINE_WARN("Custom Sandbox constructor!\n");
 
         // Sandbox has its own "config", to 
         // prevent passing in "magic" numbers. 

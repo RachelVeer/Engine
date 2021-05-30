@@ -2,6 +2,7 @@
 #include "SandboxTypes.h"
 #include "GraphicsContext.h"
 #include "Platform/Direct3D/D3D12Context.h"
+#include "Log.h"
 
 Graphics* Graphics::CreateGraphics(SandboxState* sandboxInstance)
 {
@@ -9,13 +10,18 @@ Graphics* Graphics::CreateGraphics(SandboxState* sandboxInstance)
     {
         case GraphicsAPI::Unknown: 
         {
-            printf("Unknown API!\n"); 
+            ENGINE_CORE_ERROR("Unknown API!\n"); 
             return nullptr;
         }
         case GraphicsAPI::Direct3D12:
         {
-            printf("Selected API: Direct3D12\n");
+            ENGINE_CORE_DEBUG("Selected API: Direct3D12\n");
             return new Direct3D();
+        }
+        default:
+        {
+            ENGINE_CORE_ERROR("Unknown API!\n");
+            return nullptr;
         }
     }
 }
