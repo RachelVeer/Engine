@@ -112,12 +112,12 @@ void Application::DoTime()
     {
         std::ofstream myFile;
         myFile.open("example.txt");
-        printf("\nWriting elapsedTime to a file.\n");
+        ENGINE_CORE_INFO("Writing elapsedTime to a file.\n");
         // This is what's actually written to the file.
         myFile << "Elapsed Time: "
             << appState.ElapsedTime;
         myFile.close();
     }
 
-    printf("DoTime Thread Shutting down.\n");
+    ENGINE_CORE_INFO("DoTime Thread Shutting down.\n");
 }

@@ -17,7 +17,7 @@ class Sandbox : public Application
 public:
     Sandbox()
     {
-        ENGINE_INFO("Default Sandbox constructor!\n");
+        //ENGINE_INFO("Default Sandbox constructor!\n");
     }
     Sandbox(SandboxState* OutSandbox)
     {

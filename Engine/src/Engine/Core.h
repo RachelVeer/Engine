@@ -8,8 +8,8 @@ public:
     {
         // Logger.
         Log::Init();
-        ENGINE_CORE_WARN("Initialized Info!\n");
-        int a = 5;
-        ENGINE_INFO("Hello! Var={0}\n", a);
+        ENGINE_CORE_WARN("Initialized Logger!\n");
+        // int a = 5;
+        // ENGINE_INFO("Test: Hello! Var={0}\n", a);
     }
 };
