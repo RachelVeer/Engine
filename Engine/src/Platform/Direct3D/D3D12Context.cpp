@@ -3,15 +3,58 @@
 // Licensed under the Apache-2.0 License.
 //*********************************************************
 #include "pch.h"
-#include "D3D12Context.h"
+#include "Engine/Core.h"
+#include "Engine/GraphicsContext.h"
 
-Direct3D::Direct3D()
-{}
+// DirectX specific code & libraries will only link/compile
+// relative to the graphics layer if it's actually defined.
 
-Direct3D::~Direct3D()
-{}
+#if defined(DirectX) || defined(D3D) || defined(D3D12)
 
-void Direct3D::Init()
+// Linking necessary libraries.
+#pragma comment (lib, "D3d12.lib")
+#pragma comment (lib, "dxgi.lib")
+
+// Com & D3D headers.
+#include <wrl.h>
+#include <d3d12.h>
+#include <dxgi1_6.h>
+
+// D3D12 Helper functions.
+#include "Platform/Direct3D/Utils/d3dx12.h" 
+#include "Platform/Direct3D/Utils/DXHelper.h"
+
+static const uint32_t m_FrameCount = 2;
+
+// Pipeline objects.
+Microsoft::WRL::ComPtr<IDXGISwapChain3> m_SwapChain;
+Microsoft::WRL::ComPtr<ID3D12Device4> m_Device;
+Microsoft::WRL::ComPtr<IDXGIFactory4> m_Factory;
+Microsoft::WRL::ComPtr<ID3D12CommandQueue> m_CommandQueue;
+Microsoft::WRL::ComPtr<ID3D12Resource> m_RenderTargets[m_FrameCount];
+Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> m_rtvHeap;
+Microsoft::WRL::ComPtr<ID3D12CommandAllocator> m_CommandAllocator;
+Microsoft::WRL::ComPtr<ID3D12RootSignature> m_RootSignature;
+Microsoft::WRL::ComPtr<ID3D12PipelineState> m_PipelineState;
+Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> m_CommandList;
+uint32_t m_rtvDescriptorSize;
+
+// Synchronization objects.
+uint32_t m_FrameIndex;
+HANDLE m_FenceEvent;
+Microsoft::WRL::ComPtr<ID3D12Fence> m_Fence;
+uint64_t m_FenceValue = 0;
+
+HWND m_StoredHwnd;
+
+void LoadPipeline();
+void LoadAssets();
+void GetHardwareAdapter(IDXGIFactory1* pFactory, IDXGIAdapter1** ppAdapter,
+    bool requestHighPerformanceAdapter);
+void WaitForPreviousFrame();
+void PopulateCommandList();
+
+void Graphics::Init()
 {
     // TEMP: that's platform specific code. 
     m_StoredHwnd = GetActiveWindow();
@@ -19,7 +62,7 @@ void Direct3D::Init()
     LoadAssets();
 }
 
-void Direct3D::LoadPipeline()
+void LoadPipeline()
 {
     // Enable the D3D12 debug layer. 
     // This must be called before the D3D12 device is created. 
@@ -114,7 +157,7 @@ void Direct3D::LoadPipeline()
     }
 }
 
-void Direct3D::LoadAssets()
+void LoadAssets()
 {
     // Create command list.
     m_Device->CreateCommandList1(0, D3D12_COMMAND_LIST_TYPE_DIRECT, D3D12_COMMAND_LIST_FLAG_NONE, IID_PPV_ARGS(&m_CommandList));
@@ -138,12 +181,12 @@ void Direct3D::LoadAssets()
     }
 }
 
-void Direct3D::Update()
+void Graphics::Update()
 {
 
 }
 
-void Direct3D::Render()
+void Graphics::Render()
 {
     // Record all the commands we need to render the scene into the command list.
     PopulateCommandList();
@@ -158,7 +201,7 @@ void Direct3D::Render()
     WaitForPreviousFrame();
 }
 
-void Direct3D::PopulateCommandList()
+void PopulateCommandList()
 {
     // Command list allocators can only be reset when the associated
     // command lists have finished execution on the GPU; apps should use
@@ -185,7 +228,7 @@ void Direct3D::PopulateCommandList()
     ThrowIfFailed(m_CommandList->Close());
 }
 
-void Direct3D::WaitForPreviousFrame()
+void WaitForPreviousFrame()
 {
     // Warning: Waiting for frame completion is not best practice.
     // This is just for simplicity, I will implement a more elegant
@@ -207,7 +250,7 @@ void Direct3D::WaitForPreviousFrame()
 }
 
 // Check adapter support.
-void Direct3D::GetHardwareAdapter(IDXGIFactory1* pFactory, IDXGIAdapter1** ppAdapter,
+void GetHardwareAdapter(IDXGIFactory1* pFactory, IDXGIAdapter1** ppAdapter,
     bool requestHighPerformanceAdapter)
 {
     *ppAdapter = nullptr;
@@ -268,3 +311,5 @@ void Direct3D::GetHardwareAdapter(IDXGIFactory1* pFactory, IDXGIAdapter1** ppAda
 
     *ppAdapter = adapter.Detach();
 }
+
+#endif

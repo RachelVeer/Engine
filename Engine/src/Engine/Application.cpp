@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "Application.h"
 #include "SandboxTypes.h"
-#include "GraphicsContext.h"
+#include "Engine/GraphicsContext.h"
 #include "Log.h"
 #include "spdlog/stopwatch.h"
 
@@ -53,7 +53,7 @@ void Application::Create(SandboxState* sandboxInstance)
     appState.ThreadTimer = std::thread(&Application::DoTime, this);
 
     // Allocate memory for graphics. 
-    gfx = gfx->CreateGraphics(appState.sandboxInstance);
+    gfx = gfx->CreateGraphics();
     // Initiate the actual graphics pipeline. 
     gfx->Init();
 

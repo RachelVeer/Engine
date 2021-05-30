@@ -12,10 +12,10 @@ enum class GraphicsAPI
 class Graphics
 {
 public:
-    virtual void Init() = 0;
-    virtual void Update() = 0;
-    virtual void Render() = 0;
-    virtual ~Graphics() {}
+    void Init();
+    void Update();
+    void Render();
+    ~Graphics() {}
 
-    Graphics* CreateGraphics(struct SandboxState* sandboxInstance);
+    Graphics* CreateGraphics() { return new Graphics(); }
 };

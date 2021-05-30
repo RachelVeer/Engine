@@ -6,6 +6,10 @@
 #include "pch.h"
 #include "Platform/Platform.h"
 
+// Win32/Window specific code will only compile
+// relative to the platform layer if it's actually defined.
+#if defined(WIN32) || defined(_WIN32) || defined(_WIN64) 
+
 struct Clock
 {
     double ClockFrequency;
@@ -161,3 +165,5 @@ LRESULT CALLBACK Win32ProcessMessages(HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
     }
     return DefWindowProc(hWnd, uMsg, wParam, lParam);
 }
+
+#endif
