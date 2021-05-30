@@ -21,8 +21,8 @@ struct ApplicationState
 static ApplicationState appState;
 
 // Interfaces. 
-Platform platform; // Platform doesn't need to be dynamically allocated.
-Graphics* gfx;     // Whereas Graphics is an abstract class. 
+Platform platform;
+Graphics gfx;
 
 void Application::Create(SandboxState* sandboxInstance)
 {
@@ -51,11 +51,9 @@ void Application::Create(SandboxState* sandboxInstance)
     // Platform setups time, thus time
     // thread comes after its initialization.
     appState.ThreadTimer = std::thread(&Application::DoTime, this);
-
-    // Allocate memory for graphics. 
-    gfx = gfx->CreateGraphics();
+    
     // Initiate the actual graphics pipeline. 
-    gfx->Init();
+    gfx.Init();
 
     // Assuming all functions have succeeded, reaching the end
     // of this function signals the application has initialized.
@@ -75,8 +73,8 @@ void Application::Run()
                 }
             }
             // Rendering.
-            gfx->Update();
-            gfx->Render();
+            gfx.Update();
+            gfx.Render();
         }
     }
 }
@@ -94,8 +92,6 @@ void Application::Shutdown()
     // (So it isn't still running and/or forcefully cut off).
     appState.ThreadTimer.join();
     platform.Shutdown();
-
-    delete gfx;
 }
 
 void Application::DoTime()

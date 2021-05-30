@@ -8,5 +8,5 @@ public:
     void Render();
     ~Graphics() {}
 
-    Graphics* CreateGraphics() { return new Graphics(); }
+    /* Graphics* CreateGraphics() { return new Graphics(); } */
 };
