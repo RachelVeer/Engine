@@ -15,9 +15,6 @@ int main(int argc, char* argv[])
 {
     int minimalArgumentCount = { 1 };
 
-    // Relative path in regards to Sandbox.
-    int relativePathCharacters = { 36 };
-
     // argv[0] should be the name of the program,
     // thus there should always be at least one count present.
     if (argc >= minimalArgumentCount)
@@ -25,9 +22,8 @@ int main(int argc, char* argv[])
         // Initialize sub-systems. 
         Core();
 
-        std::string exeName = argv[0];            // Assign arg char to string.
-        exeName.erase(0, relativePathCharacters); // Erase relative path.
-        ENGINE_CORE_INFO("Current Executable: {0}\n", exeName.c_str());
+        auto exeName = std::filesystem::path(argv[0]).filename();
+        ENGINE_CORE_INFO("Launched Executable: {0}\n", exeName.string());
 
         // Request the sandbox instance from the application.
         SandboxState sandboxInstance;
