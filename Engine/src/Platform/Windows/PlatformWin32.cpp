@@ -14,17 +14,17 @@
 
 struct Clock
 {
-    double ClockFrequency;
-    LARGE_INTEGER StartTime;
+    double ClockFrequency   = { 0 };
+    LARGE_INTEGER StartTime = { 0 };
 };
 
 struct Win32Props // Win32 Properties. 
 {
-    HWND hWnd = nullptr;
-    HINSTANCE hInstance = nullptr;
+    HWND hWnd                   = nullptr;
+    HINSTANCE hInstance         = nullptr;
     const std::wstring wndClass = L"Engine Window Class";
-    int Width = { 0 };
-    int Height = { 0 };
+    int Width                   = { 0 };
+    int Height                  = { 0 };
 };
 
 Win32Props win32props;
@@ -187,7 +187,7 @@ LRESULT CALLBACK Win32ProcessMessages(HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
             // If in client region -> log move. 
             if (pt.x >= 0 && pt.x < win32props.Width && pt.y >= 0 && pt.y < win32props.Height)
             {
-                ENGINE_CORE_DEBUG("width: {0}, height: {1}\n", pt.x, pt.y);
+                ENGINE_CORE_DEBUG("Mouse Coords - width: {0}, height: {1} \r", pt.x, pt.y);
             }
             return 0;
         }
