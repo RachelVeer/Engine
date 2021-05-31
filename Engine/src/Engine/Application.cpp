@@ -101,7 +101,7 @@ void Application::DoTime()
     {
         appState.ElapsedTime = platform.Peek();
         // The results of Peek() undergo formatting for readablitiy.
-        ENGINE_CORE_DEBUG("Application's life-time: {:.2f} \r", appState.ElapsedTime);
+        //ENGINE_CORE_DEBUG("Application's life-time: {:.2f} \r", appState.ElapsedTime);
     }
 
     // TODO(rachel): Make this a function. 

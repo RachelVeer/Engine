@@ -5,6 +5,8 @@
 
 #include "pch.h"
 #include "Platform/Platform.h"
+#include "Engine/Log.h"
+#include <windowsx.h>
 
 // Win32/Window specific code will only compile
 // relative to the platform layer if it's actually defined.
@@ -21,12 +23,14 @@ struct Win32Props // Win32 Properties.
     HWND hWnd = nullptr;
     HINSTANCE hInstance = nullptr;
     const std::wstring wndClass = L"Engine Window Class";
+    int Width = { 0 };
+    int Height = { 0 };
 };
 
 Win32Props win32props;
 Clock winclock;
 
-LRESULT CALLBACK Win32ProcessMessages(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+static LRESULT CALLBACK Win32ProcessMessages(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 void Platform::Startup(
     const wchar_t* applicationName,
@@ -35,7 +39,6 @@ void Platform::Startup(
     int32_t width,
     int32_t height)
 {
-    
     // Windows 10 Creators update adds Per Monitor V2 DPI awareness context.
     // Using this awareness context allows the client area of the window 
     // to achieve 100% scaling while still allowing non-client window content to 
@@ -43,6 +46,8 @@ void Platform::Startup(
     SetThreadDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
 
     win32props.hInstance = GetModuleHandle(0);
+    win32props.Width = width;
+    win32props.Height = height;
     
     // Register the window class.
     WNDCLASSEX wc = {};
@@ -65,18 +70,36 @@ void Platform::Startup(
         MessageBox(0, L"Window registration failed", L"Error", MB_ICONEXCLAMATION | MB_OK);
     };
 
+    // No Maximize box, nor resizing. 
+    DWORD windowStyles = (WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX);
+
+    // Store DPI for AdjustWindowRectExForDpi.
+    UINT dpi = GetDpiForSystem();
+
+    // Calculate client rectangle. 
+    RECT rc = { 0 };
+    rc.left = 100;
+    rc.top = 100;
+    rc.right = width + rc.left;
+    rc.bottom = height + rc.top;
+
+    AdjustWindowRectExForDpi(&rc, windowStyles, false, 0, dpi);
+
+    LONG clientWidth = rc.right - rc.left;
+    LONG clientHeight = rc.bottom - rc.top;
+
     // Create the window.
     win32props.hWnd = CreateWindowExW(
         0,                              // Optional window styles
-        win32props.wndClass.c_str(),   // Window class
+        win32props.wndClass.c_str(),    // Window class
         applicationName,                // Window text
-        (WS_OVERLAPPED | WS_CAPTION
-        | WS_SYSMENU | WS_MINIMIZEBOX), // Window style
+        windowStyles,                   // Window style
         x, y,                           // Position
-        width, height,                  // Size
+        clientWidth,                    // Width
+        clientHeight,                   // Height
         nullptr,                        // Parent window
         nullptr,                        // Menu
-        win32props.hInstance,          // Instance handle
+        win32props.hInstance,           // Instance handle
         0                               // Additional application data
     );
 
@@ -157,6 +180,17 @@ LRESULT CALLBACK Win32ProcessMessages(HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
         //{
         //    return 0; //(We're letting application handle the closing). 
         //}
+        case WM_MOUSEMOVE:
+        {
+            // Capture mouse coordinates from lParam. 
+            const POINTS pt = MAKEPOINTS(lParam);
+            // If in client region -> log move. 
+            if (pt.x >= 0 && pt.x < win32props.Width && pt.y >= 0 && pt.y < win32props.Height)
+            {
+                ENGINE_CORE_DEBUG("width: {0}, height: {1}\n", pt.x, pt.y);
+            }
+            return 0;
+        }
         case WM_DESTROY:
         {
             PostQuitMessage(0);
