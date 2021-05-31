@@ -4,6 +4,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 16.0.31025.194
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Engine", "Engine\Engine.vcxproj", "{1C0243D6-B654-4781-922D-0045A950DAD1}"
+	ProjectSection(ProjectDependencies) = postProject
+		{EEB2EB81-9F4D-4987-9EE3-4CDB3962967B} = {EEB2EB81-9F4D-4987-9EE3-4CDB3962967B}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Sandbox", "Sandbox\Sandbox.vcxproj", "{9E88B572-A319-4FFD-8B2C-14B33079D653}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -11,9 +14,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Sandbox", "Sandbox\Sandbox.
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ImGui", "Engine\vendor\imgui\ImGui.vcxproj", "{EEB2EB81-9F4D-4987-9EE3-4CDB3962967B}"
-	ProjectSection(ProjectDependencies) = postProject
-		{1C0243D6-B654-4781-922D-0045A950DAD1} = {1C0243D6-B654-4781-922D-0045A950DAD1}
-	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
