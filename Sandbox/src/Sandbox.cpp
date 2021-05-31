@@ -36,6 +36,7 @@ public:
 
         // Create the sandbox state.
         OutSandbox->state = malloc(sizeof(SandboxState));
+
     }
     ~Sandbox()
     {}

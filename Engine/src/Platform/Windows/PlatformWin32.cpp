@@ -6,7 +6,7 @@
 #include "pch.h"
 #include "Platform/Platform.h"
 #include "Engine/Log.h"
-#include <windowsx.h>
+#include "backends/imgui_impl_win32.h"
 
 // Win32/Window specific code will only compile
 // relative to the platform layer if it's actually defined.
@@ -44,6 +44,7 @@ void Platform::Startup(
     // to achieve 100% scaling while still allowing non-client window content to 
     // be rendered in a DPI sensitive fashion.
     SetThreadDpiAwarenessContext(DPI_AWARENESS_CONTEXT_PER_MONITOR_AWARE_V2);
+    ImGui_ImplWin32_EnableDpiAwareness();
 
     win32props.hInstance = GetModuleHandle(0);
     win32props.Width = width;
@@ -114,6 +115,8 @@ void Platform::Startup(
         // Window is hidden by default, thus we have to specify showing it.
         // Could be SW_SHOW instead of nCmdShow.
         ShowWindow(win32props.hWnd, SW_SHOW);
+        // Setup Platform/Renderer backends
+        ImGui_ImplWin32_Init(win32props.hWnd);
     }
 
     // Clock setup.
@@ -167,8 +170,13 @@ double Platform::Peek() const
     return elapsedTime;
 }
 
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
+
 LRESULT CALLBACK Win32ProcessMessages(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
+    if (ImGui_ImplWin32_WndProcHandler(hWnd, uMsg, wParam, lParam))
+        return true;
+
     switch (uMsg)
     {
         case WM_ERASEBKGND:

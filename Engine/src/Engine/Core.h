@@ -1,5 +1,6 @@
 #pragma once
 #include "Log.h"
+#include "ImGui/ImGui_.h"
 
 class Core
 {
@@ -11,6 +12,7 @@ public:
         ENGINE_CORE_WARN("Initialized Logger!\n");
         // int a = 5;
         // ENGINE_INFO("Test: Hello! Var={0}\n", a);
+        ImGui_::Init();
     }
 };
 
