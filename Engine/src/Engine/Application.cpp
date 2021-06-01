@@ -77,8 +77,8 @@ void Application::Create(SandboxState* sandboxInstance)
 
 void Application::Run()
 {
+    ClearColor color = { 1.0f, 0.3f, 0.4f, 1.0f };
     bool show_demo_window = true;
-    ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
     if (appState.Initialized)
     {
@@ -115,7 +115,7 @@ void Application::Run()
                     ImGui::Checkbox("Demo Window", &show_demo_window);      // Edit bools storing our window open/close state
 
                     ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
-                    ImGui::ColorEdit3("clear color", (float*)&clear_color); // Edit 3 floats representing a color
+                    ImGui::ColorEdit3("clear color", (float*)&color); // Edit 3 floats representing a color
 
                     if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
                         counter++;
@@ -132,7 +132,7 @@ void Application::Run()
 
 
                 gfx.Update();
-                gfx.Render();
+                gfx.Render(color);
             }
         }
     }

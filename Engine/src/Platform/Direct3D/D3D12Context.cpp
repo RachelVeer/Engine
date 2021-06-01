@@ -29,7 +29,7 @@
 
 static const uint32_t m_FrameCount = 2;
 
-ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+ImVec4 clear_color;
 
 // Pipeline objects.
 Microsoft::WRL::ComPtr<IDXGISwapChain3> m_SwapChain;
@@ -229,8 +229,10 @@ void Graphics::Update()
 
 }
 
-void Graphics::Render()
+void Graphics::Render(ClearColor& color)
 {
+    clear_color = ImVec4(color.r, color.g, color.b, color.a);
+
     // Record all the commands we need to render the scene into the command list.
     PopulateCommandList();
 

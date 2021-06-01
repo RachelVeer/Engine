@@ -1,13 +1,19 @@
 #pragma once
 
+struct ClearColor
+{
+    float r, g, b, a;
+};
+
 class Graphics
 {
 public:
+    Graphics() {}
+    ~Graphics() {}
     void Init();
     void Update();
-    void Render();
+    void Render(ClearColor& color);
     void Shutdown();
-    ~Graphics() {}
 
     /* Graphics* CreateGraphics() { return new Graphics(); } */
 };
