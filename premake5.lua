@@ -12,7 +12,7 @@ workspace "Engine"
 		"MultiProcessorCompile"
 	}
 
-outputdir = "{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
+outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
 -- Include directories relative to root folder (solution directory)
 IncludeDir = {}
@@ -28,8 +28,8 @@ project "Engine"
 	kind     "StaticLib"
 	language "C++"
 
-	targetdir ("bin/" .. outputdir .. "%/{prj.name}")
-	objdir    ("bin-int/" .. outputdir .. "%/{prj.name}")
+	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
+	objdir    ("bin-int/" .. outputdir .. "/%{prj.name}")
 
 	files
 	{
@@ -73,8 +73,8 @@ project "Sandbox"
 	kind     "ConsoleApp"
 	language "C++"
 
-	targetdir ("bin/" .. outputdir .. "%/{prj.name}")
-	objdir    ("bin-int/" .. outputdir .. "%/{prj.name}")
+	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
+	objdir    ("bin-int/" .. outputdir .. "/%{prj.name}")
 
 	files
 	{
