@@ -5,4 +5,4 @@ I've had multiple projects in the past that include OpenGL, and DirectX 11, thus
 
 If you're curious to see what I'm up to - it's best to look through the **twoparadigms** branch, as I experiment there. 
 
-Disclaimer: I'm by no means an expert, things are inspired by both the Hazel & Kohi engine — while adding my own flavors. Eitherway, if you want to run the project yourself (which isn't guaranteered without a proper build system atm) feel free to recursively clone the twoparadigms branch, as it utilizes submodules. 
+Disclaimer: I'm by no means an expert, things are inspired by both the Hazel & Kohi engine — while adding my own flavors. Eitherway, if you want to run the project yourself feel free to recursively clone the twoparadigms branch, as it utilizes submodules. Then run the **GenerateProjects.bat** in the *scripts* folder. 
