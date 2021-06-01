@@ -17,4 +17,6 @@ public:
     std::optional<int> PumpMessages();
     double GetAbsoluteTime() const;
     double Peek() const;
+    int16_t GetXScreenCoordinates() const;
+    int16_t GetYScreenCoordinates() const;
 };

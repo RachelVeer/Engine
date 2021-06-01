@@ -122,6 +122,15 @@ void Application::Run()
                     ImGui::SameLine();
                     ImGui::Text("counter = %d", counter);
 
+                    // Track application life-time.
+                    ImGui::Text("Application life-time: = %.2f /s", appState.ElapsedTime);
+
+                    // Track mouse coords.
+                    int16_t x = platform.GetXScreenCoordinates();
+                    int16_t y = platform.GetYScreenCoordinates();
+                    ImGui::Text("Mouse X coords: = %d", x);
+                    ImGui::Text("Mouse Y coords: = %d", y);
+
                     ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
                     ImGui::End();
                 }

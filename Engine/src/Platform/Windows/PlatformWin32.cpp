@@ -11,7 +11,7 @@
 
 // Win32/Window specific code will only compile
 // relative to the platform layer if it's actually defined.
-#if defined(WIN32) || defined(_WIN32) || defined(_WIN64) 
+#if defined(WIN32) || defined(_WIN32) || defined(_WIN64)
 
 struct Clock
 {
@@ -26,6 +26,7 @@ struct Win32Props // Win32 Properties.
     const std::wstring wndClass = L"Engine Window Class";
     int Width                   = { 0 };
     int Height                  = { 0 };
+    POINTS pt                   = { 0 };
 };
 
 Win32Props win32props;
@@ -173,6 +174,16 @@ double Platform::Peek() const
     return elapsedTime;
 }
 
+int16_t Platform::GetXScreenCoordinates() const
+{
+    return win32props.pt.x;
+}
+
+int16_t Platform::GetYScreenCoordinates() const
+{
+    return win32props.pt.y;
+}
+
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 LRESULT CALLBACK Win32ProcessMessages(HWND lhWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -196,10 +207,14 @@ LRESULT CALLBACK Win32ProcessMessages(HWND lhWnd, UINT uMsg, WPARAM wParam, LPAR
         {
             // Capture mouse coordinates from lParam. 
             const POINTS pt = MAKEPOINTS(lParam);
+            
             // If in client region -> log move. 
             if (pt.x >= 0 && pt.x < win32props.Width && pt.y >= 0 && pt.y < win32props.Height)
             {
-                ENGINE_CORE_DEBUG("Mouse Coords - width: {0}, height: {1} \r", pt.x, pt.y);
+                // Store values for ImGui.
+                win32props.pt.x = pt.x;
+                win32props.pt.y = pt.y;
+                // ENGINE_CORE_DEBUG("Mouse Coords - width: {0}, height: {1} \r", pt.x, pt.y);
             }
             return 0;
         }
