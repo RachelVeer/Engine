@@ -2,4 +2,6 @@
 
 #include "Engine/Log.h"
 
-#include "Engine/EntryPoint.h"
+// ======= Main entry point =======
+#include "Engine/EntryPoint.h" // =
+// ================================

@@ -6,8 +6,8 @@
 #include "pch.h"
 #include "Platform/Platform.h"
 #include "Engine/Log.h"
-//#include "Engine/ImGui/imgui_impl_win32.h"
-#include "../vendor/imgui/backends/imgui_impl_win32.h"
+
+#include <imgui/backends/imgui_impl_win32.h>
 
 // Win32/Window specific code will only compile
 // relative to the platform layer if it's actually defined.
@@ -54,18 +54,18 @@ void Platform::Startup(
     // Register the window class.
     WNDCLASSEX wc = {};
     SecureZeroMemory(&wc, sizeof(wc));
-    wc.cbSize = sizeof(WNDCLASSEX);
-    wc.style = CS_HREDRAW | CS_VREDRAW;
-    wc.lpfnWndProc = Win32ProcessMessages;
-    wc.cbClsExtra = 0;
-    wc.cbWndExtra = 0;
-    wc.hInstance = win32props.hInstance;
-    wc.hIcon = NULL;
-    wc.hCursor = LoadCursor(NULL, IDC_ARROW);
+    wc.cbSize        = sizeof(WNDCLASSEX);
+    wc.style         = CS_HREDRAW | CS_VREDRAW;
+    wc.lpfnWndProc   = Win32ProcessMessages;
+    wc.cbClsExtra    = 0;
+    wc.cbWndExtra    = 0;
+    wc.hInstance     = win32props.hInstance;
+    wc.hIcon         = NULL;
+    wc.hCursor       = LoadCursor(NULL, IDC_ARROW);
     wc.hbrBackground = NULL;
-    wc.lpszMenuName = NULL;
+    wc.lpszMenuName  = NULL;
     wc.lpszClassName = win32props.wndClass.c_str();
-    wc.hIconSm = NULL;
+    wc.hIconSm       = NULL;
 
     if (!RegisterClassEx(&wc))
     {
@@ -177,6 +177,7 @@ extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg
 
 LRESULT CALLBACK Win32ProcessMessages(HWND lhWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
+    // Hook ImGui into message handler, to process Win32 events (keyboard & mouse inputs, etc). 
     if (ImGui_ImplWin32_WndProcHandler(lhWnd, uMsg, wParam, lParam))
         return true;
 

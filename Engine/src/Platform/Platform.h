@@ -1,7 +1,6 @@
 #pragma once
 
-#include <cstdint>
-#include <optional>
+#include <optional> // For unqiue message loop
 
 class Platform
 {

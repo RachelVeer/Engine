@@ -61,7 +61,7 @@
       <ConformanceMode>false</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)\Engine\src\;$(SolutionDir)\Engine\vendor\spdlog\include;$(SolutionDir)\Engine\vendor\imgui</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\Engine\src\;$(SolutionDir)\Engine\vendor\spdlog\include;$(SolutionDir)\Engine\vendor\imgui;$(SolutionDir)\Engine\vendor\</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>
@@ -87,7 +87,7 @@
       <ConformanceMode>false</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>$(SolutionDir)\Engine\src\;$(SolutionDir)\Engine\vendor\spdlog\include;$(SolutionDir)\Engine\vendor\imgui</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)\Engine\src\;$(SolutionDir)\Engine\vendor\spdlog\include;$(SolutionDir)\Engine\vendor\imgui;$(SolutionDir)\Engine\vendor\</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <LanguageStandard_C>stdc17</LanguageStandard_C>
     </ClCompile>

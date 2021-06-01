@@ -3,13 +3,11 @@
 #include "SandboxTypes.h"
 #include "Engine/GraphicsContext.h"
 #include "Log.h"
-//#include "ImGui/imgui.h"
-//#include "ImGui/imgui_impl_win32.h"
-//#include "ImGui/imgui_impl_dx12.h"
 
-#include "../vendor/imgui/imgui.h"
-#include "../vendor/imgui/backends/imgui_impl_win32.h"
-#include "../vendor/imgui/backends/imgui_impl_dx12.h"
+// Dear ImGui functionality.
+#include <imgui/imgui.h>
+#include <imgui/backends/imgui_impl_win32.h>
+#include <imgui/backends/imgui_impl_dx12.h>
 
 #include <fstream> // For file functions. 
 

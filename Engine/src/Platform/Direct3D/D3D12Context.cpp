@@ -5,9 +5,9 @@
 #include "pch.h"
 #include "Engine/Core.h"
 #include "Engine/GraphicsContext.h"
-//#include "Engine/ImGui/imgui_impl_dx12.h"
 #include "Platform/Platform.h"
-#include "../vendor/imgui/backends/imgui_impl_dx12.h"
+
+#include <imgui/backends/imgui_impl_dx12.h>
 
 // DirectX specific code & libraries will only link/compile
 // relative to the graphics layer if it's actually defined.
@@ -30,7 +30,6 @@
 static const uint32_t m_FrameCount = 2;
 
 ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
-
 
 // Pipeline objects.
 Microsoft::WRL::ComPtr<IDXGISwapChain3> m_SwapChain;
