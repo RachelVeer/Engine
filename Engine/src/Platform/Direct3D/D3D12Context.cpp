@@ -5,8 +5,9 @@
 #include "pch.h"
 #include "Engine/Core.h"
 #include "Engine/GraphicsContext.h"
-#include "Engine/ImGui/imgui_impl_dx12.h"
+//#include "Engine/ImGui/imgui_impl_dx12.h"
 #include "Platform/Platform.h"
+#include "../vendor/imgui/backends/imgui_impl_dx12.h"
 
 // DirectX specific code & libraries will only link/compile
 // relative to the graphics layer if it's actually defined.
