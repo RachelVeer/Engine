@@ -6,6 +6,7 @@
 #include "Engine/Core.h"
 #include "Engine/GraphicsContext.h"
 #include "Engine/ImGui/imgui_impl_dx12.h"
+#include "Platform/Platform.h"
 
 // DirectX specific code & libraries will only link/compile
 // relative to the graphics layer if it's actually defined.
@@ -27,6 +28,9 @@
 
 static const uint32_t m_FrameCount = 2;
 
+ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
+
+
 // Pipeline objects.
 Microsoft::WRL::ComPtr<IDXGISwapChain3> m_SwapChain;
 Microsoft::WRL::ComPtr<ID3D12Device4> m_Device;
@@ -41,6 +45,8 @@ Microsoft::WRL::ComPtr<ID3D12PipelineState> m_PipelineState;
 Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> m_CommandList;
 uint32_t m_rtvDescriptorSize;
 
+static D3D12_CPU_DESCRIPTOR_HANDLE  g_mainRenderTargetDescriptor[m_FrameCount] = {};
+
 // Synchronization objects.
 uint32_t m_FrameIndex;
 HANDLE m_FenceEvent;
@@ -49,6 +55,8 @@ uint64_t m_FenceValue = 0;
 
 HWND m_StoredHwnd;
 
+void CreateRenderTarget();
+void CleanupRenderTarget();
 void LoadPipeline();
 void LoadAssets();
 void GetHardwareAdapter(IDXGIFactory1* pFactory, IDXGIAdapter1** ppAdapter,
@@ -59,7 +67,7 @@ void PopulateCommandList();
 void Graphics::Init()
 {
     ENGINE_CORE_DEBUG("Current Graphics API: Direct3D12\n");
-    // TEMP: that's platform specific code. 
+    
     m_StoredHwnd = GetActiveWindow();
     LoadPipeline();
     LoadAssets();
@@ -152,9 +160,8 @@ void LoadPipeline()
         // Create a RTV for each frame.
         for (uint32_t n = 0; n < m_FrameCount; n++)
         {
-            ThrowIfFailed(m_SwapChain->GetBuffer(n, IID_PPV_ARGS(&m_RenderTargets[n])));
-            m_Device->CreateRenderTargetView(m_RenderTargets[n].Get(), nullptr, rtvHandle);
-            rtvHandle.Offset(1, m_rtvDescriptorSize);
+            g_mainRenderTargetDescriptor[n] = rtvHandle;
+            rtvHandle.ptr += m_rtvDescriptorSize;
         }
     }
 
@@ -171,6 +178,26 @@ void LoadPipeline()
     {
         ThrowIfFailed(m_Device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&m_CommandAllocator)));
     }
+
+    CreateRenderTarget();
+}
+
+void CreateRenderTarget()
+{
+    for (UINT i = 0; i < m_FrameCount; i++)
+    {
+        ID3D12Resource* pBackBuffer = NULL;
+        m_SwapChain->GetBuffer(i, IID_PPV_ARGS(&pBackBuffer));
+        m_Device->CreateRenderTargetView(pBackBuffer, NULL, g_mainRenderTargetDescriptor[i]);
+        m_RenderTargets[i] = pBackBuffer;
+    }
+}
+
+void CleanupRenderTarget()
+{
+    WaitForPreviousFrame();
+    for (UINT i = 0; i < m_FrameCount; i++)
+        if (m_RenderTargets[i]) { m_RenderTargets[i]->Release(); m_RenderTargets[i] = nullptr; }
 }
 
 void LoadAssets()
@@ -217,36 +244,42 @@ void Graphics::Render()
     WaitForPreviousFrame();
 }
 
+void Graphics::Shutdown()
+{
+    CleanupRenderTarget();
+
+}
+
 void PopulateCommandList()
 {
-    WaitForPreviousFrame();
     // Command list allocators can only be reset when the associated
     // command lists have finished execution on the GPU; apps should use
     // fences to determine GPU execution progress.
     ThrowIfFailed(m_CommandAllocator->Reset());
 
-    // However, when ExecuteCommandList() is called on a particular command
-    // list, that command list can then be reset at any time and must be before
-    // re-recording. 
-    ThrowIfFailed(m_CommandList->Reset(m_CommandAllocator.Get(), m_PipelineState.Get()));
-
-    // Indicate that the back buffer will be used as a render target.
-    m_CommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(m_RenderTargets[m_FrameIndex].Get(), D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_RENDER_TARGET));
-
-
     CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_rtvHeap->GetCPUDescriptorHandleForHeapStart(), m_FrameIndex, m_rtvDescriptorSize);
+  
+    UINT backBufferIdx = m_SwapChain->GetCurrentBackBufferIndex();
 
+    D3D12_RESOURCE_BARRIER barrier = {};
+    barrier.Type = D3D12_RESOURCE_BARRIER_TYPE_TRANSITION;
+    barrier.Flags = D3D12_RESOURCE_BARRIER_FLAG_NONE;
+    barrier.Transition.pResource = m_RenderTargets[backBufferIdx].Get();
+    barrier.Transition.Subresource = D3D12_RESOURCE_BARRIER_ALL_SUBRESOURCES;
+    barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_PRESENT;
+    barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_RENDER_TARGET;
+    m_CommandList->Reset(m_CommandAllocator.Get(), NULL);
+    m_CommandList->ResourceBarrier(1, &barrier);
 
-    // Record commands.
-    const float clearColor[] = { 1.0f, 0.3f, 0.4f, 1.0f };
-    m_CommandList->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
-    //m_CommandList->OMSetRenderTargets(1, &m_rtvHeap->GetCPUDescriptorHandleForHeapStart(), FALSE, NULL);
+    // Render Dear ImGui graphics
+    const float clear_color_with_alpha[4] = { clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w };
+    m_CommandList->ClearRenderTargetView(g_mainRenderTargetDescriptor[backBufferIdx], clear_color_with_alpha, 0, NULL);
+    m_CommandList->OMSetRenderTargets(1, &g_mainRenderTargetDescriptor[backBufferIdx], FALSE, NULL);
     m_CommandList->SetDescriptorHeaps(1, m_pd3dSrvDescHeap.GetAddressOf());
     ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), m_CommandList.Get());
-
-    // Indicate that the back buffer will now be used to present.
-    m_CommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(m_RenderTargets[m_FrameIndex].Get(), D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PRESENT));
-  
+    barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
+    barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
+    m_CommandList->ResourceBarrier(1, &barrier);
 
     ThrowIfFailed(m_CommandList->Close());
 }

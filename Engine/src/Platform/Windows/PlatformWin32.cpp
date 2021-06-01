@@ -116,9 +116,10 @@ void Platform::Startup(
         // Could be SW_SHOW instead of nCmdShow.
         ShowWindow(win32props.hWnd, SW_SHOW);
         UpdateWindow(win32props.hWnd);
-        // Setup Platform/Renderer backends
-        ImGui_ImplWin32_Init(win32props.hWnd);
     }
+
+    // Setup Platform/Renderer backends
+    ImGui_ImplWin32_Init(win32props.hWnd);
 
     // Clock setup.
     LARGE_INTEGER frequency;
@@ -173,9 +174,9 @@ double Platform::Peek() const
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
-LRESULT CALLBACK Win32ProcessMessages(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK Win32ProcessMessages(HWND lhWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
-    if (ImGui_ImplWin32_WndProcHandler(hWnd, uMsg, wParam, lParam))
+    if (ImGui_ImplWin32_WndProcHandler(lhWnd, uMsg, wParam, lParam))
         return true;
 
     switch (uMsg)
@@ -206,7 +207,7 @@ LRESULT CALLBACK Win32ProcessMessages(HWND hWnd, UINT uMsg, WPARAM wParam, LPARA
             return 0;
         }
     }
-    return DefWindowProc(hWnd, uMsg, wParam, lParam);
+    return DefWindowProc(lhWnd, uMsg, wParam, lParam);
 }
 
 #endif

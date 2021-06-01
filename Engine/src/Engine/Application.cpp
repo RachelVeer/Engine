@@ -47,11 +47,9 @@ void Application::Create(SandboxState* sandboxInstance)
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO();
-    io.DisplaySize.x = 480;
-    io.DisplaySize.y = 650;
     //io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
     //io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
-
+    
     // Setup Dear ImGui style
     ImGui::StyleColorsDark();
     //ImGui::StyleColorsClassic();
@@ -92,6 +90,9 @@ void Application::Run()
             }
             else
             {
+                ImGuiIO& io = ImGui::GetIO();
+                io.DisplaySize.x = 1920.0f;
+                io.DisplaySize.y = 1080.0f;
                 // Start the Dear ImGui frame
                 ImGui_ImplDX12_NewFrame();
                 ImGui_ImplWin32_NewFrame();
@@ -148,6 +149,7 @@ void Application::Shutdown()
     // (So it isn't still running and/or forcefully cut off).
     appState.ThreadTimer.join();
     platform.Shutdown();
+    gfx.Shutdown();
     // Cleanup
     ImGui_ImplDX12_Shutdown();
     ImGui_ImplWin32_Shutdown();
