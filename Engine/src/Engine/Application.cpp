@@ -5,9 +5,7 @@
 #include "Log.h"
 
 // Dear ImGui functionality.
-#include <imgui/imgui.h>
-#include <imgui/backends/imgui_impl_win32.h>
-#include <imgui/backends/imgui_impl_dx12.h>
+#include "ImGui/ImGui.h"
 
 #include <fstream> // For file functions. 
 

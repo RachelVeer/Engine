@@ -45,6 +45,7 @@
     </ClInclude>
     <ClInclude Include="src\SandboxTypes.h" />
     <ClInclude Include="src\pch.h" />
+    <ClInclude Include="src\Engine\ImGui\ImGui.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Engine\Application.cpp">

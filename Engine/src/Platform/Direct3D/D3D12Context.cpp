@@ -7,7 +7,7 @@
 #include "Engine/GraphicsContext.h"
 #include "Platform/Platform.h"
 
-#include <imgui/backends/imgui_impl_dx12.h>
+#include "Engine/ImGui/ImGui.h"
 
 // DirectX specific code & libraries will only link/compile
 // relative to the graphics layer if it's actually defined.
