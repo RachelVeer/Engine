@@ -78,7 +78,7 @@ void Application::Run()
                     appState.Running = false;
                 }
             }
-            else
+            else            
             {
                 imgui.BeginFrame();
                 imgui.DemoWindows(color, show_demo_window);
@@ -118,12 +118,10 @@ void Application::Shutdown()
     // Join the timer with the main thread to cleanly shutdown.
     // (So it isn't still running and/or forcefully cut off).
     appState.ThreadTimer.join();
+    // Cleanup interfaces.
     platform.Shutdown();
     gfx.Shutdown();
-    // Cleanup
-    ImGui_ImplDX12_Shutdown();
-    ImGui_ImplWin32_Shutdown();
-    ImGui::DestroyContext();
+    imgui.Shutdown();
 }
 
 void Application::DoTime()

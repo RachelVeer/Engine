@@ -63,4 +63,11 @@ public:
     {
         ImGui::Render();
     }
+
+    void Shutdown()
+    {
+        ImGui_ImplDX12_Shutdown();
+        ImGui_ImplWin32_Shutdown();
+        ImGui::DestroyContext();
+    }
 };
