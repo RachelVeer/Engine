@@ -67,4 +67,10 @@
     </ClCompile>
     <ClCompile Include="src\pch.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="src\shaders.hlsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="src\shaders.hlsl" />
+  </ItemGroup>
 </Project>

@@ -19,7 +19,7 @@ public:
 
 // If we're on Windows, allow DirectX to be defined. 
 #if defined(WIN32) || defined(_WIN32) || defined(_WIN64) 
-    #define DirectX
+    #define Direct3D
     #define D3D
     #define D3D12
 #endif
