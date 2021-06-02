@@ -4,6 +4,9 @@
     <Filter Include="Engine">
       <UniqueIdentifier>{DBC7D3B0-C769-FE86-B024-12DB9C6585D7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Engine\ImGuiLocal">
+      <UniqueIdentifier>{D05EEA9F-3C75-E835-85EC-7357F141B9BD}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Platform">
       <UniqueIdentifier>{2AC788B4-1694-E3BF-3FAD-D1672BD9184E}</UniqueIdentifier>
     </Filter>
@@ -15,9 +18,6 @@
     </Filter>
     <Filter Include="Platform\Windows">
       <UniqueIdentifier>{64FBD71A-50F4-F66C-7926-DCF1657ED678}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Engine\ImGuiLocal">
-      <UniqueIdentifier>{7d6ed7fd-fccf-4b6c-963a-772b80e86632}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -34,6 +34,9 @@
     <ClInclude Include="src\Engine\GraphicsContext.h">
       <Filter>Engine</Filter>
     </ClInclude>
+    <ClInclude Include="src\Engine\ImGuiLocal\ImGuiLocal.h">
+      <Filter>Engine\ImGuiLocal</Filter>
+    </ClInclude>
     <ClInclude Include="src\Engine\Log.h">
       <Filter>Engine</Filter>
     </ClInclude>
@@ -48,9 +51,6 @@
     </ClInclude>
     <ClInclude Include="src\SandboxTypes.h" />
     <ClInclude Include="src\pch.h" />
-    <ClInclude Include="src\Engine\ImGuiLocal\ImGuiLocal.h">
-      <Filter>Engine\ImGuiLocal</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Engine\Application.cpp">
@@ -66,9 +66,6 @@
       <Filter>Platform\Windows</Filter>
     </ClCompile>
     <ClCompile Include="src\pch.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <FxCompile Include="src\shaders.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="src\shaders.hlsl" />
