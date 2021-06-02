@@ -9,6 +9,13 @@
 
 #include <fstream> // For file functions. 
 
+// TODO(rachel):
+// -include shaders(.hlsl) in premake file
+// - make custom build tool(engine property settings) build into sandbox instead.
+// - Sandbox.exe needs the actual shaders.hlsl file
+// - Give triangle aspect ratio.
+
+
 typedef std::thread Thread;
 
 struct ApplicationState

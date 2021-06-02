@@ -39,6 +39,8 @@ struct Vertex
     DirectX::XMFLOAT4 color;
 };
 
+auto m_aspectRatio = 1280.0f / 720.f;
+
 // Pipeline objects.
 CD3DX12_VIEWPORT m_Viewport;
 CD3DX12_RECT m_ScissorRect;
@@ -270,9 +272,9 @@ void LoadAssets()
         Vertex triangleVertices[] =
         {
             // Clockwise.
-            { { 0.0f,   0.25f, 0.0f}, { 1.0f, 0.0f, 0.0f, 1.0f } },
-            { { 0.25f, -0.25f, 0.0f}, { 0.0f, 1.0f, 0.0f, 1.0f } },
-            { {-0.25f, -0.25f, 0.0f}, { 0.0f, 0.0f, 1.0f, 1.0f } }
+            { { 0.0f,   0.25f * m_aspectRatio, 0.0f}, { 1.0f, 0.0f, 0.0f, 1.0f } },
+            { { 0.25f, -0.25f * m_aspectRatio, 0.0f}, { 0.0f, 1.0f, 0.0f, 1.0f } },
+            { {-0.25f, -0.25f * m_aspectRatio, 0.0f}, { 0.0f, 0.0f, 1.0f, 1.0f } }
         };
 
         const uint32_t vertexBufferSize = sizeof(triangleVertices);
