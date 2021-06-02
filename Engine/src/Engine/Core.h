@@ -13,7 +13,7 @@ public:
         // int a = 5;
         // ENGINE_INFO("Test: Hello! Var={0}\n", a);
         // Immediate interface
-        DearImGui();
+        DearImGui::Init();
     }
 };
 

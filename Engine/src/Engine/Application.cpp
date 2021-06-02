@@ -25,6 +25,7 @@ static ApplicationState appState;
 // Interfaces. 
 Platform platform;
 Graphics gfx;
+DearImGui imgui;
 
 void Application::Create(SandboxState* sandboxInstance)
 {
@@ -79,10 +80,7 @@ void Application::Run()
             }
             else
             {
-                // Start the Dear ImGui frame
-                ImGui_ImplDX12_NewFrame();
-                ImGui_ImplWin32_NewFrame();
-                ImGui::NewFrame();
+                imgui.BeginFrame();
 
                 // 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
                 if (show_demo_window)
@@ -106,18 +104,21 @@ void Application::Run()
                     ImGui::SameLine();
                     ImGui::Text("counter = %d", counter);
 
-                    // Track application life-time.
-                    ImGui::Text("Application life-time: = %.2f /s", appState.ElapsedTime);
-
-                    // Track mouse coords.
-                    int16_t x = platform.GetXScreenCoordinates();
-                    int16_t y = platform.GetYScreenCoordinates();
-                    ImGui::Text("Mouse X coords: = %d", x);
-                    ImGui::Text("Mouse Y coords: = %d", y);
-
                     ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
                     ImGui::End();
                 }
+
+                ImGui::Begin("Test");
+
+                // Track application life-time.
+                ImGui::Text("Application life-time: = %.2f /s", appState.ElapsedTime);
+
+                // Track mouse coords.
+                int16_t x = platform.GetXScreenCoordinates();
+                int16_t y = platform.GetYScreenCoordinates();
+                ImGui::Text("Mouse X coords: = %d", x);
+                ImGui::Text("Mouse Y coords: = %d", y);
+                ImGui::End();
 
                 // Rendering
                 ImGui::Render();
