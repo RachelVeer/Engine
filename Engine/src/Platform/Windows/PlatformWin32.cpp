@@ -7,7 +7,7 @@
 #include "Platform/Platform.h"
 #include "Engine/Log.h"
 
-#include "Engine/ImGui/ImGui.h"
+#include "Engine/ImGuiLocal/ImGuiLocal.h"
 
 // Win32/Window specific code will only compile
 // relative to the platform layer if it's actually defined.

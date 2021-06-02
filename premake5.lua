@@ -86,6 +86,7 @@ project "Sandbox"
 	{
 		"Engine/vendor/spdlog/include",
 		"Engine/vendor/imgui",
+		"Engine/vendor/",
 		"Engine/src"
 	}
 

@@ -5,7 +5,7 @@
 #include "Log.h"
 
 // Dear ImGui functionality.
-#include "ImGui/ImGui.h"
+#include "ImGuiLocal/ImGuiLocal.h"
 
 #include <fstream> // For file functions. 
 
@@ -42,17 +42,6 @@ void Application::Create(SandboxState* sandboxInstance)
 
     // App in this case simply encapsulates its configuration.
     auto app = appState.sandboxInstance->appConfig;
-
-    // Setup Dear ImGui context
-    IMGUI_CHECKVERSION();
-    ImGui::CreateContext();
-    ImGuiIO& io = ImGui::GetIO();
-    //io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
-    //io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
-    
-    // Setup Dear ImGui style
-    ImGui::StyleColorsDark();
-    //ImGui::StyleColorsClassic();
     
     platform.Startup(
         app.Name,
