@@ -10,7 +10,9 @@
 #include <fstream> // For file functions. 
 
 // TODO(rachel):
-// -include shaders(.hlsl) in premake file
+// -PREMAKE:
+//  - include shaders(.hlsl) in premake file
+//  - set custom build tools for both engine & shader
 // - make custom build tool(engine property settings) build into sandbox instead.
 // - Sandbox.exe needs the actual shaders.hlsl file
 

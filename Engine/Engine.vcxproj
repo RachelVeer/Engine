@@ -77,7 +77,7 @@
       <TreatOutputAsContent>true</TreatOutputAsContent>
     </CustomBuildStep>
     <CustomBuild>
-      <Command>copy %(Identity) "$(OutDir)" &gt; NUL</Command>
+      <Command>copy %(Identity) "$(OutDir)\..\Sandbox\src" &gt; NUL</Command>
       <Outputs>$(OutDir)\..\Sandbox\%(Identity)</Outputs>
       <TreatOutputAsContent>true</TreatOutputAsContent>
     </CustomBuild>
@@ -110,7 +110,7 @@
       <TreatOutputAsContent>true</TreatOutputAsContent>
     </CustomBuildStep>
     <CustomBuild>
-      <Command>copy %(Identity) "$(OutDir)" &gt; NUL</Command>
+      <Command>copy %(Identity) "$(OutDir)\..\Sandbox\src" &gt; NUL</Command>
       <Outputs>$(OutDir)\..\Sandbox\%(Identity)</Outputs>
       <TreatOutputAsContent>true</TreatOutputAsContent>
     </CustomBuild>
