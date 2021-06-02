@@ -79,9 +79,6 @@ void Application::Run()
             }
             else
             {
-                ImGuiIO& io = ImGui::GetIO();
-                io.DisplaySize.x = 1920.0f;
-                io.DisplaySize.y = 1080.0f;
                 // Start the Dear ImGui frame
                 ImGui_ImplDX12_NewFrame();
                 ImGui_ImplWin32_NewFrame();
