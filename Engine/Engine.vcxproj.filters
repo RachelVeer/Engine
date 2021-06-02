@@ -16,6 +16,9 @@
     <Filter Include="Platform\Windows">
       <UniqueIdentifier>{64FBD71A-50F4-F66C-7926-DCF1657ED678}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Engine\ImGuiLocal">
+      <UniqueIdentifier>{7d6ed7fd-fccf-4b6c-963a-772b80e86632}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Engine.h" />
@@ -45,8 +48,9 @@
     </ClInclude>
     <ClInclude Include="src\SandboxTypes.h" />
     <ClInclude Include="src\pch.h" />
-    <ClInclude Include="src\Engine\ImGui\ImGui.h" />
-    <ClInclude Include="src\Engine\ImGuiLocal\ImGuiLocal.h" />
+    <ClInclude Include="src\Engine\ImGuiLocal\ImGuiLocal.h">
+      <Filter>Engine\ImGuiLocal</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Engine\Application.cpp">

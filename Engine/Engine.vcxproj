@@ -98,7 +98,6 @@
     <ClInclude Include="src\Engine\EntryPoint.h" />
     <ClInclude Include="src\Engine\GraphicsContext.h" />
     <ClInclude Include="src\Engine\ImGuiLocal\ImGuiLocal.h" />
-    <ClInclude Include="src\Engine\ImGui\ImGui.h" />
     <ClInclude Include="src\Engine\Log.h" />
     <ClInclude Include="src\Platform\Direct3D\Utils\DXHelper.h" />
     <ClInclude Include="src\Platform\Direct3D\Utils\d3dx12.h" />
