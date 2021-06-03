@@ -75,4 +75,7 @@
       <Filter>Assets</Filter>
     </CustomBuild>
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="Todo.txt" />
+  </ItemGroup>
 </Project>

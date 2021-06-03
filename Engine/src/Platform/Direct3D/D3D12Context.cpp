@@ -273,9 +273,13 @@ void LoadAssets()
         Vertex triangleVertices[] =
         {
             // Clockwise.
-            { { 0.0f,   0.25f * g_aspectRatio, 0.0f}, { 1.0f, 0.0f, 0.0f, 1.0f } },
-            { { 0.25f, -0.25f * g_aspectRatio, 0.0f}, { 0.0f, 1.0f, 0.0f, 1.0f } },
-            { {-0.25f, -0.25f * g_aspectRatio, 0.0f}, { 0.0f, 0.0f, 1.0f, 1.0f } }
+            { { -0.25f,  0.25f * g_aspectRatio, 0.0f}, { 1.0f, 0.0f, 0.0f, 1.0f } },
+            { {  0.25f,  0.25f * g_aspectRatio, 0.0f}, { 0.0f, 1.0f, 0.0f, 1.0f } },
+            { { -0.25f, -0.25f * g_aspectRatio, 0.0f}, { 0.0f, 0.0f, 1.0f, 1.0f } },
+            // Second triangle.
+            { {  0.25f,  0.25f * g_aspectRatio, 0.0f}, { 0.0f, 1.0f, 0.0f, 1.0f } },
+            { {  0.25f, -0.25f * g_aspectRatio, 0.0f}, { 1.0f, 0.0f, 0.0f, 1.0f } },
+            { { -0.25f, -0.25f * g_aspectRatio, 0.0f}, { 0.0f, 0.0f, 1.0f, 1.0f } },
         };
 
         const uint32_t vertexBufferSize = sizeof(triangleVertices);
@@ -390,7 +394,7 @@ void PopulateCommandList()
     
     g_CommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     g_CommandList->IASetVertexBuffers(0, 1, &g_VertexBufferView);
-    g_CommandList->DrawInstanced(3, 1, 0, 0);
+    g_CommandList->DrawInstanced(6, 1, 0, 0); // TODO(rachel): Indexed drawing. 
     
     g_CommandList->SetDescriptorHeaps(1, g_pd3dSrvDescHeap.GetAddressOf());
     ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), g_CommandList.Get());
