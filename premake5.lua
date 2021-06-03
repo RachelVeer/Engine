@@ -18,11 +18,6 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 IncludeDir = {}
 IncludeDir["ImGui"] = "Engine/vendor/imgui"
 
---group "Dependencies"
-	--include "Engine/vendor/imgui"
-
-group ""
-
 project "Engine"
 	location "Engine"
 	kind     "StaticLib"
