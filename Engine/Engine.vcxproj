@@ -113,9 +113,9 @@
     <ClCompile Include="src\pch.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="src\shaders.hlsl">
+    <CustomBuild Include="src\Assets\shaders.hlsl">
       <FileType>Document</FileType>
-      <Command>copy %(Identity) "$(OutDir)/../Sandbox/src" &gt; NUL</Command>
+      <Command>copy %(Identity) "$(OutDir)/../Sandbox/%(Identity)" &gt; NUL</Command>
       <Outputs>$(OutDir)/../Sandbox/%(Identity)</Outputs>
       <Message>Compiling %(Identity)</Message>
     </CustomBuild>

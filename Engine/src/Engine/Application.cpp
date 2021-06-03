@@ -139,7 +139,6 @@ void Application::DoTime()
     {
         std::ofstream myFile;
         myFile.open("example.txt");
-        printf("\n");
         ENGINE_CORE_INFO("Writing elapsedTime to a file.\n");
         // This is what's actually written to the file.
         myFile << "Elapsed Time: "

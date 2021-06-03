@@ -53,7 +53,7 @@ project "Engine"
 
    -- One or more commands to run (required)
    buildcommands {
-      'copy %(Identity) "$(OutDir)/../Sandbox/src" > NUL'
+      'copy %(Identity) "$(OutDir)/../Sandbox/%(Identity)" > NUL'
    }
 
    -- One or more outputs resulting from the build (required)
