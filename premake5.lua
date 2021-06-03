@@ -34,7 +34,8 @@ project "Engine"
 	files
 	{
 		"%{prj.name}/src/**.h",
-		"%{prj.name}/src/**.cpp"
+		"%{prj.name}/src/**.cpp",
+		"%{prj.name}/src/**.hlsl"
 	}
 
 	includedirs
@@ -50,23 +51,37 @@ project "Engine"
 		"ImGui"
 	}
 
-	filter "system:windows"
-		cppdialect "C++17"
-		staticruntime "On"
-		systemversion "latest"
 
-		defines
-		{
-			"ENGINE_PLATFORM_WINDOWS"
-		}
+	filter 'files:**.hlsl'
+   -- A message to display while this build step is running (optional)
+   buildmessage 'Compiling %{file.relpath}'
 
-	filter "configurations:Debug"
-		defines "DEBUG"
-		symbols "On"
+   -- One or more commands to run (required)
+   buildcommands {
+      'copy %(Identity) "$(OutDir)/../Sandbox/src" > NUL'
+   }
 
-	filter "configurations:Release"
-		defines "NDEBUG"
-		optimize "On"
+   -- One or more outputs resulting from the build (required)
+   buildoutputs { '$(OutDir)/../Sandbox/%(Identity)' }
+
+
+filter "system:windows"
+	cppdialect "C++17"
+	staticruntime "On"
+	systemversion "latest"
+
+	defines
+	{
+		"ENGINE_PLATFORM_WINDOWS"
+	}
+
+filter "configurations:Debug"
+	defines "DEBUG"
+	symbols "On"
+
+filter "configurations:Release"
+	defines "NDEBUG"
+	optimize "On"
 
 project "Sandbox"
 	location "Sandbox"
@@ -120,12 +135,6 @@ project "ImGui"
 
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
-
-	--files
-	--{
-	--	"%{IncludeDir.ImGui}/**.h",
-	--	"%{IncludeDir.ImGui}/**.cpp"
-	--}
 
 	files
 	{
