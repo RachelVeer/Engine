@@ -69,8 +69,11 @@ static D3D12_CPU_DESCRIPTOR_HANDLE  g_mainRenderTargetDescriptor[g_FrameCount] =
 
 // App resources 
 Microsoft::WRL::ComPtr<ID3D12Resource> g_VertexBuffer, g_IndexBuffer;
+Microsoft::WRL::ComPtr<ID3D12Resource> g_VertexBuffer2, g_IndexBuffer2;
 D3D12_VERTEX_BUFFER_VIEW g_VertexBufferView;
+D3D12_VERTEX_BUFFER_VIEW g_VertexBufferView2;
 D3D12_INDEX_BUFFER_VIEW  g_IndexBufferView;
+D3D12_INDEX_BUFFER_VIEW  g_IndexBufferView2;
 
 
 // Synchronization objects.
@@ -292,11 +295,6 @@ void LoadAssets()
             { {  -0.35f,  0.25f * g_aspectRatio, 0.0f}, { 0.8f, 0.0f, 0.0f, 1.0f } }, // top
             { {  -0.10f,  -0.25f * g_aspectRatio, 0.0f}, { 0.0f, 0.8f, 0.0f, 1.0f } }, // bottom right
             { {  -0.60f, -0.25f * g_aspectRatio, 0.0f}, { 0.0f, 0.0f, 0.8f, 1.0f } }, // bottom left
-
-            // Second triangle 
-            { {  0.30f,  0.25f * g_aspectRatio, 0.0f}, { 0.8f, 0.0f, 0.8f, 1.0f } }, // top
-            { {  0.55f, -0.25f * g_aspectRatio, 0.0f}, { 0.0f, 0.8f, 0.8f, 1.0f } }, // bottom right
-            { {  0.05f, -0.25f * g_aspectRatio, 0.0f}, { 0.8f, 0.8f, 0.0f, 1.0f } }, // bottom left
         };
 
         const uint32_t vertexBufferSize = sizeof(triangleVertices);
@@ -331,8 +329,7 @@ void LoadAssets()
         // Define indices 
         int16_t Indices[] =
         {
-            0, 1, 2, // 1st triangle 
-            3, 4, 5  // 2nd triangle  
+            0, 1, 2,
         };
 
         const uint32_t indexBufferSize = sizeof(Indices);
@@ -357,6 +354,78 @@ void LoadAssets()
         g_IndexBufferView.BufferLocation = g_IndexBuffer->GetGPUVirtualAddress();
         g_IndexBufferView.Format = DXGI_FORMAT_R16_UINT;
         g_IndexBufferView.SizeInBytes = indexBufferSize;
+    }
+
+    // SECOND ENITRELY SEPARATE TRIANGLE // 
+    // ================================= //
+    // Create the vertex buffer.
+    {
+        // Define the geometry for a triangle.
+        Vertex triangleVertices[] =
+        {
+            // Clockwise.
+            { {  0.30f,  0.25f * g_aspectRatio, 0.0f}, { 0.8f, 0.0f, 0.8f, 1.0f } }, // top
+            { {  0.55f, -0.25f * g_aspectRatio, 0.0f}, { 0.0f, 0.8f, 0.8f, 1.0f } }, // bottom right
+            { {  0.05f, -0.25f * g_aspectRatio, 0.0f}, { 0.8f, 0.8f, 0.0f, 1.0f } }, // bottom left
+        };
+
+        const uint32_t vertexBufferSize = sizeof(triangleVertices);
+
+        // Note: using upload heaps to transfer static data like vert buffers is not 
+        // recommended. Every time the GPU needs it, the upload heap will be marshalled 
+        // over. Please read up on Default Heap usage. An upload heap is used here for 
+        // code simplicity and because there are very few verts to actually transfer.
+        ThrowIfFailed(g_Device->CreateCommittedResource(
+            &CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD),
+            D3D12_HEAP_FLAG_NONE,
+            &CD3DX12_RESOURCE_DESC::Buffer(vertexBufferSize),
+            D3D12_RESOURCE_STATE_GENERIC_READ,
+            nullptr,
+            IID_PPV_ARGS(&g_VertexBuffer2)));
+
+        // Copy the triangle data to the vertex buffer.
+        UINT8* pVertexDataBegin = { 0 };
+        CD3DX12_RANGE readRange(0, 0);        // We do not intend to read from this resource on the CPU.
+        ThrowIfFailed(g_VertexBuffer2->Map(0, &readRange, reinterpret_cast<void**>(&pVertexDataBegin)));
+        memcpy(pVertexDataBegin, triangleVertices, sizeof(triangleVertices));
+        g_VertexBuffer2->Unmap(0, nullptr);
+
+        // Initialize the vertex buffer view.
+        g_VertexBufferView2.BufferLocation = g_VertexBuffer2->GetGPUVirtualAddress();
+        g_VertexBufferView2.StrideInBytes = sizeof(Vertex);
+        g_VertexBufferView2.SizeInBytes = vertexBufferSize;
+    }
+
+    // Create the index buffer
+    {
+        // Define indices 
+        int16_t Indices[] =
+        {
+            0, 1, 2,
+        };
+
+        const uint32_t indexBufferSize = sizeof(Indices);
+
+        ThrowIfFailed(g_Device->CreateCommittedResource(
+            &CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD),
+            D3D12_HEAP_FLAG_NONE,
+            &CD3DX12_RESOURCE_DESC::Buffer(indexBufferSize),
+            D3D12_RESOURCE_STATE_GENERIC_READ,
+            nullptr,
+            IID_PPV_ARGS(&g_IndexBuffer2)
+        ));
+
+        // Copy the triangle data to index buffer.
+        UINT8* pIndexDataBegin = { 0 };
+        CD3DX12_RANGE readRange(0, 0);
+        ThrowIfFailed(g_IndexBuffer2->Map(0, &readRange, reinterpret_cast<void**>(&pIndexDataBegin)));
+        memcpy(pIndexDataBegin, Indices, sizeof(Indices));
+        g_IndexBuffer2->Unmap(0, nullptr);
+
+        // Initialize index buffer view.
+        g_IndexBufferView2.BufferLocation = g_IndexBuffer->GetGPUVirtualAddress();
+        g_IndexBufferView2.Format = DXGI_FORMAT_R16_UINT;
+        g_IndexBufferView2.SizeInBytes = indexBufferSize;
     }
 
     // Create synchronization objects and wait until assets have been uploaded to the GPU.
@@ -443,9 +512,15 @@ void PopulateCommandList()
     g_CommandList->OMSetRenderTargets(1, &g_mainRenderTargetDescriptor[backBufferIdx], FALSE, NULL);
     
     g_CommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+    // First triangle.
     g_CommandList->IASetVertexBuffers(0, 1, &g_VertexBufferView);
     g_CommandList->IASetIndexBuffer(&g_IndexBufferView);
-    g_CommandList->DrawIndexedInstanced(6, 1, 0, 0, 0); 
+    g_CommandList->DrawIndexedInstanced(3, 1, 0, 0, 0); 
+
+    // Second triangle.
+    g_CommandList->IASetVertexBuffers(0, 1, &g_VertexBufferView2);
+    g_CommandList->IASetIndexBuffer(&g_IndexBufferView2);
+    g_CommandList->DrawIndexedInstanced(3, 1, 0, 0, 0);
     
     g_CommandList->SetDescriptorHeaps(1, g_pd3dSrvDescHeap.GetAddressOf());
     ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), g_CommandList.Get());
