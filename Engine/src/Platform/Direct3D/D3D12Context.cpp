@@ -289,10 +289,14 @@ void LoadAssets()
         Vertex triangleVertices[] =
         {
             // Clockwise.
-            { { -0.25f,  0.25f * g_aspectRatio, 0.0f}, { 0.8f, 0.0f, 0.0f, 1.0f } }, // top left
+            { {  0.0f,   0.25f * g_aspectRatio, 0.0f}, { 0.8f, 0.0f, 0.0f, 1.0f } }, // top
             { {  0.25f, -0.25f * g_aspectRatio, 0.0f}, { 0.0f, 0.8f, 0.0f, 1.0f } }, // bottom right
             { { -0.25f, -0.25f * g_aspectRatio, 0.0f}, { 0.0f, 0.0f, 0.8f, 1.0f } }, // bottom left
-            { {  0.25f,  0.25f * g_aspectRatio, 0.0f}, { 0.8f, 0.8f, 0.0f, 1.0f } }, // top right
+
+            // Second triangle 
+            { {  0.60f,  0.25f * g_aspectRatio, 0.0f}, { 0.8f, 0.0f, 0.8f, 1.0f } }, // top
+            { {  0.85f, -0.25f * g_aspectRatio, 0.0f}, { 0.0f, 0.8f, 0.8f, 1.0f } }, // bottom right
+            { {  0.35f, -0.25f * g_aspectRatio, 0.0f}, { 0.8f, 0.8f, 0.0f, 1.0f } }, // bottom left
         };
 
         const uint32_t vertexBufferSize = sizeof(triangleVertices);
@@ -327,8 +331,8 @@ void LoadAssets()
         // Define indices 
         int16_t Indices[] =
         {
-            0, 1, 2,
-            0, 3, 1
+            0, 1, 2, // 1st triangle 
+            3, 4, 5  // 2nd triangle  
         };
 
         const uint32_t indexBufferSize = sizeof(Indices);
@@ -441,7 +445,7 @@ void PopulateCommandList()
     g_CommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
     g_CommandList->IASetVertexBuffers(0, 1, &g_VertexBufferView);
     g_CommandList->IASetIndexBuffer(&g_IndexBufferView);
-    g_CommandList->DrawIndexedInstanced(6, 1, 0, 0, 0); // TODO(rachel): Indexed drawing. 
+    g_CommandList->DrawIndexedInstanced(6, 1, 0, 0, 0); 
     
     g_CommandList->SetDescriptorHeaps(1, g_pd3dSrvDescHeap.GetAddressOf());
     ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), g_CommandList.Get());
