@@ -57,7 +57,7 @@ void Application::Create(SandboxState* sandboxInstance)
     appState.ThreadTimer = std::thread(&Application::DoTime, this);
     
     // Initiate the actual graphics pipeline. 
-    gfx.Init();
+    gfx.Init(app.startWidth, app.startHeight);
 
     // Assuming all functions have succeeded, reaching the end
     // of this function signals the application has initialized.

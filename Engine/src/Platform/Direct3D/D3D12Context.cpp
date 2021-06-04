@@ -39,7 +39,14 @@ struct Vertex
     DirectX::XMFLOAT4 color;
 };
 
-auto g_aspectRatio = 1280.0f / 720.f;
+struct Surface
+{
+    int32_t width, height;
+};
+
+Surface surface;
+
+float g_aspectRatio = { 0 };
 
 // Pipeline objects.
 CD3DX12_VIEWPORT g_Viewport;
@@ -87,17 +94,24 @@ void PopulateCommandList();
 // variable creation. 
 using namespace Microsoft::WRL;
 
-void Graphics::Init()
+void Graphics::Init(int32_t width, int32_t height)
 {
     ENGINE_CORE_DEBUG("Current Graphics API: Direct3D12\n");
     
+    // Storing incoming/external data.
     g_StoredHwnd = GetActiveWindow();
+    surface.width = width;
+    surface.height = height;
 
-    g_Viewport.Width     = 1280;
-    g_Viewport.Height    = 720;
-    g_ScissorRect.right  = 1280;
-    g_ScissorRect.bottom = 720;
+    // Now preparing data for pipeline.
+    g_aspectRatio = static_cast<float>(surface.width) / static_cast<float>(surface.height);
 
+    g_Viewport.Width     = (float)surface.width;
+    g_Viewport.Height    = (float)surface.height;
+    g_ScissorRect.right  = surface.width;
+    g_ScissorRect.bottom = surface.height;
+
+    // Then we can call upon the actual api. 
     LoadPipeline();
     LoadAssets();
     ImGui_ImplDX12_Init(g_Device.Get(), g_FrameCount,
