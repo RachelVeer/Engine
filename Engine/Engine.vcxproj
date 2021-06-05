@@ -57,7 +57,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>ENGINE_PLATFORM_WINDOWS;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;vendor;vendor\spdlog\include;vendor\imgui;vendor\directxtk12\inc;vendor\directxtk12;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;vendor;vendor\directxtk12;vendor\directxtk12\inc;vendor\spdlog\include;vendor\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <MinimalRebuild>false</MinimalRebuild>
@@ -75,7 +75,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>ENGINE_PLATFORM_WINDOWS;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;vendor;vendor\spdlog\include;vendor\imgui;vendor\directxtk12\inc;vendor\directxtk12;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;vendor;vendor\directxtk12;vendor\directxtk12\inc;vendor\spdlog\include;vendor\imgui;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
@@ -104,7 +104,7 @@
     <ClInclude Include="src\Platform\Platform.h" />
     <ClInclude Include="src\SandboxTypes.h" />
     <ClInclude Include="src\pch.h" />
-    <ClInclude Include="vendor\DirectXTK12\Inc\ScreenGrab.h" />
+    <ClInclude Include="vendor\directxtk12\inc\screengrab.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Engine\Application.cpp" />
@@ -112,10 +112,16 @@
     <ClCompile Include="src\Platform\Direct3D\D3D12Context.cpp" />
     <ClCompile Include="src\Platform\Windows\PlatformWin32.cpp" />
     <ClCompile Include="src\pch.cpp" />
-    <ClCompile Include="vendor\DirectXTK12\Src\ScreenGrab.cpp" />
+    <ClCompile Include="vendor\directxtk12\src\screengrab.cpp" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="src\Assets\shaders.hlsl">
+      <FileType>Document</FileType>
+      <Command>copy %(Identity) "$(OutDir)/../Sandbox/%(Identity)" &gt; NUL</Command>
+      <Outputs>$(OutDir)/../Sandbox/%(Identity)</Outputs>
+      <Message>Compiling %(Identity)</Message>
+    </CustomBuild>
+    <CustomBuild Include="src\Assets\shaders2.hlsl">
       <FileType>Document</FileType>
       <Command>copy %(Identity) "$(OutDir)/../Sandbox/%(Identity)" &gt; NUL</Command>
       <Outputs>$(OutDir)/../Sandbox/%(Identity)</Outputs>
@@ -126,22 +132,6 @@
     <ProjectReference Include="vendor\imgui\ImGui.vcxproj">
       <Project>{C0FF640D-2C14-8DBE-F595-301E616989EF}</Project>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Text Include="Todo.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <CustomBuild Include="src\Assets\shaders2.hlsl">
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
-      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
-      <FileType>Document</FileType>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">copy %(Identity) "$(OutDir)/../Sandbox/%(Identity)" &gt; NUL</Command>
-      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">copy %(Identity) "$(OutDir)/../Sandbox/%(Identity)" &gt; NUL</Command>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Compiling %(Identity)</Message>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Compiling %(Identity)</Message>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutDir)/../Sandbox/%(Identity)</Outputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(OutDir)/../Sandbox/%(Identity)</Outputs>
-    </CustomBuild>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

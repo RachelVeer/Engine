@@ -30,13 +30,17 @@ project "Engine"
 	{
 		"%{prj.name}/src/**.h",
 		"%{prj.name}/src/**.cpp",
-		"%{prj.name}/src/**.hlsl"
+		"%{prj.name}/src/**.hlsl",
+		"%{prj.name}/vendor/directxtk12/inc/screengrab.h",
+		"%{prj.name}/vendor/directxtk12/src/screengrab.cpp",
 	}
 
 	includedirs
 	{
 		"%{prj.name}/src",
 		"%{prj.name}/vendor/",
+		"%{prj.name}/vendor/directxtk12",
+		"%{prj.name}/vendor/directxtk12/inc",
 		"%{prj.name}/vendor/spdlog/include",
 		"%{IncludeDir.ImGui}"
 	}
@@ -96,6 +100,9 @@ project "Sandbox"
 	{
 		"Engine/vendor/spdlog/include",
 		"Engine/vendor/imgui",
+		"Engine/vendor/directxtk12",
+		"Engine/vendor/directxtk12/inc",
+		"Engine/vendor/directxtk12/src",
 		"Engine/vendor/",
 		"Engine/src"
 	}
@@ -167,3 +174,9 @@ project "ImGui"
 	filter "configurations:Release"
 		runtime "Release"
 		optimize "On"
+
+externalproject "DirectXTK_Desktop_2019_Win10"
+   location "Engine/vendor/DirectXTK12"
+   uuid "57940020-8E99-AEB6-271F-61E0F7F6B73B"
+   kind "StaticLib"
+   language "C++"

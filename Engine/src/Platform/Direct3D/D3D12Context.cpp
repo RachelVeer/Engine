@@ -14,11 +14,6 @@
 
 #if defined(D3D) || defined(D3D12)
 
-// Linking necessary libraries.
-#pragma comment (lib, "D3d12.lib")
-#pragma comment (lib, "dxgi.lib")
-#pragma comment (lib, "d3dcompiler.lib")
-
 // Com & D3D headers.
 #include <wrl.h>
 #include <d3d12.h>
@@ -26,6 +21,11 @@
 #include <DirectXMath.h>
 #include <D3Dcompiler.h>
 #include <commapi.h>
+
+// Linking necessary libraries.
+#pragma comment (lib, "D3d12.lib")
+#pragma comment (lib, "dxgi.lib")
+#pragma comment (lib, "d3dcompiler.lib")
 
 // D3D12 Helper functions.
 #include "Platform/Direct3D/Utils/d3dx12.h" 
