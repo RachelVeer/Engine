@@ -14,6 +14,7 @@ public:
     void Update();
     void Render(ClearColor& color);
     void Shutdown();
+    void Screenshot();
 
     /* Graphics* CreateGraphics() { return new Graphics(); } */
 };

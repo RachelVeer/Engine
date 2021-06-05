@@ -54,6 +54,7 @@
     </ClInclude>
     <ClInclude Include="src\SandboxTypes.h" />
     <ClInclude Include="src\pch.h" />
+    <ClInclude Include="vendor\DirectXTK12\Inc\ScreenGrab.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Engine\Application.cpp">
@@ -69,6 +70,7 @@
       <Filter>Platform\Windows</Filter>
     </ClCompile>
     <ClCompile Include="src\pch.cpp" />
+    <ClCompile Include="vendor\DirectXTK12\Src\ScreenGrab.cpp" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="src\Assets\shaders.hlsl">

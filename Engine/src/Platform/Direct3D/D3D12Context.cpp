@@ -31,6 +31,9 @@
 #include "Platform/Direct3D/Utils/d3dx12.h" 
 #include "Platform/Direct3D/Utils/DXHelper.h"
 
+// DirectX 12 Toolkit functionality.
+#include <ScreenGrab.h>
+
 static const uint32_t g_FrameCount = 2;
 
 ImVec4 clear_color; 
@@ -99,6 +102,7 @@ void PopulateCommandList();
 // ComPtr truly originated from. Plus general explicitness on 
 // variable creation. 
 using namespace Microsoft::WRL;
+using namespace DirectX;
 
 void Graphics::Init(int32_t width, int32_t height)
 {
@@ -479,6 +483,12 @@ void Graphics::Render(ClearColor& color)
     ThrowIfFailed(g_SwapChain->Present(1, 0));
 
     WaitForPreviousFrame();
+}
+
+void Graphics::Screenshot()
+{
+    UINT backBufferIdx = g_SwapChain->GetCurrentBackBufferIndex();
+    SaveDDSTextureToFile(g_CommandQueue.Get(), g_RenderTargets[backBufferIdx].Get(), L"test.dds", D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_PRESENT);
 }
 
 void Graphics::Shutdown()

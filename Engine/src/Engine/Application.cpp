@@ -68,6 +68,7 @@ void Application::Run()
 {
     ClearColor color = { 1.0f, 0.3f, 0.4f, 1.0f };
     bool show_demo_window = false;
+    static int counter = { 0 };
 
     if (appState.Initialized)
     {
@@ -95,6 +96,15 @@ void Application::Run()
                     int16_t y = platform.GetYScreenCoordinates();
                     ImGui::Text("Mouse X coords: = %d", x);
                     ImGui::Text("Mouse Y coords: = %d", y);
+
+                    if (ImGui::Button("Screenshot"))
+                    {
+                        // Buttons return true when clicked (most widgets return true when edited/activated)
+                        gfx.Screenshot();
+                        counter++;
+                    }
+                    ImGui::SameLine();
+                    ImGui::Text("Screenshots taken: = %d", counter);
                     ImGui::End();
                 }
 
