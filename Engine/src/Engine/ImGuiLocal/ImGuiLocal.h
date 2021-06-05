@@ -17,7 +17,7 @@ public:
         ImGuiIO& io = ImGui::GetIO();
         io.DisplaySize.x = 1920.0f;
         io.DisplaySize.y = 1080.0f;
-        io.FontGlobalScale = 1.2f;
+        //io.FontGlobalScale = 1.2f;
         io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
 
         // Setup Dear ImGui style

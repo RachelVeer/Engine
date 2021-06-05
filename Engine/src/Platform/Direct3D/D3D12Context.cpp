@@ -62,6 +62,7 @@ Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> g_pd3dSrvDescHeap;
 Microsoft::WRL::ComPtr<ID3D12CommandAllocator> g_CommandAllocator;
 Microsoft::WRL::ComPtr<ID3D12RootSignature> g_RootSignature;
 Microsoft::WRL::ComPtr<ID3D12PipelineState> g_PipelineState;
+Microsoft::WRL::ComPtr<ID3D12PipelineState> g_PipelineState2;
 Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> g_CommandList;
 uint32_t g_rtvDescriptorSize;
 
@@ -281,6 +282,17 @@ void LoadAssets()
         psoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
         psoDesc.SampleDesc.Count = 1;
         ThrowIfFailed(g_Device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&g_PipelineState)));
+       
+        // Second set of shaders 
+        ThrowIfFailed(D3DCompileFromFile(GetAssetFullPath(L"src/assets/shaders2.hlsl").c_str(), nullptr, nullptr, "VSMain", "vs_5_0", compileFlags, 0, &vertexShader, nullptr));
+        ThrowIfFailed(D3DCompileFromFile(GetAssetFullPath(L"src/assets/shaders2.hlsl").c_str(), nullptr, nullptr, "PSMain", "ps_5_0", compileFlags, 0, &pixelShader, nullptr));
+
+        // The previous desc bleeds through, the only thing we alter are the shaders set.
+        psoDesc.VS = CD3DX12_SHADER_BYTECODE(vertexShader.Get());
+        psoDesc.PS = CD3DX12_SHADER_BYTECODE(pixelShader.Get());
+        
+        // Create a second pso from that. 
+        ThrowIfFailed(g_Device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&g_PipelineState2)));
     }
 
     // Create command list. (version "1" automatically closes itself - one less step). 
@@ -472,7 +484,6 @@ void Graphics::Render(ClearColor& color)
 void Graphics::Shutdown()
 {
     CleanupRenderTarget();
-
 }
 
 void PopulateCommandList()
@@ -506,24 +517,36 @@ void PopulateCommandList()
     g_CommandList->RSSetViewports(1, &g_Viewport);
     g_CommandList->RSSetScissorRects(1, &g_ScissorRect);
 
-    // Render Dear ImGui graphics
+    // Clear color with alpha blending.
     const float clear_color_with_alpha[4] = { clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w };
+
+    // Render target view.
     g_CommandList->ClearRenderTargetView(g_mainRenderTargetDescriptor[backBufferIdx], clear_color_with_alpha, 0, NULL);
     g_CommandList->OMSetRenderTargets(1, &g_mainRenderTargetDescriptor[backBufferIdx], FALSE, NULL);
     
     g_CommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
     // First triangle.
     g_CommandList->IASetVertexBuffers(0, 1, &g_VertexBufferView);
     g_CommandList->IASetIndexBuffer(&g_IndexBufferView);
     g_CommandList->DrawIndexedInstanced(3, 1, 0, 0, 0); 
+
+    // Second pipeline state
+    // The command list resets itself above, with the original pipeline state. 
+    // Thus we don't need to set pso "1" after the second triangle, or call it before the
+    // first triangle. 
+    g_CommandList->SetPipelineState(g_PipelineState2.Get());
 
     // Second triangle.
     g_CommandList->IASetVertexBuffers(0, 1, &g_VertexBufferView2);
     g_CommandList->IASetIndexBuffer(&g_IndexBufferView2);
     g_CommandList->DrawIndexedInstanced(3, 1, 0, 0, 0);
     
+    // Related to Imgui.
     g_CommandList->SetDescriptorHeaps(1, g_pd3dSrvDescHeap.GetAddressOf());
     ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), g_CommandList.Get());
+    
+    // Prepare frame for presenting/drawing. 
     barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
     barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
     g_CommandList->ResourceBarrier(1, &barrier);

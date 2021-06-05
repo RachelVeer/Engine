@@ -67,7 +67,7 @@ void Application::Create(SandboxState* sandboxInstance)
 void Application::Run()
 {
     ClearColor color = { 1.0f, 0.3f, 0.4f, 1.0f };
-    bool show_demo_window = true;
+    bool show_demo_window = false;
 
     if (appState.Initialized)
     {

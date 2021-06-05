@@ -74,6 +74,7 @@
     <CustomBuild Include="src\Assets\shaders.hlsl">
       <Filter>Assets</Filter>
     </CustomBuild>
+    <CustomBuild Include="src\Assets\shaders2.hlsl" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Todo.txt" />
