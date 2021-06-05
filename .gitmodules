@@ -4,3 +4,9 @@
 [submodule "Engine/vendor/imgui"]
 	path = Engine/vendor/imgui
 	url = https://github.com/ocornut/imgui.git
+[submodule "Engine/vendor/DirectXTK"]
+	path = Engine/vendor/DirectXTK
+	url = https://github.com/microsoft/DirectXTK.git
+[submodule "Engine/vendor/DirectXTK12"]
+	path = Engine/vendor/DirectXTK12
+	url = https://github.com/microsoft/DirectXTK12.git
