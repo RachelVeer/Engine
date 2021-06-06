@@ -57,6 +57,17 @@ struct Surface
 
 Surface surface;
 
+struct CBVResources // Not so much literally accessing D3D constant buffers, but affecting it with these parameters. 
+{
+    bool forward = true;
+    const float translationSpeed = 0.005f;
+    // "bounds" relative to uniformed space within DirectX, not our screens.  
+    const float offsetBounds    =  1.25f; // Right edge
+    const float negoffsetBounds = -0.55f; // Left edge
+};
+
+CBVResources cbvParams;
+
 float g_aspectRatio = { 0 };
 
 // Pipeline objects.
@@ -531,14 +542,21 @@ void LoadAssets()
 // Update frame-based values.
 void Graphics::Update()
 {
-    const float translationSpeed = 0.005f;
-    const float offsetBounds = 1.25f;
+    // By default it moves forward, thus once we reach offsetBounds - set it false.
+    if (g_constantBufferData.offset.x > cbvParams.offsetBounds) { cbvParams.forward = false; }
+    // And once it reaches negative bounds, it can move forward again.
+    if (g_constantBufferData.offset.x < cbvParams.negoffsetBounds) { cbvParams.forward = true; }
 
-    g_constantBufferData.offset.x += translationSpeed;
-    if (g_constantBufferData.offset.x > offsetBounds)
+    if (cbvParams.forward)
     {
-        g_constantBufferData.offset.x = -offsetBounds;
+        g_constantBufferData.offset.x += cbvParams.translationSpeed;
     }
+
+    if (!cbvParams.forward)
+    {
+        g_constantBufferData.offset.x -= cbvParams.translationSpeed;
+    }
+
     memcpy(g_pCbvDataBegin, &g_constantBufferData, sizeof(g_constantBufferData));
 }
 
