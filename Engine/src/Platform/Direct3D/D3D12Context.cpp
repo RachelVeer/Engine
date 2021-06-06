@@ -12,7 +12,7 @@
 // DirectX specific code & libraries will only link/compile
 // relative to the graphics layer if it's actually defined.
 
-#if defined(D3D) || defined(D3D12)
+#if defined(ENGINE_GRAPHICS_DIRECTX12)
 
 // Com & D3D headers.
 #include <wrl.h>

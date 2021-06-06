@@ -11,7 +11,7 @@
 
 // Win32/Window specific code will only compile
 // relative to the platform layer if it's actually defined.
-#if defined(WIN32) || defined(_WIN32) || defined(_WIN64)
+#if defined(ENGINE_PLATFORM_WINDOWS)
 
 struct Clock
 {

@@ -71,7 +71,8 @@ filter "system:windows"
 
 	defines
 	{
-		"ENGINE_PLATFORM_WINDOWS"
+		"ENGINE_PLATFORM_WINDOWS",
+		"ENGINE_GRAPHICS_DIRECTX12"
 	}
 
 filter "configurations:Debug"
