@@ -12,7 +12,8 @@
 cbuffer SceneConstantBuffer : register(b0)
 {
     float4 offset;
-    float padding[15];
+    float4 cbcolor;
+    float padding[16];
 }
 
 struct PSInput
@@ -26,6 +27,7 @@ PSInput VSMain(float4 position : POSITION, float4 color : COLOR)
     PSInput result;
 
     result.position = position + offset;
+    color.y = cbcolor.y;
     result.color = color;
 
     return result;

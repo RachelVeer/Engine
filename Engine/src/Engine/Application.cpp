@@ -107,10 +107,15 @@ void Application::Run()
                     ImGui::Text("Screenshots taken: = %d", counter);
                     ImGui::End();
                 }
+                
+                // Update clear color.
+                float timeValue = platform.GetAbsoluteTime();
+                float greenValue = sin(timeValue) / 2.0f + 0.5f;
+                color.g = greenValue;
 
                 // Rendering
                 imgui.EndFrame(); // Actually render imgui setup
-                gfx.Update();
+                gfx.Update(color);
                 gfx.Render(color);
             }
         }

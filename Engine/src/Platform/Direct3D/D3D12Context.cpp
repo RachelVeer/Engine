@@ -46,7 +46,8 @@ struct Vertex
 struct SceneConstantBuffer
 {
     DirectX::XMFLOAT4 offset;
-    float padding[60]; // Padding so the constant buffer is 256-byte aligned. 
+    DirectX::XMFLOAT4 cbcolor;
+    float padding[56]; // Padding so the constant buffer is 256-byte aligned. 
 };
 static_assert((sizeof(SceneConstantBuffer) % 256) == 0, "Constant Buffer size must be 256-byte aligned");
 
@@ -540,7 +541,7 @@ void LoadAssets()
 }
 
 // Update frame-based values.
-void Graphics::Update()
+void Graphics::Update(ClearColor& color)
 {
     // By default it moves forward, thus once we reach offsetBounds - set it false.
     if (g_constantBufferData.offset.x > cbvParams.offsetBounds) { cbvParams.forward = false; }
@@ -556,6 +557,8 @@ void Graphics::Update()
     {
         g_constantBufferData.offset.x -= cbvParams.translationSpeed;
     }
+
+    g_constantBufferData.cbcolor.y = color.g;
 
     memcpy(g_pCbvDataBegin, &g_constantBufferData, sizeof(g_constantBufferData));
 }

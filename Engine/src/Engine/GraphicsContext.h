@@ -11,7 +11,7 @@ public:
     Graphics() {}
     ~Graphics() {}
     void Init(int32_t width, int32_t height);
-    void Update();
+    void Update(ClearColor& color);
     void Render(ClearColor& color);
     void Shutdown();
     void Screenshot();
