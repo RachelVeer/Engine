@@ -43,6 +43,13 @@ struct Vertex
     DirectX::XMFLOAT4 color;
 };
 
+struct SceneConstantBuffer
+{
+    DirectX::XMFLOAT4 offset;
+    float padding[60]; // Padding so the constant buffer is 256-byte aligned. 
+};
+static_assert((sizeof(SceneConstantBuffer) % 256) == 0, "Constant Buffer size must be 256-byte aligned");
+
 struct Surface
 {
     int32_t width, height;
@@ -61,7 +68,7 @@ Microsoft::WRL::ComPtr<IDXGIFactory4> g_Factory;
 Microsoft::WRL::ComPtr<ID3D12CommandQueue> g_CommandQueue;
 Microsoft::WRL::ComPtr<ID3D12Resource> g_RenderTargets[g_FrameCount];
 Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> g_rtvHeap;
-Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> g_pd3dSrvDescHeap;
+Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> g_pd3dSrvDescHeap, g_cbvHeap; // Original heap belongs to Imgui.
 Microsoft::WRL::ComPtr<ID3D12CommandAllocator> g_CommandAllocator;
 Microsoft::WRL::ComPtr<ID3D12RootSignature> g_RootSignature;
 Microsoft::WRL::ComPtr<ID3D12PipelineState> g_PipelineState;
@@ -72,12 +79,14 @@ uint32_t g_rtvDescriptorSize;
 static D3D12_CPU_DESCRIPTOR_HANDLE  g_mainRenderTargetDescriptor[g_FrameCount] = {};
 
 // App resources 
-Microsoft::WRL::ComPtr<ID3D12Resource> g_VertexBuffer, g_IndexBuffer;
+Microsoft::WRL::ComPtr<ID3D12Resource> g_VertexBuffer, g_IndexBuffer, g_ConstantBuffer;
 Microsoft::WRL::ComPtr<ID3D12Resource> g_VertexBuffer2, g_IndexBuffer2;
 D3D12_VERTEX_BUFFER_VIEW g_VertexBufferView;
 D3D12_VERTEX_BUFFER_VIEW g_VertexBufferView2;
 D3D12_INDEX_BUFFER_VIEW  g_IndexBufferView;
 D3D12_INDEX_BUFFER_VIEW  g_IndexBufferView2;
+SceneConstantBuffer g_constantBufferData;
+UINT8* g_pCbvDataBegin;
 
 
 // Synchronization objects.
@@ -225,26 +234,58 @@ void LoadPipeline()
         desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
         (g_Device->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&g_pd3dSrvDescHeap)));
     }
-
-
+    // Two seperate descriptors. 
+    // (could be one potentially, i.e we could try "desc.NumDescriptors = 2")
+    {
+        D3D12_DESCRIPTOR_HEAP_DESC desc = {};
+        desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+        desc.NumDescriptors = 1;
+        desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+        (g_Device->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&g_cbvHeap)));
+    }
+    // Create frame resources.
+    CreateRenderTarget();
+    
     // Create command allocator.
     {
         ThrowIfFailed(g_Device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&g_CommandAllocator)));
     }
-
-    CreateRenderTarget();
 }
 
 void LoadAssets()
 {
-    // Create empty root signature 
+    // Create a root signature of a descriptor table with a single CBV. 
     {
-        CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc;
-        rootSignatureDesc.Init(0, nullptr, 0, nullptr, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
+        D3D12_FEATURE_DATA_ROOT_SIGNATURE featureData = {};
 
-        Microsoft::WRL::ComPtr<ID3DBlob> signature;
-        Microsoft::WRL::ComPtr<ID3DBlob> error;
-        ThrowIfFailed(D3D12SerializeRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, &signature, &error));
+        // This is the highest version the app supports. If CheckFeatureSupport succeeds, the HighestVersion returned will not be greater than this.
+        featureData.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_1;
+
+        if (FAILED(g_Device->CheckFeatureSupport(D3D12_FEATURE_ROOT_SIGNATURE, &featureData, sizeof(featureData))))
+        {
+            featureData.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_0;
+        }
+
+        CD3DX12_DESCRIPTOR_RANGE1 ranges[1];
+        CD3DX12_ROOT_PARAMETER1 rootParameters[1];
+
+        ranges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 0, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC);
+        rootParameters[0].InitAsDescriptorTable(1, &ranges[0], D3D12_SHADER_VISIBILITY_VERTEX);
+
+        // Allow input layout and deny uneccessary access to certain pipeline stages.
+        D3D12_ROOT_SIGNATURE_FLAGS rootSignatureFlags =
+            D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT |
+            D3D12_ROOT_SIGNATURE_FLAG_DENY_HULL_SHADER_ROOT_ACCESS |
+            D3D12_ROOT_SIGNATURE_FLAG_DENY_DOMAIN_SHADER_ROOT_ACCESS |
+            D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS |
+            D3D12_ROOT_SIGNATURE_FLAG_DENY_PIXEL_SHADER_ROOT_ACCESS;
+
+        CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDesc = {};
+        rootSignatureDesc.Init_1_1(_countof(rootParameters), rootParameters, 0, nullptr, rootSignatureFlags);
+
+        ComPtr<ID3DBlob> signature;
+        ComPtr<ID3DBlob> error;
+        ThrowIfFailed(D3DX12SerializeVersionedRootSignature(&rootSignatureDesc, featureData.HighestVersion, &signature, &error));
         ThrowIfFailed(g_Device->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_PPV_ARGS(&g_RootSignature)));
     }
 
@@ -444,6 +485,30 @@ void LoadAssets()
         g_IndexBufferView2.SizeInBytes = indexBufferSize;
     }
 
+    // Create the constant buffer.
+    {
+        const UINT constantBufferSize = sizeof(SceneConstantBuffer); // CB size is required to be 256-byte aligned.
+        ThrowIfFailed(g_Device->CreateCommittedResource(
+            &CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD), 
+             D3D12_HEAP_FLAG_NONE,
+             &CD3DX12_RESOURCE_DESC::Buffer(constantBufferSize),
+             D3D12_RESOURCE_STATE_GENERIC_READ, 
+             nullptr, 
+             IID_PPV_ARGS(&g_ConstantBuffer)));
+
+        // Describe and create a constant buffer view.
+        D3D12_CONSTANT_BUFFER_VIEW_DESC cbvdesc = {};
+        cbvdesc.BufferLocation = g_ConstantBuffer->GetGPUVirtualAddress();
+        cbvdesc.SizeInBytes = constantBufferSize;
+        g_Device->CreateConstantBufferView(&cbvdesc, g_cbvHeap->GetCPUDescriptorHandleForHeapStart());
+
+        // Map and intialize the constant buffer. We don't unmap this until the
+        // app closes. Keeping things mapped for the lifetime of the resource is okay.
+        CD3DX12_RANGE readRange(0, 0); // We do not intend to read from this resource of the CPU.
+        ThrowIfFailed(g_ConstantBuffer->Map(0, &readRange, reinterpret_cast<void**>(&g_pCbvDataBegin)));
+        memcpy(g_pCbvDataBegin, &g_constantBufferData, sizeof(g_constantBufferData));
+    }
+
     // Create synchronization objects and wait until assets have been uploaded to the GPU.
     {
         ThrowIfFailed(g_Device->CreateFence(0, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&g_Fence)));
@@ -463,9 +528,18 @@ void LoadAssets()
     }
 }
 
+// Update frame-based values.
 void Graphics::Update()
 {
+    const float translationSpeed = 0.005f;
+    const float offsetBounds = 1.25f;
 
+    g_constantBufferData.offset.x += translationSpeed;
+    if (g_constantBufferData.offset.x > offsetBounds)
+    {
+        g_constantBufferData.offset.x = -offsetBounds;
+    }
+    memcpy(g_pCbvDataBegin, &g_constantBufferData, sizeof(g_constantBufferData));
 }
 
 void Graphics::Render(ClearColor& color)
@@ -524,9 +598,15 @@ void PopulateCommandList()
 
     // Set necessary state.
     g_CommandList->SetGraphicsRootSignature(g_RootSignature.Get());
+
+    ID3D12DescriptorHeap* ppHeaps[] = { g_cbvHeap.Get() };
+    g_CommandList->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
+
+    g_CommandList->SetGraphicsRootDescriptorTable(0, g_cbvHeap->GetGPUDescriptorHandleForHeapStart());
     g_CommandList->RSSetViewports(1, &g_Viewport);
     g_CommandList->RSSetScissorRects(1, &g_ScissorRect);
 
+    // Record commands.
     // Clear color with alpha blending.
     const float clear_color_with_alpha[4] = { clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w };
 
