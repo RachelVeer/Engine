@@ -19,6 +19,9 @@ public:
         io.DisplaySize.y = 1080.0f;
         //io.FontGlobalScale = 1.2f;
         io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
+        // WARNING: this font file must be copied to "Sandbox" directory. 
+        // It's under vendor/imgui/misc/fonts.
+        io.Fonts->AddFontFromFileTTF("Roboto-Medium.ttf", 16.0f);
 
         // Setup Dear ImGui style
         ImGui::StyleColorsDark();

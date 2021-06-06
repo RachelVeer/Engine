@@ -3,9 +3,9 @@
 // Licensed under the Apache-2.0 License.
 //*********************************************************
 #include "pch.h"
-#include "Engine/Core.h"
 #include "Engine/GraphicsContext.h"
 #include "Platform/Platform.h"
+#include "Engine/Log.h"
 
 #include "Engine/ImGuiLocal/ImGuiLocal.h"
 
