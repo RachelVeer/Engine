@@ -69,6 +69,10 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <Lib>
+      <AdditionalLibraryDirectories>C:\dev\Engine\Engine\vendor\DirectXTK12\Bin\Desktop_2019_Win10\x64\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>DirectXTK12.lib</AdditionalDependencies>
+    </Lib>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -104,7 +108,6 @@
     <ClInclude Include="src\Platform\Platform.h" />
     <ClInclude Include="src\SandboxTypes.h" />
     <ClInclude Include="src\pch.h" />
-    <ClInclude Include="vendor\directxtk12\inc\screengrab.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Engine\Application.cpp" />
@@ -112,7 +115,6 @@
     <ClCompile Include="src\Platform\Direct3D\D3D12Context.cpp" />
     <ClCompile Include="src\Platform\Windows\PlatformWin32.cpp" />
     <ClCompile Include="src\pch.cpp" />
-    <ClCompile Include="vendor\directxtk12\src\screengrab.cpp" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="src\Assets\shaders.hlsl">
