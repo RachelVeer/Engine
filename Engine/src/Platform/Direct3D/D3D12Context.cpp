@@ -34,15 +34,25 @@
 // DirectX 12 Toolkit functionality.
 #include <ScreenGrab.h>
 
-static const uint32_t g_FrameCount = 2;
+// Defining the area we draw to.
+struct Surface
+{
+    int32_t width, height;
+};
 
-ImVec4 clear_color; 
+Surface surface;
+
+// Imgui helper with clearing surface color.
+ImVec4 clear_color;
+
+// Defining geometry and additional data for graphics/shader pipleine.
 struct Vertex
 {
     DirectX::XMFLOAT3 position;
     DirectX::XMFLOAT4 color;
 };
 
+// Detailing a constant occuring within our scene. 
 struct SceneConstantBuffer
 {
     DirectX::XMFLOAT4 offset;
@@ -50,13 +60,6 @@ struct SceneConstantBuffer
     float padding[56]; // Padding so the constant buffer is 256-byte aligned. 
 };
 static_assert((sizeof(SceneConstantBuffer) % 256) == 0, "Constant Buffer size must be 256-byte aligned");
-
-struct Surface
-{
-    int32_t width, height;
-};
-
-Surface surface;
 
 struct CBVResources // Not so much literally accessing D3D constant buffers, but affecting it with these parameters. 
 {
@@ -69,6 +72,8 @@ struct CBVResources // Not so much literally accessing D3D constant buffers, but
 
 CBVResources cbvParams;
 
+// Relevant D3D parameters.
+static const uint32_t g_FrameCount = 2;
 float g_aspectRatio = { 0 };
 
 // Pipeline objects.
