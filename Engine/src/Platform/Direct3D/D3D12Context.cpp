@@ -429,13 +429,25 @@ void LoadAssets()
     // ================================= //
     // Create the vertex buffer.
     {
+        // At the end of the day, we're simply defining points in space.
+        // Which usually come in two, (A, B) -> [0], [1].
+        {
+            // Original triangle position
+            float top[] = { 0.30f, 0.25f };
+            float bottomRight[] = { 0.55f, -0.25f };
+            float bottomLeft[] = { 0.05f, -0.25f };
+        }
+        // Upside down triangle 
+        float top[] = { -0.30f, -0.25f };
+        float bottomRight[] = { -0.55f, 0.25f };
+        float bottomLeft[] = { -0.05f, 0.25f };
         // Define the geometry for a triangle.
         Vertex triangleVertices[] =
         {
             // Clockwise.
-            { {  0.30f,  0.25f * g_aspectRatio, 0.0f}, { 0.8f, 0.0f, 0.8f, 1.0f } }, // top
-            { {  0.55f, -0.25f * g_aspectRatio, 0.0f}, { 0.0f, 0.8f, 0.8f, 1.0f } }, // bottom right
-            { {  0.05f, -0.25f * g_aspectRatio, 0.0f}, { 0.8f, 0.8f, 0.0f, 1.0f } }, // bottom left
+            { {  top[0],  top[1] * g_aspectRatio, 0.0f}, { 0.8f, 0.0f, 0.8f, 1.0f } },
+            { {  bottomRight[0], bottomRight[1] * g_aspectRatio, 0.0f}, { 0.0f, 0.8f, 0.8f, 1.0f } },
+            { {  bottomLeft[0],  bottomLeft[1] * g_aspectRatio, 0.0f}, { 0.8f, 0.8f, 0.0f, 1.0f } }, 
         };
 
         const uint32_t vertexBufferSize = sizeof(triangleVertices);
