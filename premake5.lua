@@ -103,9 +103,6 @@ project "Sandbox"
 	{
 		"Engine/vendor/spdlog/include",
 		"Engine/vendor/imgui",
-		"Engine/vendor/directxtk12",
-		"Engine/vendor/directxtk12/inc",
-		"Engine/vendor/directxtk12/src",
 		"Engine/vendor/",
 		"Engine/src"
 	}
