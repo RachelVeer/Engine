@@ -17,6 +17,7 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 -- Include directories relative to root folder (solution directory)
 IncludeDir = {}
 IncludeDir["ImGui"] = "Engine/vendor/imgui"
+--IncludeDir["DirectXTK12"] = "Engine/vendor/DirectXTK12"
 
 project "Engine"
 	location "Engine"
@@ -30,9 +31,7 @@ project "Engine"
 	{
 		"%{prj.name}/src/**.h",
 		"%{prj.name}/src/**.cpp",
-		"%{prj.name}/src/**.hlsl",
-		"%{prj.name}/vendor/directxtk12/inc/screengrab.h",
-		"%{prj.name}/vendor/directxtk12/src/screengrab.cpp",
+		"%{prj.name}/src/**.hlsl"
 	}
 
 	includedirs
@@ -42,12 +41,14 @@ project "Engine"
 		"%{prj.name}/vendor/directxtk12",
 		"%{prj.name}/vendor/directxtk12/inc",
 		"%{prj.name}/vendor/spdlog/include",
-		"%{IncludeDir.ImGui}"
+		"%{IncludeDir.ImGui}",
+		"%{IncludeDir.DirectXTK12}"
 	}
 
 	links
 	{
-		"ImGui"
+		"ImGui",
+		"DirectXTK_Desktop_2019_Win10"
 	}
 
 
@@ -179,6 +180,6 @@ project "ImGui"
 
 externalproject "DirectXTK_Desktop_2019_Win10"
    location "Engine/vendor/DirectXTK12"
-   uuid "57940020-8E99-AEB6-271F-61E0F7F6B73B"
+   uuid "3E0E8608-CD9B-4C76-AF33-29CA38F2C9F0"
    kind "StaticLib"
    language "C++"

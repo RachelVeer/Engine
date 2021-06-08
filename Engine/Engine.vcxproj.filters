@@ -1,104 +1,81 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="src">
-      <UniqueIdentifier>{2DAB880B-99B4-887C-2230-9F7C8E38947C}</UniqueIdentifier>
+    <Filter Include="Assets">
+      <UniqueIdentifier>{3824E0A7-24C6-0A7E-0D81-1ED2F9C191CE}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Assets">
-      <UniqueIdentifier>{6FFD3E05-5BB5-8052-C4BC-59AEB0931B43}</UniqueIdentifier>
+    <Filter Include="Engine">
+      <UniqueIdentifier>{DBC7D3B0-C769-FE86-B024-12DB9C6585D7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Engine">
-      <UniqueIdentifier>{12A1320E-FE58-745B-6760-4DB753370F4C}</UniqueIdentifier>
+    <Filter Include="Engine\ImGuiLocal">
+      <UniqueIdentifier>{D05EEA9F-3C75-E835-85EC-7357F141B9BD}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Engine\ImGuiLocal">
-      <UniqueIdentifier>{A7A7F8F4-1314-B4EF-DC07-4C4D4833D657}</UniqueIdentifier>
+    <Filter Include="Platform">
+      <UniqueIdentifier>{2AC788B4-1694-E3BF-3FAD-D1672BD9184E}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Platform">
-      <UniqueIdentifier>{21CA02E5-0D2D-9289-B6B2-CA3FA2F45D0C}</UniqueIdentifier>
+    <Filter Include="Platform\Direct3D">
+      <UniqueIdentifier>{EBAC54F6-57C3-528C-A03A-DEAD0C902314}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Platform\Direct3D">
-      <UniqueIdentifier>{C2F5624B-2E62-1E46-F755-B6A3638140AE}</UniqueIdentifier>
+    <Filter Include="Platform\Direct3D\Utils">
+      <UniqueIdentifier>{8B72C1A3-F7A9-093B-00B4-6D5E6C6A3034}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Platform\Direct3D\Utils">
-      <UniqueIdentifier>{A2C08E12-0ECE-BCF8-97B4-B8E303C188AF}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\Platform\Windows">
-      <UniqueIdentifier>{5B054582-4794-CE4B-F0B2-E246DC20DFF1}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="vendor">
-      <UniqueIdentifier>{B3738122-9F15-ACF8-88D0-BF4C74113349}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="vendor\directxtk12">
-      <UniqueIdentifier>{D72D70CB-C311-3121-2C72-2B7418751BA3}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="vendor\directxtk12\inc">
-      <UniqueIdentifier>{60D40C41-4CCE-3593-353B-CCA321D49BFF}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="vendor\directxtk12\src">
-      <UniqueIdentifier>{6EFF0C41-5AF9-3593-4366-CCA32FFF9BFF}</UniqueIdentifier>
+    <Filter Include="Platform\Windows">
+      <UniqueIdentifier>{64FBD71A-50F4-F66C-7926-DCF1657ED678}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Engine.h">
-      <Filter>src</Filter>
-    </ClInclude>
+    <ClInclude Include="src\Engine.h" />
     <ClInclude Include="src\Engine\Application.h">
-      <Filter>src\Engine</Filter>
+      <Filter>Engine</Filter>
     </ClInclude>
     <ClInclude Include="src\Engine\Core.h">
-      <Filter>src\Engine</Filter>
+      <Filter>Engine</Filter>
     </ClInclude>
     <ClInclude Include="src\Engine\EntryPoint.h">
-      <Filter>src\Engine</Filter>
+      <Filter>Engine</Filter>
     </ClInclude>
     <ClInclude Include="src\Engine\GraphicsContext.h">
-      <Filter>src\Engine</Filter>
+      <Filter>Engine</Filter>
     </ClInclude>
     <ClInclude Include="src\Engine\ImGuiLocal\ImGuiLocal.h">
-      <Filter>src\Engine\ImGuiLocal</Filter>
+      <Filter>Engine\ImGuiLocal</Filter>
     </ClInclude>
     <ClInclude Include="src\Engine\Log.h">
-      <Filter>src\Engine</Filter>
+      <Filter>Engine</Filter>
     </ClInclude>
     <ClInclude Include="src\Platform\Direct3D\Utils\DXHelper.h">
-      <Filter>src\Platform\Direct3D\Utils</Filter>
+      <Filter>Platform\Direct3D\Utils</Filter>
     </ClInclude>
     <ClInclude Include="src\Platform\Direct3D\Utils\d3dx12.h">
-      <Filter>src\Platform\Direct3D\Utils</Filter>
+      <Filter>Platform\Direct3D\Utils</Filter>
     </ClInclude>
     <ClInclude Include="src\Platform\Platform.h">
-      <Filter>src\Platform</Filter>
+      <Filter>Platform</Filter>
     </ClInclude>
-    <ClInclude Include="src\SandboxTypes.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="src\pch.h">
-      <Filter>src</Filter>
-    </ClInclude>
+    <ClInclude Include="src\SandboxTypes.h" />
+    <ClInclude Include="src\pch.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Engine\Application.cpp">
-      <Filter>src\Engine</Filter>
+      <Filter>Engine</Filter>
     </ClCompile>
     <ClCompile Include="src\Engine\Log.cpp">
-      <Filter>src\Engine</Filter>
+      <Filter>Engine</Filter>
     </ClCompile>
     <ClCompile Include="src\Platform\Direct3D\D3D12Context.cpp">
-      <Filter>src\Platform\Direct3D</Filter>
+      <Filter>Platform\Direct3D</Filter>
     </ClCompile>
     <ClCompile Include="src\Platform\Windows\PlatformWin32.cpp">
-      <Filter>src\Platform\Windows</Filter>
+      <Filter>Platform\Windows</Filter>
     </ClCompile>
-    <ClCompile Include="src\pch.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
+    <ClCompile Include="src\pch.cpp" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="src\Assets\shaders.hlsl">
-      <Filter>src\Assets</Filter>
+      <Filter>Assets</Filter>
     </CustomBuild>
     <CustomBuild Include="src\Assets\shaders2.hlsl">
-      <Filter>src\Assets</Filter>
+      <Filter>Assets</Filter>
     </CustomBuild>
   </ItemGroup>
 </Project>
