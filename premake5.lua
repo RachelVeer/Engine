@@ -133,6 +133,8 @@ project "Sandbox"
 		defines "NDEBUG"
 		optimize "On"
 
+group "Dependencies"
+
 project "ImGui"
 	location "Engine/vendor/imgui"
 	kind "StaticLib"
@@ -214,3 +216,5 @@ filter "configurations:Debug"
 filter "configurations:Release"
 	defines "NDEBUG"
 	optimize "On"
+
+group ""
