@@ -21,7 +21,7 @@ public:
         io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;
         // WARNING: this font file must be copied to "Sandbox" directory. 
         // It's under vendor/imgui/misc/fonts.
-        io.Fonts->AddFontFromFileTTF("Roboto-Medium.ttf", 16.0f);
+        io.Fonts->AddFontFromFileTTF("../Engine/vendor/imgui/misc/fonts/Roboto-Medium.ttf", 16.0f);
 
         // Setup Dear ImGui style
         ImGui::StyleColorsDark();
