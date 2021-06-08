@@ -8,3 +8,5 @@ If you're curious to see what I'm up to - it's best to look through the **twopar
 Disclaimer: I'm by no means an expert, things are inspired by both the Hazel & Kohi engine — while adding my own flavors. 
 ## Building 
 Eitherway, if you want to run the project yourself feel free to recursively clone the twoparadigms branch, as it utilizes submodules. Then run the **GenerateProjects.bat** in the *scripts* folder. Cheat sheet: `git clone --recurse-submodules --branch twoparadigms https://github.com/RachelVeer/Engine.git`.
+
+**Note:** This is under the assumption you're running Visual Studio 2019.
