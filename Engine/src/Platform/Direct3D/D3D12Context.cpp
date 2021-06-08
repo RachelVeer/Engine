@@ -26,13 +26,14 @@
 #pragma comment (lib, "D3d12.lib")
 #pragma comment (lib, "dxgi.lib")
 #pragma comment (lib, "d3dcompiler.lib")
+#pragma comment (lib, "dxguid.lib") // For DX Modules functionality. 
 
 // D3D12 Helper functions.
 #include "Platform/Direct3D/Utils/d3dx12.h" 
 #include "Platform/Direct3D/Utils/DXHelper.h"
 
 // DirectX 12 Toolkit functionality.
-#include <ScreenGrab.h>
+#include <ScreenGrab/ScreenGrab12.h>
 
 // Defining the area we draw to.
 struct Surface

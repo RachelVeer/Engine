@@ -17,7 +17,7 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 -- Include directories relative to root folder (solution directory)
 IncludeDir = {}
 IncludeDir["ImGui"] = "Engine/vendor/imgui"
-IncludeDir["DirectXTK12Custom"] = "Engine/vendor/DirectXTK12"
+IncludeDir["DirectX12Modules"] = "Engine/vendor/DirectX12Modules"
 
 project "Engine"
 	location "Engine"
@@ -42,13 +42,13 @@ project "Engine"
 		"%{prj.name}/vendor/directxtk12/inc",
 		"%{prj.name}/vendor/spdlog/include",
 		"%{IncludeDir.ImGui}",
-		"%{IncludeDir.DirectXTK12}"
+		"%{IncludeDir.DirectX12Modules}"
 	}
 
 	links
 	{
 		"ImGui",
-		"DirectXTK12Custom"
+		"DirectX12Modules"
 	}
 
 
@@ -178,16 +178,8 @@ project "ImGui"
 		runtime "Release"
 		optimize "On"
 
---externalproject "DirectXTK_Desktop_2019_Win10"
---   location "Engine/vendor/DirectXTK12"
---   uuid "3E0E8608-CD9B-4C76-AF33-29CA38F2C9F0"
---   kind "StaticLib"
---   language "C++"
---   symbols "On"
---   runtime "Release"
-
-project "DirectXTK12Custom"
-location "Engine/vendor/DirectXTK12"
+project "DirectX12Modules"
+location "Engine/vendor/DirectX12Modules"
 	kind     "StaticLib"
 	language "C++"
 
@@ -196,23 +188,24 @@ location "Engine/vendor/DirectXTK12"
 
 	files
 	{
-		"%{IncludeDir.DirectXTK12Custom}/inc/**.h",
-		"%{IncludeDir.DirectXTK12Custom}/src/**.h",
-		"%{IncludeDir.DirectXTK12Custom}/src/**.cpp",
+		"%{IncludeDir.DirectX12Modules}/**.h",
+		"%{IncludeDir.DirectX12Modules}/**.cpp",
 	}
-
-	removefiles { "%{IncludeDir.DirectXTK12Custom}/src/XboxDDSTextureLoader.cpp" }
 
 	includedirs
 	{
-		"%{IncludeDir.DirectXTK12Custom}/src",
-		"%{IncludeDir.DirectXTK12Custom}/inc"
+		"%{IncludeDir.DirectXTK12Custom}/",
 	}
 
 	filter "system:windows"
 	cppdialect "C++17"
 	staticruntime "On"
 	systemversion "latest"
+
+	defines
+	{
+		"WIN32"
+	}
 
 filter "configurations:Debug"
 	defines "DEBUG"

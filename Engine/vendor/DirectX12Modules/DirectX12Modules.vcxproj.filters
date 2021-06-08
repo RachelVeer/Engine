@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="DDSTextureLoader">
+      <UniqueIdentifier>{681569CE-540E-8820-7D40-6DA56998672C}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ScreenGrab">
+      <UniqueIdentifier>{61D4CD18-4D8C-0F66-B693-E8C1A26AAA56}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="WICTextureLoader">
+      <UniqueIdentifier>{D06FBC32-BC68-DB84-E59A-C009D1F2BA90}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="DDSTextureLoader\DDSTextureLoader12.h">
+      <Filter>DDSTextureLoader</Filter>
+    </ClInclude>
+    <ClInclude Include="ScreenGrab\ScreenGrab12.h">
+      <Filter>ScreenGrab</Filter>
+    </ClInclude>
+    <ClInclude Include="WICTextureLoader\WICTextureLoader12.h">
+      <Filter>WICTextureLoader</Filter>
+    </ClInclude>
+    <ClInclude Include="d3dx12.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="DDSTextureLoader\DDSTextureLoader12.cpp">
+      <Filter>DDSTextureLoader</Filter>
+    </ClCompile>
+    <ClCompile Include="ScreenGrab\ScreenGrab12.cpp">
+      <Filter>ScreenGrab</Filter>
+    </ClCompile>
+    <ClCompile Include="WICTextureLoader\WICTextureLoader12.cpp">
+      <Filter>WICTextureLoader</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
