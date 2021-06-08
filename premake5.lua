@@ -196,12 +196,12 @@ location "Engine/vendor/DirectXTK12"
 
 	files
 	{
-		"%{IncludeDir.DirectXTK12Custom}/**.h",
-		"%{IncludeDir.DirectXTK12Custom}/**.cpp"
+		"%{IncludeDir.DirectXTK12Custom}/inc/**.h",
+		"%{IncludeDir.DirectXTK12Custom}/src/**.h",
+		"%{IncludeDir.DirectXTK12Custom}/src/**.cpp",
 	}
+
 	removefiles { "%{IncludeDir.DirectXTK12Custom}/src/XboxDDSTextureLoader.cpp" }
-
-
 
 	includedirs
 	{
