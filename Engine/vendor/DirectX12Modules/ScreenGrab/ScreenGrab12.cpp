@@ -48,9 +48,9 @@
 
 #define D3DX12_NO_STATE_OBJECT_HELPERS
 #ifdef WIN32
-#include "../d3dx12.h"
+#include "d3dx12.h"
 #else
-#include "../d3dx12.h"
+#include "d3dx12.h"
 #endif
 
 using Microsoft::WRL::ComPtr;

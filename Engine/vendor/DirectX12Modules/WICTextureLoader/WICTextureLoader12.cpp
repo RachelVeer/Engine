@@ -48,7 +48,7 @@
 // C5027 move assignment operator was implicitly defined as deleted
 
 #define D3DX12_NO_STATE_OBJECT_HELPERS
-#include "../d3dx12.h"
+#include "d3dx12.h"
 
 using namespace DirectX;
 using Microsoft::WRL::ComPtr;

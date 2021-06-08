@@ -197,7 +197,7 @@ location "Engine/vendor/DirectX12Modules"
 
 	includedirs
 	{
-		"%{IncludeDir.DirectXTK12Custom}/",
+		"Engine/vendor/DirectX12Modules",
 	}
 
 	filter "system:windows"
