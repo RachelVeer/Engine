@@ -109,7 +109,7 @@ void Application::Run()
                 }
                 
                 // Update clear color.
-                float timeValue = platform.GetAbsoluteTime();
+                float timeValue = static_cast<float>(platform.GetAbsoluteTime());
                 float greenValue = sin(timeValue) / 2.0f + 0.5f;
                 color.g = greenValue;
 
