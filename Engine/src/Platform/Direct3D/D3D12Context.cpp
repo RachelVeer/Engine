@@ -34,6 +34,7 @@
 
 // DirectX 12 Toolkit functionality.
 #include <ScreenGrab/ScreenGrab12.h>
+#include <DDSTextureLoader/DDSTextureLoader12.h>
 
 // Defining the area we draw to.
 struct Surface
@@ -110,8 +111,8 @@ UINT8* g_pCbvDataBegin;
 Microsoft::WRL::ComPtr<ID3D12Resource> g_Texture;
 
 // For mockup texture
-static const uint32_t TextureWidth = 256;
-static const uint32_t TextureHeight = 256;
+static const uint32_t TextureWidth = 512;
+static const uint32_t TextureHeight = 512;
 static const uint32_t TexturePixelSize = 4; // The number of bytes used to represent a pixel in the texture.
 
 
@@ -590,7 +591,7 @@ void LoadAssets()
         // Describe and create a Texture2D.
         D3D12_RESOURCE_DESC textureDesc = {};
         textureDesc.MipLevels = 1;
-        textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+        textureDesc.Format = DXGI_FORMAT_BC1_UNORM;
         textureDesc.Width = TextureWidth;
         textureDesc.Height = TextureHeight;
         textureDesc.Flags = D3D12_RESOURCE_FLAG_NONE;
@@ -607,8 +608,18 @@ void LoadAssets()
             nullptr,
             IID_PPV_ARGS(&g_Texture)
         ));
+        //
+        //const uint64_t uploadBufferSize = GetRequiredIntermediateSize(g_Texture.Get(), 0, 1);
 
-        const uint64_t uploadBufferSize = GetRequiredIntermediateSize(g_Texture.Get(), 0, 1);
+        // Copy data to the intermediate upload heap and then schedule a copy
+        // from the upload heap to the Texture2D. 
+        //std::vector<uint8_t> texture = GenerateTextureData();
+
+        std::unique_ptr<uint8_t[]> ddsData;
+        std::vector<D3D12_SUBRESOURCE_DATA> subresources;
+        LoadDDSTextureFromFile(g_Device.Get(), L"wall.dds", &g_Texture, ddsData, subresources);
+
+        const UINT64 uploadBufferSize = GetRequiredIntermediateSize(g_Texture.Get(), 0, static_cast<UINT>(subresources.size()));
 
         // Create the GPU upload buffer.
         ThrowIfFailed(g_Device->CreateCommittedResource(
@@ -619,18 +630,15 @@ void LoadAssets()
             nullptr,
             IID_PPV_ARGS(&textureUploadHeap)
         ));
-
-        // Copy data to the intermediate upload heap and then schedule a copy
-        // from the upload heap to the Texture2D. 
-        std::vector<uint8_t> texture = GenerateTextureData();
-
-        D3D12_SUBRESOURCE_DATA textureData = {};
-        textureData.pData = &texture[0];
-        textureData.RowPitch = TextureWidth * TexturePixelSize;
-        textureData.SlicePitch = textureData.RowPitch * TextureHeight;
+        
+        // OLD texture stuffs
+        //D3D12_SUBRESOURCE_DATA textureData = {};
+        //textureData.pData = &texture[0];
+        //textureData.RowPitch = TextureWidth * TexturePixelSize;
+        //textureData.SlicePitch = textureData.RowPitch * TextureHeight;
 
         g_CommandList->Reset(g_CommandAllocator.Get(), g_PipelineState.Get());
-        UpdateSubresources(g_CommandList.Get(), g_Texture.Get(), textureUploadHeap.Get(), 0, 0, 1, &textureData);
+        UpdateSubresources(g_CommandList.Get(), g_Texture.Get(), textureUploadHeap.Get(), 0, 0, static_cast<UINT>(subresources.size()), subresources.data());
         g_CommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(g_Texture.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE));
         g_CommandList->Close();
 
