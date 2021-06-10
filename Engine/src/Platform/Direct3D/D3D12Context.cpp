@@ -143,7 +143,7 @@ using namespace DirectX;
 
 void Graphics::Init(int32_t width, int32_t height)
 {
-    ENGINE_CORE_DEBUG("Current Graphics API: Direct3D12\n");
+    ENGINE_CORE_DEBUG("Current Graphics API: Direct3D12.");
     
     // Storing incoming/external data.
     g_StoredHwnd = GetActiveWindow();
@@ -608,13 +608,9 @@ void LoadAssets()
             nullptr,
             IID_PPV_ARGS(&g_Texture)
         ));
-        //
-        //const uint64_t uploadBufferSize = GetRequiredIntermediateSize(g_Texture.Get(), 0, 1);
-
+        
         // Copy data to the intermediate upload heap and then schedule a copy
         // from the upload heap to the Texture2D. 
-        //std::vector<uint8_t> texture = GenerateTextureData();
-
         std::unique_ptr<uint8_t[]> ddsData;
         std::vector<D3D12_SUBRESOURCE_DATA> subresources;
         LoadDDSTextureFromFile(g_Device.Get(), L"wall.dds", &g_Texture, ddsData, subresources);
@@ -630,18 +626,16 @@ void LoadAssets()
             nullptr,
             IID_PPV_ARGS(&textureUploadHeap)
         ));
-        
-        // OLD texture stuffs
-        //D3D12_SUBRESOURCE_DATA textureData = {};
-        //textureData.pData = &texture[0];
-        //textureData.RowPitch = TextureWidth * TexturePixelSize;
-        //textureData.SlicePitch = textureData.RowPitch * TextureHeight;
 
+        // CommandList1 closes itself after creation, so we reset commandlist to call UpdateSubresources.
         g_CommandList->Reset(g_CommandAllocator.Get(), g_PipelineState.Get());
+        // Copy upload contents to default heap.
         UpdateSubresources(g_CommandList.Get(), g_Texture.Get(), textureUploadHeap.Get(), 0, 0, static_cast<UINT>(subresources.size()), subresources.data());
+        // Transistion the texture default heap to pixel shader resource. 
         g_CommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(g_Texture.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE));
+        // Close command list once more.
         g_CommandList->Close();
-
+        // Execute it.
         ID3D12CommandList* ppCommandLists[] = { g_CommandList.Get() };
         g_CommandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
 
@@ -654,14 +648,6 @@ void LoadAssets()
         //g_Device->CreateShaderResourceView(g_Texture.Get(), &srvDesc, g_srvHeap->GetCPUDescriptorHandleForHeapStart());
         g_Device->CreateShaderResourceView(g_Texture.Get(), &srvDesc, g_srvHeap->GetCPUDescriptorHandleForHeapStart());
     }
-
-    // Close the command list and execute it to begin the initial GPU setup.
-    //ThrowIfFailed(g_CommandList->Close());
-    
-    //g_CommandList->Reset(g_CommandAllocator.Get(), g_PipelineState.Get());
-    //ThrowIfFailed(g_CommandList->Close());
-    //ID3D12CommandList* ppCommandLists[] = { g_CommandList.Get() };
-    //g_CommandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
 
     // Create synchronization objects and wait until assets have been uploaded to the GPU.
     {

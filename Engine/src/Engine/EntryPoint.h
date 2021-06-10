@@ -23,7 +23,7 @@ int main(int argc, char* argv[])
         Core();
 
         auto exeName = std::filesystem::path(argv[0]).filename();
-        ENGINE_CORE_INFO("Launched Executable: {0}\n", exeName.string());
+        ENGINE_CORE_INFO("Launched Executable: {0}", exeName.string());
 
         // Request the sandbox instance from the application.
         SandboxState sandboxInstance;

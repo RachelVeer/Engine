@@ -30,7 +30,7 @@ DearImGui imgui;
 
 void Application::Create(SandboxState* sandboxInstance)
 {
-    ENGINE_CORE_INFO("This is a test.\n");
+    ENGINE_CORE_INFO("This is a test.");
 
     // Retrieve the original Sandbox instance & store it here.
     appState.sandboxInstance = sandboxInstance;
@@ -39,8 +39,8 @@ void Application::Create(SandboxState* sandboxInstance)
     // officially up and running at this point. 
     appState.Running = true;
 
-    ENGINE_CORE_WARN("Application State Running?: \n");
-    ENGINE_CORE_DEBUG(appState.Running ? "true\n" : "false\n");
+    ENGINE_CORE_WARN("Application State Running?: ");
+    ENGINE_CORE_DEBUG(appState.Running ? "true" : "false");
 
     // App in this case simply encapsulates its configuration.
     auto app = appState.sandboxInstance->appConfig;
@@ -154,12 +154,12 @@ void Application::DoTime()
     {
         std::ofstream myFile;
         myFile.open("example.txt");
-        ENGINE_CORE_INFO("Writing elapsedTime to a file.\n");
+        ENGINE_CORE_INFO("Writing elapsedTime to a file.");
         // This is what's actually written to the file.
         myFile << "Elapsed Time: "
             << appState.ElapsedTime;
         myFile.close();
     }
 
-    ENGINE_CORE_INFO("DoTime Thread Shutting down.\n");
+    ENGINE_CORE_INFO("DoTime Thread Shutting down.");
 }

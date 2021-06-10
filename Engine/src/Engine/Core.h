@@ -9,9 +9,9 @@ public:
     {
         // Logger.
         Log::Init();
-        ENGINE_CORE_WARN("Initialized Logger!\n");
+        ENGINE_CORE_WARN("Initialized Logger!");
         // int a = 5;
-        // ENGINE_INFO("Test: Hello! Var={0}\n", a);
+        // ENGINE_INFO("Test: Hello! Var={0}", a);
         
         // Immediate interface
         DearImGui::Init();
