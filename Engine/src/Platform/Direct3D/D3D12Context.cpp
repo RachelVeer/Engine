@@ -569,6 +569,9 @@ void LoadAssets()
              nullptr, 
              IID_PPV_ARGS(&g_ConstantBuffer)));
 
+        // NOTE: No constant buffer view is being created here anymore - 
+        // as the rootsignature handles it being 'set' as a rootconstant now.
+
         // Map and intialize the constant buffer. We don't unmap this until the
         // app closes. Keeping things mapped for the lifetime of the resource is okay.
         CD3DX12_RANGE readRange(0, 0); // We do not intend to read from this resource of the CPU.
