@@ -569,12 +569,6 @@ void LoadAssets()
              nullptr, 
              IID_PPV_ARGS(&g_ConstantBuffer)));
 
-        // Describe and create a constant buffer view.
-        D3D12_CONSTANT_BUFFER_VIEW_DESC cbvdesc = {};
-        cbvdesc.BufferLocation = g_ConstantBuffer->GetGPUVirtualAddress();
-        cbvdesc.SizeInBytes = constantBufferSize;
-        g_Device->CreateConstantBufferView(&cbvdesc, g_cbvHeap->GetCPUDescriptorHandleForHeapStart());
-
         // Map and intialize the constant buffer. We don't unmap this until the
         // app closes. Keeping things mapped for the lifetime of the resource is okay.
         CD3DX12_RANGE readRange(0, 0); // We do not intend to read from this resource of the CPU.
