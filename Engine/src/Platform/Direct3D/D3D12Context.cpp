@@ -88,7 +88,7 @@ Microsoft::WRL::ComPtr<IDXGIFactory4> g_Factory;
 Microsoft::WRL::ComPtr<ID3D12CommandQueue> g_CommandQueue;
 Microsoft::WRL::ComPtr<ID3D12Resource> g_RenderTargets[g_FrameCount];
 Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> g_rtvHeap;
-Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> g_pd3dSrvDescHeap, g_cbvHeap; // Original heap belongs to Imgui.
+Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> g_pd3dSrvDescHeap; // This heap belongs to Imgui.
 Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> g_srvHeap;
 Microsoft::WRL::ComPtr<ID3D12CommandAllocator> g_CommandAllocator;
 Microsoft::WRL::ComPtr<ID3D12RootSignature> g_RootSignature;
@@ -256,23 +256,15 @@ void LoadPipeline()
     }
 
     {
+        // A descriptor heap relevant to imgui funcitonality. 
         D3D12_DESCRIPTOR_HEAP_DESC desc = {};
         desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
         desc.NumDescriptors = 1;
         desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
         (g_Device->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&g_pd3dSrvDescHeap)));
     }
-    // Two seperate descriptors. 
-    // (could be one potentially, i.e we could try "desc.NumDescriptors = 2")
-    {
-        D3D12_DESCRIPTOR_HEAP_DESC desc = {};
-        desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-        desc.NumDescriptors = 1;
-        desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-        (g_Device->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&g_cbvHeap)));
-    }
 
-    {
+    { 
         // Describe and create a shader resource view (SRV) heap for the texture.
         D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc = {};
         srvHeapDesc.NumDescriptors = 1;
@@ -304,15 +296,16 @@ void LoadAssets()
             featureData.HighestVersion = D3D_ROOT_SIGNATURE_VERSION_1_0;
         }
 
+        // We only need one range for the shader resource view.
+        // Whereas two rootparameters are used to not only account for the SRV,
+        // but to describe our constant buffer as well - or RootConstant in this case. 
         CD3DX12_DESCRIPTOR_RANGE1 ranges[1];
         CD3DX12_ROOT_PARAMETER1 rootParameters[2];
 
-        //ranges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 0, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC);
-        //rootParameters[0].InitAsDescriptorTable(1, &ranges[0], D3D12_SHADER_VISIBILITY_VERTEX);
-
         ranges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC);
-        //rootParameters[0].InitAsConstantBufferView(0, 0, D3D12_ROOT_DESCRIPTOR_FLAG_NONE, D3D12_SHADER_VISIBILITY_VERTEX);
+        // "3" values, reflecting our constant buffer (yes, even including the padding). 
         rootParameters[0].InitAsConstants(3, 0, 0, D3D12_SHADER_VISIBILITY_VERTEX);
+        // Descriptor table, which will point to our SRV descriptor within our original SRV descriptor heap. 
         rootParameters[1].InitAsDescriptorTable(1, &ranges[0], D3D12_SHADER_VISIBILITY_PIXEL);
 
         D3D12_STATIC_SAMPLER_DESC sampler = {};
@@ -747,17 +740,12 @@ void PopulateCommandList()
     // Set necessary state.
     g_CommandList->SetGraphicsRootSignature(g_RootSignature.Get());
 
-    ID3D12DescriptorHeap* ppHeaps[] = { g_cbvHeap.Get() };
+    ID3D12DescriptorHeap* ppHeaps[] = { g_srvHeap.Get() };
     g_CommandList->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
 
-    //g_CommandList->SetGraphicsRootDescriptorTable(0, g_cbvHeap->GetGPUDescriptorHandleForHeapStart());
-    //g_CommandList->SetGraphicsRootConstantBufferView(0, g_ConstantBuffer->GetGPUVirtualAddress());
+    // Again, 3 values to reflect our contant buffer members (including padding).
     g_CommandList->SetGraphicsRoot32BitConstants(0, 3, g_pCbvDataBegin, 0);
-
-    g_CommandList->SetDescriptorHeaps(1, g_srvHeap.GetAddressOf());
     g_CommandList->SetGraphicsRootDescriptorTable(1, g_srvHeap->GetGPUDescriptorHandleForHeapStart());
-    //g_CommandList->SetGraphicsRootDescriptorTable(1, g_cbvHeap->GetGPUDescriptorHandleForHeapStart());
-    //g_CommandList->SetGraphicsRootDescriptorTable(1, g_srvHeap->GetGPUDescriptorHandleForHeapStart());
     g_CommandList->RSSetViewports(1, &g_Viewport);
     g_CommandList->RSSetScissorRects(1, &g_ScissorRect);
 
