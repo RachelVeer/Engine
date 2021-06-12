@@ -51,7 +51,7 @@ ImVec4 clear_color;
 struct Vertex
 {
     DirectX::XMFLOAT3 position;
-    //DirectX::XMFLOAT4 color;
+    DirectX::XMFLOAT4 color;
     DirectX::XMFLOAT2 uv;
 };
 
@@ -409,7 +409,7 @@ void LoadAssets()
         D3D12_INPUT_ELEMENT_DESC inputElementDescs[] =
         {
             { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
-            //{ "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
+            { "COLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 },
             { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, D3D12_APPEND_ALIGNED_ELEMENT, D3D12_INPUT_CLASSIFICATION_PER_VERTEX_DATA, 0 }
         };
 
@@ -453,9 +453,10 @@ void LoadAssets()
         Vertex triangleVertices[] =
         {
             // Clockwise.
-            { {  -0.35f,  0.25f * g_aspectRatio, 0.0f}, {0.5f, 0.0f} }, // top
-            { {  -0.10f,  -0.25f * g_aspectRatio, 0.0f}, {1.0f, 1.0f} }, // bottom right
-            { {  -0.60f, -0.25f * g_aspectRatio, 0.0f}, {0.0f, 1.0f} }, // bottom left
+            { { -0.25f,  0.25f * g_aspectRatio, 0.0f}, { 0.8f, 0.0f, 0.0f, 1.0f }, { 0.0f, 0.0f } }, // top left
+            { {  0.25f, -0.25f * g_aspectRatio, 0.0f}, { 0.0f, 0.8f, 0.0f, 1.0f }, { 1.0f, 1.0f } }, // bottom right
+            { { -0.25f, -0.25f * g_aspectRatio, 0.0f}, { 0.0f, 0.0f, 0.8f, 1.0f }, { 0.0f, 1.0f } }, // bottom left
+            { {  0.25f,  0.25f * g_aspectRatio, 0.0f}, { 0.8f, 0.8f, 0.0f, 1.0f }, { 1.0f, 0.0f } }, // top right
         };
 
         const uint32_t vertexBufferSize = sizeof(triangleVertices);
@@ -491,6 +492,7 @@ void LoadAssets()
         int16_t Indices[] =
         {
             0, 1, 2,
+            0, 3, 1
         };
 
         const uint32_t indexBufferSize = sizeof(Indices);
@@ -656,7 +658,7 @@ void LoadAssets()
         // from the upload heap to the Texture2D.
         std::unique_ptr<uint8_t[]> decodedData;
         D3D12_SUBRESOURCE_DATA subresouce;
-        LoadWICTextureFromFile(g_Device.Get(), L"wall.jpg", &g_Texture, decodedData, subresouce);
+        LoadWICTextureFromFile(g_Device.Get(), L"container.jpg", &g_Texture, decodedData, subresouce);
         
 
         const UINT64 uploadBufferSize = GetRequiredIntermediateSize(g_Texture.Get(), 0, 1);
@@ -762,7 +764,7 @@ void PopulateCommandList()
     // First triangle.
     g_CommandList->IASetVertexBuffers(0, 1, &g_VertexBufferView);
     g_CommandList->IASetIndexBuffer(&g_IndexBufferView);
-    g_CommandList->DrawIndexedInstanced(3, 1, 0, 0, 0); 
+    g_CommandList->DrawIndexedInstanced(6, 1, 0, 0, 0); 
 
     // Second pipeline state
     // The command list resets itself above, with the original pipeline state. 
