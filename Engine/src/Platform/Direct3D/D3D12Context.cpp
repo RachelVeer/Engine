@@ -167,6 +167,57 @@ void Graphics::Init(int32_t width, int32_t height)
         g_pd3dSrvDescHeap->GetGPUDescriptorHandleForHeapStart());
 }
 
+// Update frame-based values.
+void Graphics::Update(ClearColor& color)
+{
+    // By default it moves forward, thus once we reach offsetBounds - set it false.
+    if (g_constantBufferData.offset.x > cbvParams.offsetBounds) { cbvParams.forward = false; }
+    // And once it reaches negative bounds, it can move forward again.
+    if (g_constantBufferData.offset.x < cbvParams.negoffsetBounds) { cbvParams.forward = true; }
+
+    if (cbvParams.forward)
+    {
+        g_constantBufferData.offset.x += cbvParams.translationSpeed;
+    }
+
+    if (!cbvParams.forward)
+    {
+        g_constantBufferData.offset.x -= cbvParams.translationSpeed;
+    }
+
+    g_constantBufferData.cbcolor.y = color.g;
+
+    memcpy(g_pCbvDataBegin, &g_constantBufferData, sizeof(g_constantBufferData));
+}
+
+void Graphics::Render(ClearColor& color)
+{
+    clear_color = ImVec4(color.r, color.g, color.b, color.a);
+
+    // Record all the commands we need to render the scene into the command list.
+    PopulateCommandList();
+
+    // Execute the command list.
+    ID3D12CommandList* ppCommandLists[] = { g_CommandList.Get() };
+    g_CommandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
+
+    // Present the frame.
+    ThrowIfFailed(g_SwapChain->Present(1, 0));
+
+    WaitForPreviousFrame();
+}
+
+void Graphics::Screenshot()
+{
+    UINT backBufferIdx = g_SwapChain->GetCurrentBackBufferIndex();
+    SaveDDSTextureToFile(g_CommandQueue.Get(), g_RenderTargets[backBufferIdx].Get(), L"test.dds", D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_PRESENT);
+}
+
+void Graphics::Shutdown()
+{
+    CleanupRenderTarget();
+}
+
 void LoadPipeline()
 {
     // Enable the D3D12 debug layer. 
@@ -658,57 +709,6 @@ void LoadAssets()
         // complete before continuing. 
         WaitForPreviousFrame();
     }
-}
-
-// Update frame-based values.
-void Graphics::Update(ClearColor& color)
-{
-    // By default it moves forward, thus once we reach offsetBounds - set it false.
-    if (g_constantBufferData.offset.x > cbvParams.offsetBounds) { cbvParams.forward = false; }
-    // And once it reaches negative bounds, it can move forward again.
-    if (g_constantBufferData.offset.x < cbvParams.negoffsetBounds) { cbvParams.forward = true; }
-
-    if (cbvParams.forward)
-    {
-        g_constantBufferData.offset.x += cbvParams.translationSpeed;
-    }
-
-    if (!cbvParams.forward)
-    {
-        g_constantBufferData.offset.x -= cbvParams.translationSpeed;
-    }
-
-    g_constantBufferData.cbcolor.y = color.g;
-
-    memcpy(g_pCbvDataBegin, &g_constantBufferData, sizeof(g_constantBufferData));
-}
-
-void Graphics::Render(ClearColor& color)
-{
-    clear_color = ImVec4(color.r, color.g, color.b, color.a);
-
-    // Record all the commands we need to render the scene into the command list.
-    PopulateCommandList();
-
-    // Execute the command list.
-    ID3D12CommandList* ppCommandLists[] = { g_CommandList.Get() };
-    g_CommandQueue->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
-
-    // Present the frame.
-    ThrowIfFailed(g_SwapChain->Present(1, 0));
-
-    WaitForPreviousFrame();
-}
-
-void Graphics::Screenshot()
-{
-    UINT backBufferIdx = g_SwapChain->GetCurrentBackBufferIndex();
-    SaveDDSTextureToFile(g_CommandQueue.Get(), g_RenderTargets[backBufferIdx].Get(), L"test.dds", D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_PRESENT);
-}
-
-void Graphics::Shutdown()
-{
-    CleanupRenderTarget();
 }
 
 void PopulateCommandList()
