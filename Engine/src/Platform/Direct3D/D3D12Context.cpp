@@ -34,7 +34,7 @@
 
 // DirectX 12 Toolkit functionality.
 #include <ScreenGrab/ScreenGrab12.h>
-#include <DDSTextureLoader/DDSTextureLoader12.h>
+#include <WICTextureLoader/WICTextureLoader12.h>
 
 // Defining the area we draw to.
 struct Surface
@@ -583,7 +583,7 @@ void LoadAssets()
         // Describe and create a Texture2D.
         D3D12_RESOURCE_DESC textureDesc = {};
         textureDesc.MipLevels = 1;
-        textureDesc.Format = DXGI_FORMAT_BC1_UNORM;
+        textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
         textureDesc.Width = TextureWidth;
         textureDesc.Height = TextureHeight;
         textureDesc.Flags = D3D12_RESOURCE_FLAG_NONE;
@@ -602,12 +602,13 @@ void LoadAssets()
         ));
         
         // Copy data to the intermediate upload heap and then schedule a copy
-        // from the upload heap to the Texture2D. 
-        std::unique_ptr<uint8_t[]> ddsData;
-        std::vector<D3D12_SUBRESOURCE_DATA> subresources;
-        LoadDDSTextureFromFile(g_Device.Get(), L"wall.dds", &g_Texture, ddsData, subresources);
+        // from the upload heap to the Texture2D.
+        std::unique_ptr<uint8_t[]> decodedData;
+        D3D12_SUBRESOURCE_DATA subresouce;
+        LoadWICTextureFromFile(g_Device.Get(), L"wall.jpg", &g_Texture, decodedData, subresouce);
+        
 
-        const UINT64 uploadBufferSize = GetRequiredIntermediateSize(g_Texture.Get(), 0, static_cast<UINT>(subresources.size()));
+        const UINT64 uploadBufferSize = GetRequiredIntermediateSize(g_Texture.Get(), 0, 1);
 
         // Create the GPU upload buffer.
         ThrowIfFailed(g_Device->CreateCommittedResource(
@@ -622,7 +623,7 @@ void LoadAssets()
         // CommandList1 closes itself after creation, so we reset commandlist to call UpdateSubresources.
         g_CommandList->Reset(g_CommandAllocator.Get(), g_PipelineState.Get());
         // Copy upload contents to default heap.
-        UpdateSubresources(g_CommandList.Get(), g_Texture.Get(), textureUploadHeap.Get(), 0, 0, static_cast<UINT>(subresources.size()), subresources.data());
+        UpdateSubresources(g_CommandList.Get(), g_Texture.Get(), textureUploadHeap.Get(), 0, 0, 1, &subresouce);
         // Transistion the texture default heap to pixel shader resource. 
         g_CommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(g_Texture.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE));
         // Close command list once more.
@@ -637,7 +638,6 @@ void LoadAssets()
         srvDesc.Format = textureDesc.Format;
         srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
         srvDesc.Texture2D.MipLevels = 1;
-        //g_Device->CreateShaderResourceView(g_Texture.Get(), &srvDesc, g_srvHeap->GetCPUDescriptorHandleForHeapStart());
         g_Device->CreateShaderResourceView(g_Texture.Get(), &srvDesc, g_srvHeap->GetCPUDescriptorHandleForHeapStart());
     }
 
