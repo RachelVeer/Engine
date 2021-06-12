@@ -453,10 +453,10 @@ void LoadAssets()
         Vertex triangleVertices[] =
         {
             // Clockwise.
-            { { -0.25f,  0.25f * g_aspectRatio, 0.0f}, { 0.8f, 0.0f, 0.0f, 1.0f }, { 0.0f, 0.0f } }, // top left
-            { {  0.25f, -0.25f * g_aspectRatio, 0.0f}, { 0.0f, 0.8f, 0.0f, 1.0f }, { 1.0f, 1.0f } }, // bottom right
-            { { -0.25f, -0.25f * g_aspectRatio, 0.0f}, { 0.0f, 0.0f, 0.8f, 1.0f }, { 0.0f, 1.0f } }, // bottom left
-            { {  0.25f,  0.25f * g_aspectRatio, 0.0f}, { 0.8f, 0.8f, 0.0f, 1.0f }, { 1.0f, 0.0f } }, // top right
+            { { -0.25f,  0.25f * g_aspectRatio, 0.0f}, { 1.0f, 0.0f, 0.0f, 1.0f }, { 0.0f, 0.0f } }, // top left
+            { {  0.25f, -0.25f * g_aspectRatio, 0.0f}, { 0.0f, 1.0f, 0.0f, 1.0f }, { 1.0f, 1.0f } }, // bottom right
+            { { -0.25f, -0.25f * g_aspectRatio, 0.0f}, { 0.0f, 0.0f, 1.0f, 1.0f }, { 0.0f, 1.0f } }, // bottom left
+            { {  0.25f,  0.25f * g_aspectRatio, 0.0f}, { 1.0f, 1.0f, 0.0f, 1.0f }, { 1.0f, 0.0f } }, // top right
         };
 
         const uint32_t vertexBufferSize = sizeof(triangleVertices);
