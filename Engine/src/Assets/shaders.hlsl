@@ -41,7 +41,6 @@ PSInput VSMain(float4 position : POSITION, float4 color: COLOR, float2 uv : TEXC
 
 float4 PSMain(PSInput input) : SV_TARGET
 {
-    //return input.color;
     return lerp(g_Texture.Sample(g_Sampler, input.uv), g_Texture2.Sample(g_Sampler, input.uv), 0.2f);
 }
 

@@ -96,6 +96,7 @@ Microsoft::WRL::ComPtr<ID3D12PipelineState> g_PipelineState;
 Microsoft::WRL::ComPtr<ID3D12PipelineState> g_PipelineState2;
 Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> g_CommandList;
 uint32_t g_rtvDescriptorSize;
+uint32_t g_srvDescriptorSize;
 
 static D3D12_CPU_DESCRIPTOR_HANDLE  g_mainRenderTargetDescriptor[g_FrameCount] = {};
 
@@ -322,6 +323,7 @@ void LoadPipeline()
         srvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
         srvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
         ThrowIfFailed(g_Device->CreateDescriptorHeap(&srvHeapDesc, IID_PPV_ARGS(&g_srvHeap)));
+        g_srvDescriptorSize = g_Device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
     }
 
     // Create frame resources.
@@ -350,15 +352,22 @@ void LoadAssets()
         // We only need one range for the shader resource view.
         // Whereas two rootparameters are used to not only account for the SRV,
         // but to describe our constant buffer as well - or RootConstant in this case. 
-        CD3DX12_DESCRIPTOR_RANGE1 ranges[1];
-        CD3DX12_ROOT_PARAMETER1 rootParameters[2];
+        CD3DX12_DESCRIPTOR_RANGE1 ranges[2];
+        CD3DX12_ROOT_PARAMETER1 rootParameters[3];
 
-        ranges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 2, 0, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC);
-        // "3" values, reflecting our constant buffer (yes, even including the padding). 
-        rootParameters[0].InitAsConstants(3, 0, 0, D3D12_SHADER_VISIBILITY_VERTEX);
+        // Texture 1
+        ranges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC);
         // Descriptor table, which will point to our SRV descriptor within our original SRV descriptor heap. 
         rootParameters[1].InitAsDescriptorTable(1, &ranges[0], D3D12_SHADER_VISIBILITY_PIXEL);
-        //rootParameters[2].InitAsDescriptorTable(1, &ranges[0], D3D12_SHADER_VISIBILITY_PIXEL);
+
+        // Texture 2
+        // Notice its baseShaderRegister is set 1, as next texture register is (t1)
+        ranges[1].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 1, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC);
+        // Descriptor table, which will point to our SRV descriptor within our original SRV descriptor heap. 
+        rootParameters[2].InitAsDescriptorTable(1, &ranges[1], D3D12_SHADER_VISIBILITY_PIXEL);
+
+        // "3" values, reflecting our constant buffer (yes, even including the padding). 
+        rootParameters[0].InitAsConstants(3, 0, 0, D3D12_SHADER_VISIBILITY_VERTEX);
 
         D3D12_STATIC_SAMPLER_DESC sampler = {};
         sampler.Filter = D3D12_FILTER_MIN_MAG_LINEAR_MIP_POINT;
@@ -758,7 +767,11 @@ void LoadAssets()
         srvDesc.Format = textureDesc.Format;
         srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
         srvDesc.Texture2D.MipLevels = 1;
-        g_Device->CreateShaderResourceView(g_Texture2.Get(), &srvDesc, g_srvHeap->GetCPUDescriptorHandleForHeapStart());
+        // Here is how we access & store the texture into the SECOND descriptor of our Heap.
+        // It's only "1" because of index counting ([0], [1]), either way - we include the proper
+        // size of the descriptor heap type as well. 
+        CD3DX12_CPU_DESCRIPTOR_HANDLE srvHandle(g_srvHeap->GetCPUDescriptorHandleForHeapStart(), 1, g_srvDescriptorSize);
+        g_Device->CreateShaderResourceView(g_Texture2.Get(), &srvDesc, srvHandle);
     }
 
     // Create synchronization objects and wait until assets have been uploaded to the GPU.
@@ -814,8 +827,12 @@ void PopulateCommandList()
 
     // Again, 3 values to reflect our contant buffer members (including padding).
     g_CommandList->SetGraphicsRoot32BitConstants(0, 3, g_pCbvDataBegin, 0);
+    // Set Texture 1
     g_CommandList->SetGraphicsRootDescriptorTable(1, g_srvHeap->GetGPUDescriptorHandleForHeapStart());
-    //g_CommandList->SetGraphicsRootDescriptorTable(2, g_srvHeap->GetGPUDescriptorHandleForHeapStart());
+    // Get a proper handle to our second descriptor.
+    CD3DX12_GPU_DESCRIPTOR_HANDLE srvHandle(g_srvHeap->GetGPUDescriptorHandleForHeapStart(), 1, g_srvDescriptorSize);
+    // Then set Texture 2
+    g_CommandList->SetGraphicsRootDescriptorTable(2, srvHandle);
     g_CommandList->RSSetViewports(1, &g_Viewport);
     g_CommandList->RSSetScissorRects(1, &g_ScissorRect);
 
