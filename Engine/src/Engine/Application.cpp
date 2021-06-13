@@ -66,7 +66,7 @@ void Application::Create(SandboxState* sandboxInstance)
 
 void Application::Run()
 {
-    ClearColor color = { 1.0f, 0.3f, 0.4f, 1.0f };
+    ClearColor color = { 0.086f, 0.086f, 0.086f, 1.0f }; // #161616
     bool show_demo_window = false;
     static int counter = { 0 };
     bool updatingClearColor = false;
