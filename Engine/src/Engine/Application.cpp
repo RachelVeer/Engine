@@ -69,6 +69,8 @@ void Application::Run()
     ClearColor color = { 1.0f, 0.3f, 0.4f, 1.0f };
     bool show_demo_window = false;
     static int counter = { 0 };
+    bool updatingClearColor = false;
+    bool adjustOffset = false;
 
     if (appState.Initialized)
     {
@@ -107,15 +109,24 @@ void Application::Run()
                     ImGui::Text("Screenshots taken: = %d", counter);
                     ImGui::End();
                 }
-                
-                // Update clear color.
-                float timeValue = static_cast<float>(platform.GetAbsoluteTime());
-                float greenValue = sin(timeValue) / 2.0f + 0.5f;
-                color.g = greenValue;
 
+                {
+                    ImGui::Begin("Resource State.");
+                    ImGui::Checkbox("Clear color over time", &updatingClearColor);
+                    ImGui::Checkbox("Enable constant (movement)", &adjustOffset);
+                    ImGui::End();
+                    // Update clear color.
+                    if (updatingClearColor)
+                    {
+                        float timeValue = static_cast<float>(platform.GetAbsoluteTime());
+                        float greenValue = sin(timeValue) / 2.0f + 0.5f;
+                        color.g = greenValue;
+                    }
+                }
+               
                 // Rendering
                 imgui.EndFrame(); // Actually render imgui setup
-                gfx.Update(color);
+                gfx.Update(color, adjustOffset);
                 gfx.Render(color);
             }
         }

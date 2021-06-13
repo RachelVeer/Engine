@@ -172,26 +172,30 @@ void Graphics::Init(int32_t width, int32_t height)
 }
 
 // Update frame-based values.
-void Graphics::Update(ClearColor& color)
+void Graphics::Update(ClearColor& color, bool adjustOffset)
 {
-    // By default it moves forward, thus once we reach offsetBounds - set it false.
-    if (g_constantBufferData.offset.x > cbvParams.offsetBounds) { cbvParams.forward = false; }
-    // And once it reaches negative bounds, it can move forward again.
-    if (g_constantBufferData.offset.x < cbvParams.negoffsetBounds) { cbvParams.forward = true; }
-
-    if (cbvParams.forward)
+    // Do we want to move our geometry in the first place?
+    if (adjustOffset)
     {
-        g_constantBufferData.offset.x += cbvParams.translationSpeed;
+        // By default it moves forward, thus once we reach offsetBounds - set it false.
+        if (g_constantBufferData.offset.x > cbvParams.offsetBounds) { cbvParams.forward = false; }
+        // And once it reaches negative bounds, it can move forward again.
+        if (g_constantBufferData.offset.x < cbvParams.negoffsetBounds) { cbvParams.forward = true; }
+
+        if (cbvParams.forward)
+        {
+            g_constantBufferData.offset.x += cbvParams.translationSpeed;
+        }
+
+        if (!cbvParams.forward)
+        {
+            g_constantBufferData.offset.x -= cbvParams.translationSpeed;
+        }
+
+        g_constantBufferData.cbcolor.y = color.g;
+
+        memcpy(g_pCbvDataBegin, &g_constantBufferData, sizeof(g_constantBufferData));
     }
-
-    if (!cbvParams.forward)
-    {
-        g_constantBufferData.offset.x -= cbvParams.translationSpeed;
-    }
-
-    g_constantBufferData.cbcolor.y = color.g;
-
-    memcpy(g_pCbvDataBegin, &g_constantBufferData, sizeof(g_constantBufferData));
 }
 
 void Graphics::Render(ClearColor& color)
@@ -671,7 +675,8 @@ void LoadAssets()
         // from the upload heap to the Texture2D.
         std::unique_ptr<uint8_t[]> decodedData;
         D3D12_SUBRESOURCE_DATA subresouce;
-        LoadWICTextureFromFile(g_Device.Get(), L"container.jpg", &g_Texture, decodedData, subresouce);
+        //LoadWICTextureFromFile(g_Device.Get(), L"container.jpg", &g_Texture, decodedData, subresouce);
+        LoadWICTextureFromFile(g_Device.Get(), L"C2E.jpg", &g_Texture, decodedData, subresouce);
         
 
         const UINT64 uploadBufferSize = GetRequiredIntermediateSize(g_Texture.Get(), 0, 1);

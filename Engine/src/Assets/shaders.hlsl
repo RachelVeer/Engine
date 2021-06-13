@@ -41,6 +41,10 @@ PSInput VSMain(float4 position : POSITION, float4 color: COLOR, float2 uv : TEXC
 
 float4 PSMain(PSInput input) : SV_TARGET
 {
-    return lerp(g_Texture.Sample(g_Sampler, input.uv), g_Texture2.Sample(g_Sampler, input.uv), 0.2f);
+    // Linearly interpolate the textures.
+    //return lerp(g_Texture.Sample(g_Sampler, input.uv), g_Texture2.Sample(g_Sampler, input.uv), 0.2f);
+    
+    // Simply return first texture passed in/created.
+    return g_Texture.Sample(g_Sampler, input.uv);
 }
 
