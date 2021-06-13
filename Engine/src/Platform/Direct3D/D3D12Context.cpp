@@ -14,6 +14,9 @@
 
 #if defined(ENGINE_GRAPHICS_DIRECTX12)
 
+// Windows related.
+#include <wincodec.h>
+
 // Com & D3D headers.
 #include <wrl.h>
 #include <d3d12.h>
@@ -211,7 +214,7 @@ void Graphics::Render(ClearColor& color)
 void Graphics::Screenshot()
 {
     UINT backBufferIdx = g_SwapChain->GetCurrentBackBufferIndex();
-    SaveDDSTextureToFile(g_CommandQueue.Get(), g_RenderTargets[backBufferIdx].Get(), L"test.dds", D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_PRESENT);
+    SaveWICTextureToFile(g_CommandQueue.Get(), g_RenderTargets[backBufferIdx].Get(), GUID_ContainerFormatJpeg, L"Screenshot.jpeg", D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_PRESENT);
 }
 
 void Graphics::Shutdown()
