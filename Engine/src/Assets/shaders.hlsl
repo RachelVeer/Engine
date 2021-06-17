@@ -43,8 +43,10 @@ float4 PSMain(PSInput input) : SV_TARGET
 {
     // Linearly interpolate the textures.
     //return lerp(g_Texture.Sample(g_Sampler, input.uv), g_Texture2.Sample(g_Sampler, input.uv), 0.2f);
+    // Flip overlapping texture. 
+    return lerp(g_Texture.Sample(g_Sampler, input.uv), g_Texture2.Sample(g_Sampler, float2(1.0f - input.uv.x, input.uv.y)), 0.2f);
     
     // Simply return first texture passed in/created.
-    return g_Texture.Sample(g_Sampler, input.uv);
+    //return g_Texture.Sample(g_Sampler, input.uv);
 }
 

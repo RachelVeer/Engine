@@ -676,7 +676,7 @@ void LoadAssets()
         std::unique_ptr<uint8_t[]> decodedData;
         D3D12_SUBRESOURCE_DATA subresouce;
         //LoadWICTextureFromFile(g_Device.Get(), L"container.jpg", &g_Texture, decodedData, subresouce);
-        LoadWICTextureFromFile(g_Device.Get(), L"C2E.jpg", &g_Texture, decodedData, subresouce);
+        LoadWICTextureFromFile(g_Device.Get(), L"container.jpg", &g_Texture, decodedData, subresouce);
         
 
         const UINT64 uploadBufferSize = GetRequiredIntermediateSize(g_Texture.Get(), 0, 1);
