@@ -92,7 +92,7 @@ Microsoft::WRL::ComPtr<ID3D12CommandQueue> g_CommandQueue;
 Microsoft::WRL::ComPtr<ID3D12Resource> g_RenderTargets[g_FrameCount];
 Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> g_rtvHeap;
 Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> g_pd3dSrvDescHeap; // This heap belongs to Imgui.
-Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> g_srvHeap;
+Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> g_srvHeap, g_samplerHeap;
 Microsoft::WRL::ComPtr<ID3D12CommandAllocator> g_CommandAllocator;
 Microsoft::WRL::ComPtr<ID3D12RootSignature> g_RootSignature;
 Microsoft::WRL::ComPtr<ID3D12PipelineState> g_PipelineState;
@@ -333,6 +333,16 @@ void LoadPipeline()
         g_srvDescriptorSize = g_Device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
     }
 
+    {
+        // Describe and create a shader resource view (SRV) heap for the texture.
+        D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc = {};
+        srvHeapDesc.NumDescriptors = 2;
+        srvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER;
+        srvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+        ThrowIfFailed(g_Device->CreateDescriptorHeap(&srvHeapDesc, IID_PPV_ARGS(&g_samplerHeap)));
+        g_srvDescriptorSize = g_Device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER);
+    }
+
     // Create frame resources.
     CreateRenderTarget();
     
@@ -359,8 +369,8 @@ void LoadAssets()
         // We only need one range for the shader resource view.
         // Whereas two rootparameters are used to not only account for the SRV,
         // but to describe our constant buffer as well - or RootConstant in this case. 
-        CD3DX12_DESCRIPTOR_RANGE1 ranges[2];
-        CD3DX12_ROOT_PARAMETER1 rootParameters[3];
+        CD3DX12_DESCRIPTOR_RANGE1 ranges[4];
+        CD3DX12_ROOT_PARAMETER1 rootParameters[5];
 
         // Texture 1
         ranges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC);
@@ -376,20 +386,44 @@ void LoadAssets()
         // "3" values, reflecting our constant buffer (yes, even including the padding). 
         rootParameters[0].InitAsConstants(3, 0, 0, D3D12_SHADER_VISIBILITY_VERTEX);
 
-        D3D12_STATIC_SAMPLER_DESC sampler = {};
+        ranges[2].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER, 1, 0);
+        rootParameters[3].InitAsDescriptorTable(1, &ranges[2], D3D12_SHADER_VISIBILITY_PIXEL);
+
+        ranges[3].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER, 1, 1);
+        rootParameters[4].InitAsDescriptorTable(1, &ranges[3], D3D12_SHADER_VISIBILITY_PIXEL);
+
+        D3D12_SAMPLER_DESC sampler = {};
         sampler.Filter = D3D12_FILTER_MIN_MAG_LINEAR_MIP_POINT;
-        sampler.AddressU = D3D12_TEXTURE_ADDRESS_MODE_BORDER;
-        sampler.AddressV = D3D12_TEXTURE_ADDRESS_MODE_BORDER;
-        sampler.AddressW = D3D12_TEXTURE_ADDRESS_MODE_BORDER;
+        sampler.AddressU = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+        sampler.AddressV = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
+        sampler.AddressW = D3D12_TEXTURE_ADDRESS_MODE_CLAMP;
         sampler.MipLODBias = 0;
         sampler.MaxAnisotropy = 0;
         sampler.ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER;
-        sampler.BorderColor = D3D12_STATIC_BORDER_COLOR_TRANSPARENT_BLACK;
+        sampler.BorderColor[0] = D3D12_STATIC_BORDER_COLOR_TRANSPARENT_BLACK;
+        sampler.BorderColor[1] = D3D12_STATIC_BORDER_COLOR_TRANSPARENT_BLACK;
+        sampler.BorderColor[2] = D3D12_STATIC_BORDER_COLOR_TRANSPARENT_BLACK;
+        sampler.BorderColor[3] = D3D12_STATIC_BORDER_COLOR_TRANSPARENT_BLACK;
         sampler.MinLOD = 0.0f;
         sampler.MaxLOD = D3D12_FLOAT32_MAX;
-        sampler.ShaderRegister = 0;
-        sampler.RegisterSpace = 0;
-        sampler.ShaderVisibility = D3D12_SHADER_VISIBILITY_PIXEL;
+        g_Device->CreateSampler(&sampler, g_samplerHeap->GetCPUDescriptorHandleForHeapStart());
+        
+        D3D12_SAMPLER_DESC sampler2 = {};
+        sampler2.Filter = D3D12_FILTER_MIN_MAG_LINEAR_MIP_POINT;
+        sampler2.AddressU = D3D12_TEXTURE_ADDRESS_MODE_BORDER;
+        sampler2.AddressV = D3D12_TEXTURE_ADDRESS_MODE_BORDER;
+        sampler2.AddressW = D3D12_TEXTURE_ADDRESS_MODE_BORDER;
+        sampler2.MipLODBias = 0;
+        sampler2.MaxAnisotropy = 0;
+        sampler2.ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER;
+        sampler2.MinLOD = 0.0f;
+        sampler2.MaxLOD = D3D12_FLOAT32_MAX;
+        sampler2.BorderColor[0] = D3D12_STATIC_BORDER_COLOR_TRANSPARENT_BLACK;
+        sampler2.BorderColor[1] = D3D12_STATIC_BORDER_COLOR_TRANSPARENT_BLACK;
+        sampler2.BorderColor[2] = D3D12_STATIC_BORDER_COLOR_TRANSPARENT_BLACK;
+        sampler2.BorderColor[3] = D3D12_STATIC_BORDER_COLOR_TRANSPARENT_BLACK;
+
+        g_Device->CreateSampler(&sampler2, g_samplerHeap->GetCPUDescriptorHandleForHeapStart());
 
         // Allow input layout and deny uneccessary access to certain pipeline stages.
         D3D12_ROOT_SIGNATURE_FLAGS rootSignatureFlags =
@@ -399,7 +433,7 @@ void LoadAssets()
             D3D12_ROOT_SIGNATURE_FLAG_DENY_GEOMETRY_SHADER_ROOT_ACCESS;
 
         CD3DX12_VERSIONED_ROOT_SIGNATURE_DESC rootSignatureDesc = {};
-        rootSignatureDesc.Init_1_1(_countof(rootParameters), rootParameters, 1, &sampler, rootSignatureFlags);
+        rootSignatureDesc.Init_1_1(_countof(rootParameters), rootParameters, 0, nullptr, rootSignatureFlags);
 
         ComPtr<ID3DBlob> signature;
         ComPtr<ID3DBlob> error;
@@ -471,9 +505,9 @@ void LoadAssets()
         {
             // Clockwise.
             { { -0.25f,  0.25f * g_aspectRatio, 0.0f}, { 1.0f, 0.0f, 0.0f, 1.0f }, { 0.0f, 0.0f } }, // top left
-            { {  0.25f, -0.25f * g_aspectRatio, 0.0f}, { 0.0f, 1.0f, 0.0f, 1.0f }, { 1.0f, 1.0f } }, // bottom right
-            { { -0.25f, -0.25f * g_aspectRatio, 0.0f}, { 0.0f, 0.0f, 1.0f, 1.0f }, { 0.0f, 1.0f } }, // bottom left
-            { {  0.25f,  0.25f * g_aspectRatio, 0.0f}, { 1.0f, 1.0f, 0.0f, 1.0f }, { 1.0f, 0.0f } }, // top right
+            { {  0.25f, -0.25f * g_aspectRatio, 0.0f}, { 0.0f, 1.0f, 0.0f, 1.0f }, { 2.0f, 2.0f } }, // bottom right
+            { { -0.25f, -0.25f * g_aspectRatio, 0.0f}, { 0.0f, 0.0f, 1.0f, 1.0f }, { 0.0f, 2.0f } }, // bottom left
+            { {  0.25f,  0.25f * g_aspectRatio, 0.0f}, { 1.0f, 1.0f, 0.0f, 1.0f }, { 2.0f, 0.0f } }, // top right
         };
 
         const uint32_t vertexBufferSize = sizeof(triangleVertices);
@@ -830,7 +864,7 @@ void PopulateCommandList()
     // Set necessary state.
     g_CommandList->SetGraphicsRootSignature(g_RootSignature.Get());
 
-    ID3D12DescriptorHeap* ppHeaps[] = { g_srvHeap.Get() };
+    ID3D12DescriptorHeap* ppHeaps[] = { g_srvHeap.Get(), g_samplerHeap.Get() };
     g_CommandList->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
 
     // Again, 3 values to reflect our contant buffer members (including padding).
@@ -841,6 +875,10 @@ void PopulateCommandList()
     CD3DX12_GPU_DESCRIPTOR_HANDLE srvHandle(g_srvHeap->GetGPUDescriptorHandleForHeapStart(), 1, g_srvDescriptorSize);
     // Then set Texture 2
     g_CommandList->SetGraphicsRootDescriptorTable(2, srvHandle);
+
+    g_CommandList->SetGraphicsRootDescriptorTable(3, g_samplerHeap->GetGPUDescriptorHandleForHeapStart());
+    g_CommandList->SetGraphicsRootDescriptorTable(4, g_samplerHeap->GetGPUDescriptorHandleForHeapStart());
+
     g_CommandList->RSSetViewports(1, &g_Viewport);
     g_CommandList->RSSetScissorRects(1, &g_ScissorRect);
 

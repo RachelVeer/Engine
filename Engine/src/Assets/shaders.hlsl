@@ -25,6 +25,7 @@ struct PSInput
 
 Texture2D g_Texture : register(t0);
 SamplerState g_Sampler : register(s0);
+SamplerState g_Sampler2 : register(s1);
 Texture2D g_Texture2 : register(t1);
 
 PSInput VSMain(float4 position : POSITION, float4 color: COLOR, float2 uv : TEXCOORD)
@@ -42,9 +43,9 @@ PSInput VSMain(float4 position : POSITION, float4 color: COLOR, float2 uv : TEXC
 float4 PSMain(PSInput input) : SV_TARGET
 {
     // Linearly interpolate the textures.
-    //return lerp(g_Texture.Sample(g_Sampler, input.uv), g_Texture2.Sample(g_Sampler, input.uv), 0.2f);
+    return lerp(g_Texture.Sample(g_Sampler, input.uv), g_Texture2.Sample(g_Sampler, input.uv), 0.2f);
     // Flip overlapping texture. 
-    return lerp(g_Texture.Sample(g_Sampler, input.uv), g_Texture2.Sample(g_Sampler, float2(1.0f - input.uv.x, input.uv.y)), 0.2f);
+    //return lerp(g_Texture.Sample(g_Sampler, input.uv), g_Texture2.Sample(g_Sampler2, float2(1.0f - input.uv.x, input.uv.y)), 0.2f);
     
     // Simply return first texture passed in/created.
     //return g_Texture.Sample(g_Sampler, input.uv);
