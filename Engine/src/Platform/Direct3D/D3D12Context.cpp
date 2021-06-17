@@ -133,7 +133,7 @@ void CreateRenderTarget();
 void CleanupRenderTarget();
 void LoadPipeline();
 void LoadAssets();
-void GetHardwareAdapter(IDXGIFactory1* pFactory, IDXGIAdapter1** ppAdapter,
+void GetHardwareAdapter(IDXGIFactory4* pFactory, IDXGIAdapter1** ppAdapter,
     bool requestHighPerformanceAdapter);
 void WaitForPreviousFrame();
 void PopulateCommandList();
@@ -922,7 +922,7 @@ void CleanupRenderTarget()
 }
 
 // Check adapter support.
-void GetHardwareAdapter(IDXGIFactory1* pFactory, IDXGIAdapter1** ppAdapter,
+void GetHardwareAdapter(IDXGIFactory4* pFactory, IDXGIAdapter1** ppAdapter,
     bool requestHighPerformanceAdapter)
 {
     *ppAdapter = nullptr;
