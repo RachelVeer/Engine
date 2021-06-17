@@ -100,6 +100,7 @@ Microsoft::WRL::ComPtr<ID3D12PipelineState> g_PipelineState2;
 Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> g_CommandList;
 uint32_t g_rtvDescriptorSize;
 uint32_t g_srvDescriptorSize;
+uint32_t g_samplerDescriptorSize;
 
 static D3D12_CPU_DESCRIPTOR_HANDLE  g_mainRenderTargetDescriptor[g_FrameCount] = {};
 
@@ -335,12 +336,12 @@ void LoadPipeline()
 
     {
         // Describe and create a shader resource view (SRV) heap for the texture.
-        D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc = {};
-        srvHeapDesc.NumDescriptors = 2;
-        srvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER;
-        srvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-        ThrowIfFailed(g_Device->CreateDescriptorHeap(&srvHeapDesc, IID_PPV_ARGS(&g_samplerHeap)));
-        g_srvDescriptorSize = g_Device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER);
+        D3D12_DESCRIPTOR_HEAP_DESC samplerHeapDesc = {};
+        samplerHeapDesc.NumDescriptors = 2;
+        samplerHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER;
+        samplerHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+        ThrowIfFailed(g_Device->CreateDescriptorHeap(&samplerHeapDesc, IID_PPV_ARGS(&g_samplerHeap)));
+        g_samplerDescriptorSize = g_Device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER);
     }
 
     // Create frame resources.
@@ -410,9 +411,9 @@ void LoadAssets()
         
         D3D12_SAMPLER_DESC sampler2 = {};
         sampler2.Filter = D3D12_FILTER_MIN_MAG_LINEAR_MIP_POINT;
-        sampler2.AddressU = D3D12_TEXTURE_ADDRESS_MODE_BORDER;
-        sampler2.AddressV = D3D12_TEXTURE_ADDRESS_MODE_BORDER;
-        sampler2.AddressW = D3D12_TEXTURE_ADDRESS_MODE_BORDER;
+        sampler2.AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+        sampler2.AddressV = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
+        sampler2.AddressW = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
         sampler2.MipLODBias = 0;
         sampler2.MaxAnisotropy = 0;
         sampler2.ComparisonFunc = D3D12_COMPARISON_FUNC_NEVER;
@@ -423,7 +424,8 @@ void LoadAssets()
         sampler2.BorderColor[2] = D3D12_STATIC_BORDER_COLOR_TRANSPARENT_BLACK;
         sampler2.BorderColor[3] = D3D12_STATIC_BORDER_COLOR_TRANSPARENT_BLACK;
 
-        g_Device->CreateSampler(&sampler2, g_samplerHeap->GetCPUDescriptorHandleForHeapStart());
+        CD3DX12_CPU_DESCRIPTOR_HANDLE samplerHandle(g_samplerHeap->GetCPUDescriptorHandleForHeapStart(), 1, g_samplerDescriptorSize);
+        g_Device->CreateSampler(&sampler2, samplerHandle);
 
         // Allow input layout and deny uneccessary access to certain pipeline stages.
         D3D12_ROOT_SIGNATURE_FLAGS rootSignatureFlags =
@@ -876,8 +878,10 @@ void PopulateCommandList()
     // Then set Texture 2
     g_CommandList->SetGraphicsRootDescriptorTable(2, srvHandle);
 
+    CD3DX12_GPU_DESCRIPTOR_HANDLE sampleHandle(g_samplerHeap->GetGPUDescriptorHandleForHeapStart(), 1, g_samplerDescriptorSize);
     g_CommandList->SetGraphicsRootDescriptorTable(3, g_samplerHeap->GetGPUDescriptorHandleForHeapStart());
-    g_CommandList->SetGraphicsRootDescriptorTable(4, g_samplerHeap->GetGPUDescriptorHandleForHeapStart());
+    //g_CommandList->SetGraphicsRootDescriptorTable(3,sampleHandle);
+    g_CommandList->SetGraphicsRootDescriptorTable(4, sampleHandle);
 
     g_CommandList->RSSetViewports(1, &g_Viewport);
     g_CommandList->RSSetScissorRects(1, &g_ScissorRect);
