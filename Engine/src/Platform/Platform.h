@@ -17,8 +17,10 @@ public:
     std::optional<int> PumpMessages();
     double GetAbsoluteTime() const;
     double Peek() const;
+    // Hacky stuffs.
     int16_t GetXScreenCoordinates() const;
     int16_t GetYScreenCoordinates() const;
     static bool getUpArrowKey();
     static bool getDownArrowKey();
+    static void* getAdditionalPlatformData();
 };

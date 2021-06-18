@@ -201,6 +201,11 @@ bool Platform::getDownArrowKey()
     return simpleKeys.downArrow;
 }
 
+void* Platform::getAdditionalPlatformData()
+{
+    return win32props.hWnd;
+}
+
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 LRESULT CALLBACK Win32ProcessMessages(HWND lhWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
