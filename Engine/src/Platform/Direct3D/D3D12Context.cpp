@@ -97,9 +97,9 @@ Microsoft::WRL::ComPtr<ID3D12Device4> g_Device;
 Microsoft::WRL::ComPtr<IDXGIFactory4> g_Factory;
 Microsoft::WRL::ComPtr<ID3D12CommandQueue> g_CommandQueue;
 Microsoft::WRL::ComPtr<ID3D12Resource> g_RenderTargets[g_FrameCount];
-Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> g_rtvHeap;
-Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> g_pd3dSrvDescHeap; // This heap belongs to Imgui.
-Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> g_srvHeap, g_samplerHeap;
+Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> g_rtvHeap; // Render Target View Heap.
+Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> g_srvHeap; // Our main Descriptor Heap.
+Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> g_samplerHeap; 
 Microsoft::WRL::ComPtr<ID3D12CommandAllocator> g_CommandAllocator;
 Microsoft::WRL::ComPtr<ID3D12RootSignature> g_RootSignature;
 Microsoft::WRL::ComPtr<ID3D12PipelineState> g_PipelineState;
@@ -175,10 +175,12 @@ void Graphics::Init(int32_t width, int32_t height)
     // Then we can call upon the actual api. 
     LoadPipeline();
     LoadAssets();
+    // Dear Imgui is our third descriptor within our main Shader Resource View Descriptor Heap. (Starting from 0 -> 1 -> 2 (2 being our "third" one)).
+    CD3DX12_CPU_DESCRIPTOR_HANDLE srvHandleCPU(g_srvHeap->GetCPUDescriptorHandleForHeapStart(), 2, g_srvDescriptorSize);
+    CD3DX12_GPU_DESCRIPTOR_HANDLE srvHandleGPU(g_srvHeap->GetGPUDescriptorHandleForHeapStart(), 2, g_srvDescriptorSize);
     ImGui_ImplDX12_Init(g_Device.Get(), g_FrameCount,
-        DXGI_FORMAT_R8G8B8A8_UNORM, g_pd3dSrvDescHeap.Get(),
-        g_pd3dSrvDescHeap->GetCPUDescriptorHandleForHeapStart(),
-        g_pd3dSrvDescHeap->GetGPUDescriptorHandleForHeapStart());
+        DXGI_FORMAT_R8G8B8A8_UNORM, g_srvHeap.Get(),
+        srvHandleCPU, srvHandleGPU);
 }
 
 // Update frame-based values.
@@ -335,19 +337,10 @@ void LoadPipeline()
         }
     }
 
-    {
-        // A descriptor heap relevant to imgui funcitonality. 
-        D3D12_DESCRIPTOR_HEAP_DESC desc = {};
-        desc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-        desc.NumDescriptors = 1;
-        desc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-        (g_Device->CreateDescriptorHeap(&desc, IID_PPV_ARGS(&g_pd3dSrvDescHeap)));
-    }
-
     { 
         // Describe and create a shader resource view (SRV) heap for the texture.
         D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc = {};
-        srvHeapDesc.NumDescriptors = 2;
+        srvHeapDesc.NumDescriptors = 3; // Texture 1 is our first descriptor, Texture 2 our second, and lastly Dear Imgui (Though I'd like it to be first). 
         srvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
         srvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
         ThrowIfFailed(g_Device->CreateDescriptorHeap(&srvHeapDesc, IID_PPV_ARGS(&g_srvHeap)));
@@ -944,20 +937,8 @@ void PopulateCommandList()
     g_CommandList->IASetVertexBuffers(0, 1, &g_VertexBufferView);
     g_CommandList->IASetIndexBuffer(&g_IndexBufferView);
     g_CommandList->DrawIndexedInstanced(6, 1, 0, 0, 0); 
-
-    // Second pipeline state
-    // The command list resets itself above, with the original pipeline state. 
-    // Thus we don't need to set pso "1" after the second triangle, or call it before the
-    // first triangle. 
-    //g_CommandList->SetPipelineState(g_PipelineState2.Get());
-
-    // Second triangle.
-    //g_CommandList->IASetVertexBuffers(0, 1, &g_VertexBufferView2);
-    //g_CommandList->IASetIndexBuffer(&g_IndexBufferView2);
-    //g_CommandList->DrawIndexedInstanced(3, 1, 0, 0, 0);
     
     // Related to Imgui.
-    g_CommandList->SetDescriptorHeaps(1, g_pd3dSrvDescHeap.GetAddressOf());
     ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), g_CommandList.Get());
     
     // Prepare frame for presenting/drawing. 
