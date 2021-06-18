@@ -67,6 +67,13 @@ struct SceneConstantBuffer
 };
 static_assert((sizeof(SceneConstantBuffer) % 256) == 0, "Constant Buffer size must be 256-byte aligned");
 
+struct Lerp
+{
+    float mixColor = 0.2f;
+    float padding[63]; // Padding so the constant buffer is 256-byte aligned. 
+};
+static_assert((sizeof(Lerp) % 256) == 0, "Constant Buffer size must be 256-byte aligned");
+
 struct CBVResources // Not so much literally accessing D3D constant buffers, but affecting it with these parameters. 
 {
     bool forward = true;
@@ -105,14 +112,16 @@ uint32_t g_samplerDescriptorSize;
 static D3D12_CPU_DESCRIPTOR_HANDLE  g_mainRenderTargetDescriptor[g_FrameCount] = {};
 
 // App resources 
-Microsoft::WRL::ComPtr<ID3D12Resource> g_VertexBuffer, g_IndexBuffer, g_ConstantBuffer;
+Microsoft::WRL::ComPtr<ID3D12Resource> g_VertexBuffer, g_IndexBuffer, g_ConstantBuffer, g_LerpConstantBuffer;
 Microsoft::WRL::ComPtr<ID3D12Resource> g_VertexBuffer2, g_IndexBuffer2;
 D3D12_VERTEX_BUFFER_VIEW g_VertexBufferView;
 D3D12_VERTEX_BUFFER_VIEW g_VertexBufferView2;
 D3D12_INDEX_BUFFER_VIEW  g_IndexBufferView;
 D3D12_INDEX_BUFFER_VIEW  g_IndexBufferView2;
 SceneConstantBuffer g_constantBufferData;
+Lerp g_LerpCBData;
 UINT8* g_pCbvDataBegin;
+UINT8* g_pLerpCbvDataBegin;
 Microsoft::WRL::ComPtr<ID3D12Resource> g_Texture, g_Texture2;
 
 // For mockup texture
@@ -186,16 +195,19 @@ void Graphics::Update(ClearColor& color, bool adjustOffset)
         if (cbvParams.forward)
         {
             g_constantBufferData.offset.x += cbvParams.translationSpeed;
+            g_LerpCBData.mixColor += cbvParams.translationSpeed;
         }
 
         if (!cbvParams.forward)
         {
             g_constantBufferData.offset.x -= cbvParams.translationSpeed;
+            g_LerpCBData.mixColor -= cbvParams.translationSpeed;
         }
 
         g_constantBufferData.cbcolor.y = color.g;
 
         memcpy(g_pCbvDataBegin, &g_constantBufferData, sizeof(g_constantBufferData));
+        memcpy(g_pLerpCbvDataBegin, &g_LerpCBData, sizeof(g_LerpCBData));
     }
 }
 
@@ -371,7 +383,7 @@ void LoadAssets()
         // Whereas two rootparameters are used to not only account for the SRV,
         // but to describe our constant buffer as well - or RootConstant in this case. 
         CD3DX12_DESCRIPTOR_RANGE1 ranges[4];
-        CD3DX12_ROOT_PARAMETER1 rootParameters[5];
+        CD3DX12_ROOT_PARAMETER1 rootParameters[6];
 
         // Texture 1
         ranges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC);
@@ -386,6 +398,7 @@ void LoadAssets()
 
         // "3" values, reflecting our constant buffer (yes, even including the padding). 
         rootParameters[0].InitAsConstants(3, 0, 0, D3D12_SHADER_VISIBILITY_VERTEX);
+        rootParameters[5].InitAsConstants(2, 1, 0, D3D12_SHADER_VISIBILITY_PIXEL);
 
         ranges[2].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER, 1, 0);
         rootParameters[3].InitAsDescriptorTable(1, &ranges[2], D3D12_SHADER_VISIBILITY_PIXEL);
@@ -678,6 +691,27 @@ void LoadAssets()
         memcpy(g_pCbvDataBegin, &g_constantBufferData, sizeof(g_constantBufferData));
     }
 
+    {
+        //g_LerpCBV
+        const UINT constantBufferSize = sizeof(Lerp); // CB size is required to be 256-byte aligned.
+        ThrowIfFailed(g_Device->CreateCommittedResource(
+            &CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD),
+            D3D12_HEAP_FLAG_NONE,
+            &CD3DX12_RESOURCE_DESC::Buffer(constantBufferSize),
+            D3D12_RESOURCE_STATE_GENERIC_READ,
+            nullptr,
+            IID_PPV_ARGS(&g_LerpConstantBuffer)));
+
+        // NOTE: No constant buffer view is being created here anymore - 
+        // as the rootsignature handles it being 'set' as a rootconstant now.
+
+        // Map and intialize the constant buffer. We don't unmap this until the
+        // app closes. Keeping things mapped for the lifetime of the resource is okay.
+        CD3DX12_RANGE readRange(0, 0); // We do not intend to read from this resource of the CPU.
+        ThrowIfFailed(g_LerpConstantBuffer->Map(0, &readRange, reinterpret_cast<void**>(&g_pLerpCbvDataBegin)));
+        memcpy(g_pLerpCbvDataBegin, &g_LerpCBData, sizeof(g_LerpCBData));
+    }
+
     // Note: ComPtr's are CPU objects but this resource needs to stay in scope until
     // the command list that references it has finished executing on the GPU.
     // We will flush the GPU at the end of this method to ensure the resource is not
@@ -882,6 +916,8 @@ void PopulateCommandList()
     g_CommandList->SetGraphicsRootDescriptorTable(3, g_samplerHeap->GetGPUDescriptorHandleForHeapStart());
     //g_CommandList->SetGraphicsRootDescriptorTable(3,sampleHandle);
     g_CommandList->SetGraphicsRootDescriptorTable(4, sampleHandle);
+
+    g_CommandList->SetGraphicsRoot32BitConstants(5, 2, g_pLerpCbvDataBegin, 0);
 
     g_CommandList->RSSetViewports(1, &g_Viewport);
     g_CommandList->RSSetScissorRects(1, &g_ScissorRect);
