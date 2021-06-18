@@ -195,13 +195,21 @@ void Graphics::Update(ClearColor& color, bool adjustOffset)
         if (cbvParams.forward)
         {
             g_constantBufferData.offset.x += cbvParams.translationSpeed;
+        }
+
+        if (Platform::getUpArrowKey())
+        {
             g_LerpCBData.mixColor += cbvParams.translationSpeed;
+        }
+
+        if (Platform::getDownArrowKey())
+        {
+            g_LerpCBData.mixColor -= cbvParams.translationSpeed;
         }
 
         if (!cbvParams.forward)
         {
             g_constantBufferData.offset.x -= cbvParams.translationSpeed;
-            g_LerpCBData.mixColor -= cbvParams.translationSpeed;
         }
 
         g_constantBufferData.cbcolor.y = color.g;

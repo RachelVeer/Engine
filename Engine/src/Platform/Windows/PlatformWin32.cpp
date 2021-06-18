@@ -29,8 +29,15 @@ struct Win32Props // Win32 Properties.
     POINTS pt                   = { 0 };
 };
 
+struct Keys
+{
+    bool upArrow = false;
+    bool downArrow = false;
+};
+
 Win32Props win32props;
 Clock winclock;
+Keys simpleKeys;
 
 static LRESULT CALLBACK Win32ProcessMessages(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
@@ -184,6 +191,16 @@ int16_t Platform::GetYScreenCoordinates() const
     return win32props.pt.y;
 }
 
+bool Platform::getUpArrowKey()
+{
+    return simpleKeys.upArrow;
+}
+
+bool Platform::getDownArrowKey()
+{
+    return simpleKeys.downArrow;
+}
+
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
 LRESULT CALLBACK Win32ProcessMessages(HWND lhWnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
@@ -228,6 +245,18 @@ LRESULT CALLBACK Win32ProcessMessages(HWND lhWnd, UINT uMsg, WPARAM wParam, LPAR
                 {
                     ENGINE_CORE_INFO("Arrow key up!");
                     printf("ArrowKey up!\n");
+                    if (simpleKeys.downArrow)
+                        simpleKeys.downArrow = false;
+                    else
+                        simpleKeys.upArrow = true;
+                    break;
+                }
+                case VK_DOWN:
+                {
+                    if (simpleKeys.upArrow)
+                        simpleKeys.upArrow = false;
+                    else
+                        simpleKeys.downArrow = true;
                     break;
                 }
                 default: break;
