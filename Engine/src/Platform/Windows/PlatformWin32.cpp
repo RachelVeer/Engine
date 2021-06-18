@@ -218,6 +218,22 @@ LRESULT CALLBACK Win32ProcessMessages(HWND lhWnd, UINT uMsg, WPARAM wParam, LPAR
             }
             return 0;
         }
+        case WM_KEYDOWN: 
+        {
+            ENGINE_CORE_INFO("Wm_keydown");
+            printf("wm_keydown\n");
+            switch (wParam)
+            {
+                case VK_UP:
+                {
+                    ENGINE_CORE_INFO("Arrow key up!");
+                    printf("ArrowKey up!\n");
+                    break;
+                }
+                default: break;
+            }
+            break;
+        }
         case WM_DESTROY:
         {
             PostQuitMessage(0);
