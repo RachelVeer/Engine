@@ -119,12 +119,6 @@
       <Outputs>$(OutDir)/../Sandbox/%(Identity)</Outputs>
       <Message>Compiling %(Identity)</Message>
     </CustomBuild>
-    <CustomBuild Include="src\Assets\shaders2.hlsl">
-      <FileType>Document</FileType>
-      <Command>copy %(Identity) "$(OutDir)/../Sandbox/%(Identity)" &gt; NUL</Command>
-      <Outputs>$(OutDir)/../Sandbox/%(Identity)</Outputs>
-      <Message>Compiling %(Identity)</Message>
-    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="vendor\imgui\ImGui.vcxproj">

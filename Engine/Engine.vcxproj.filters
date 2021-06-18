@@ -74,8 +74,5 @@
     <CustomBuild Include="src\Assets\shaders.hlsl">
       <Filter>Assets</Filter>
     </CustomBuild>
-    <CustomBuild Include="src\Assets\shaders2.hlsl">
-      <Filter>Assets</Filter>
-    </CustomBuild>
   </ItemGroup>
 </Project>

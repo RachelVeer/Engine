@@ -124,10 +124,9 @@ UINT8* g_pCbvDataBegin;
 UINT8* g_pLerpCbvDataBegin;
 Microsoft::WRL::ComPtr<ID3D12Resource> g_Texture, g_Texture2;
 
-// For mockup texture
+// For our textures.
 static const uint32_t TextureWidth = 512;
 static const uint32_t TextureHeight = 512;
-static const uint32_t TexturePixelSize = 4; // The number of bytes used to represent a pixel in the texture.
 
 
 // Synchronization objects.
@@ -147,7 +146,6 @@ void GetHardwareAdapter(IDXGIFactory4* pFactory, IDXGIAdapter1** ppAdapter,
     bool requestHighPerformanceAdapter);
 void WaitForPreviousFrame();
 void PopulateCommandList();
-std::vector<uint8_t> GenerateTextureData();
 
 // We only namespace after variables to make it obvious where 
 // ComPtr truly originated from. Plus general explicitness on 
@@ -496,19 +494,6 @@ void LoadAssets()
         psoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
         psoDesc.SampleDesc.Count = 1;
         ThrowIfFailed(g_Device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&g_PipelineState)));
-       
-        /*
-        // Second set of shaders 
-        ThrowIfFailed(D3DCompileFromFile(GetAssetFullPath(L"src/assets/shaders2.hlsl").c_str(), nullptr, nullptr, "VSMain", "vs_5_0", compileFlags, 0, &vertexShader, nullptr));
-        ThrowIfFailed(D3DCompileFromFile(GetAssetFullPath(L"src/assets/shaders2.hlsl").c_str(), nullptr, nullptr, "PSMain", "ps_5_0", compileFlags, 0, &pixelShader, nullptr));
-
-        // The previous desc bleeds through, the only thing we alter are the shaders set.
-        psoDesc.VS = CD3DX12_SHADER_BYTECODE(vertexShader.Get());
-        psoDesc.PS = CD3DX12_SHADER_BYTECODE(pixelShader.Get());
-        
-        // Create a second pso from that. 
-        ThrowIfFailed(g_Device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&g_PipelineState2)));
-        */
     }
 
     // Create command list. (version "1" automatically closes itself - one less step). 
@@ -585,91 +570,6 @@ void LoadAssets()
         g_IndexBufferView.Format = DXGI_FORMAT_R16_UINT;
         g_IndexBufferView.SizeInBytes = indexBufferSize;
     }
-
-    /*
-    // SECOND ENITRELY SEPARATE TRIANGLE // 
-    // ================================= //
-    // Create the vertex buffer.
-    {
-        // At the end of the day, we're simply defining points in space.
-        // Which usually come in two, (A, B) -> [0], [1].
-        {
-            // Original triangle position
-            float top[] = { 0.30f, 0.25f };
-            float bottomRight[] = { 0.55f, -0.25f };
-            float bottomLeft[] = { 0.05f, -0.25f };
-        }
-        // Upside down triangle 
-        float top[] = { -0.30f, -0.25f };
-        float bottomRight[] = { -0.55f, 0.25f };
-        float bottomLeft[] = { -0.05f, 0.25f };
-        // Define the geometry for a triangle.
-        Vertex triangleVertices[] =
-        {
-            // Clockwise.
-            { {  top[0],  top[1] * g_aspectRatio, 0.0f}, { 0.8f, 0.0f, 0.8f, 1.0f } },
-            { {  bottomRight[0], bottomRight[1] * g_aspectRatio, 0.0f}, { 0.0f, 0.8f, 0.8f, 1.0f } },
-            { {  bottomLeft[0],  bottomLeft[1] * g_aspectRatio, 0.0f}, { 0.8f, 0.8f, 0.0f, 1.0f } }, 
-        };
-
-        const uint32_t vertexBufferSize = sizeof(triangleVertices);
-
-        // Note: using upload heaps to transfer static data like vert buffers is not 
-        // recommended. Every time the GPU needs it, the upload heap will be marshalled 
-        // over. Please read up on Default Heap usage. An upload heap is used here for 
-        // code simplicity and because there are very few verts to actually transfer.
-        ThrowIfFailed(g_Device->CreateCommittedResource(
-            &CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD),
-            D3D12_HEAP_FLAG_NONE,
-            &CD3DX12_RESOURCE_DESC::Buffer(vertexBufferSize),
-            D3D12_RESOURCE_STATE_GENERIC_READ,
-            nullptr,
-            IID_PPV_ARGS(&g_VertexBuffer2)));
-
-        // Copy the triangle data to the vertex buffer.
-        UINT8* pVertexDataBegin = { 0 };
-        CD3DX12_RANGE readRange(0, 0);        // We do not intend to read from this resource on the CPU.
-        ThrowIfFailed(g_VertexBuffer2->Map(0, &readRange, reinterpret_cast<void**>(&pVertexDataBegin)));
-        memcpy(pVertexDataBegin, triangleVertices, sizeof(triangleVertices));
-        g_VertexBuffer2->Unmap(0, nullptr);
-
-        // Initialize the vertex buffer view.
-        g_VertexBufferView2.BufferLocation = g_VertexBuffer2->GetGPUVirtualAddress();
-        g_VertexBufferView2.StrideInBytes = sizeof(Vertex);
-        g_VertexBufferView2.SizeInBytes = vertexBufferSize;
-    }
-
-    // Create the index buffer
-    {
-        // Define indices 
-        int16_t Indices[] =
-        {
-            0, 1, 2,
-        };
-
-        const uint32_t indexBufferSize = sizeof(Indices);
-
-        ThrowIfFailed(g_Device->CreateCommittedResource(
-            &CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD),
-            D3D12_HEAP_FLAG_NONE,
-            &CD3DX12_RESOURCE_DESC::Buffer(indexBufferSize),
-            D3D12_RESOURCE_STATE_GENERIC_READ,
-            nullptr,
-            IID_PPV_ARGS(&g_IndexBuffer2)
-        ));
-
-        // Copy the triangle data to index buffer.
-        UINT8* pIndexDataBegin = { 0 };
-        CD3DX12_RANGE readRange(0, 0);
-        ThrowIfFailed(g_IndexBuffer2->Map(0, &readRange, reinterpret_cast<void**>(&pIndexDataBegin)));
-        memcpy(pIndexDataBegin, Indices, sizeof(Indices));
-        g_IndexBuffer2->Unmap(0, nullptr);
-
-        // Initialize index buffer view.
-        g_IndexBufferView2.BufferLocation = g_IndexBuffer->GetGPUVirtualAddress();
-        g_IndexBufferView2.Format = DXGI_FORMAT_R16_UINT;
-        g_IndexBufferView2.SizeInBytes = indexBufferSize;
-    } */
 
     // Create the constant buffer.
     {
@@ -1049,43 +949,6 @@ void GetHardwareAdapter(IDXGIFactory4* pFactory, IDXGIAdapter1** ppAdapter,
     }
 
     *ppAdapter = adapter.Detach();
-}
-
-// Generate a simple black and white checkerboard texture.
-std::vector<uint8_t> GenerateTextureData()
-{
-    const uint32_t rowPitch = TextureWidth * TexturePixelSize;
-    const uint32_t cellPitch = rowPitch >> 3;        // The width of a cell in the checkboard texture.
-    const uint32_t cellHeight = TextureWidth >> 3;    // The height of a cell in the checkerboard texture.
-    const uint32_t textureSize = rowPitch * TextureHeight;
-
-    std::vector<uint8_t> data(textureSize);
-    uint8_t* pData = &data[0];
-
-    for (uint32_t n = 0; n < textureSize; n += TexturePixelSize)
-    {
-        uint32_t x = n % rowPitch;
-        uint32_t y = n / rowPitch;
-        uint32_t i = x / cellPitch;
-        uint32_t j = y / cellHeight;
-
-        if (i % 2 == j % 2)
-        {
-            pData[n] = 0x00;        // R
-            pData[n + 1] = 0x00;    // G
-            pData[n + 2] = 0x00;    // B
-            pData[n + 3] = 0xff;    // A
-        }
-        else
-        {
-            pData[n] = 0xff;        // R
-            pData[n + 1] = 0xff;    // G
-            pData[n + 2] = 0xff;    // B
-            pData[n + 3] = 0xff;    // A
-        }
-    }
-
-    return data;
 }
 
 #endif
