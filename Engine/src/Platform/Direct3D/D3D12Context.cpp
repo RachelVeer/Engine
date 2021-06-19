@@ -517,10 +517,13 @@ void LoadAssets()
         // recommended. Every time the GPU needs it, the upload heap will be marshalled 
         // over. Please read up on Default Heap usage. An upload heap is used here for 
         // code simplicity and because there are very few verts to actually transfer.
+        // autos = & pattern to avoid visual studio C2102 error.
+        auto uploadProperties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
+        auto resourceDesc = CD3DX12_RESOURCE_DESC::Buffer(vertexBufferSize);
         ThrowIfFailed(g_Device->CreateCommittedResource(
-            &CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD),
+            &uploadProperties,
             D3D12_HEAP_FLAG_NONE,
-            &CD3DX12_RESOURCE_DESC::Buffer(vertexBufferSize),
+            &resourceDesc,
             D3D12_RESOURCE_STATE_GENERIC_READ,
             nullptr,
             IID_PPV_ARGS(&g_VertexBuffer)));
@@ -549,10 +552,13 @@ void LoadAssets()
 
         const uint32_t indexBufferSize = sizeof(Indices);
 
+        auto uploadProperties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
+        auto resourceDesc = CD3DX12_RESOURCE_DESC::Buffer(indexBufferSize);
+
         ThrowIfFailed(g_Device->CreateCommittedResource(
-            &CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD),
+            &uploadProperties,
             D3D12_HEAP_FLAG_NONE,
-            &CD3DX12_RESOURCE_DESC::Buffer(indexBufferSize),
+            &resourceDesc,
             D3D12_RESOURCE_STATE_GENERIC_READ,
             nullptr,
             IID_PPV_ARGS(&g_IndexBuffer)
@@ -574,13 +580,15 @@ void LoadAssets()
     // Create the constant buffer.
     {
         const UINT constantBufferSize = sizeof(SceneConstantBuffer); // CB size is required to be 256-byte aligned.
+        auto uploadProperties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
+        auto resourceDesc = CD3DX12_RESOURCE_DESC::Buffer(constantBufferSize);
         ThrowIfFailed(g_Device->CreateCommittedResource(
-            &CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD), 
-             D3D12_HEAP_FLAG_NONE,
-             &CD3DX12_RESOURCE_DESC::Buffer(constantBufferSize),
-             D3D12_RESOURCE_STATE_GENERIC_READ, 
-             nullptr, 
-             IID_PPV_ARGS(&g_ConstantBuffer)));
+            &uploadProperties,
+            D3D12_HEAP_FLAG_NONE,
+            &resourceDesc,
+            D3D12_RESOURCE_STATE_GENERIC_READ,
+            nullptr,
+            IID_PPV_ARGS(&g_ConstantBuffer)));
 
         // NOTE: No constant buffer view is being created here anymore - 
         // as the rootsignature handles it being 'set' as a rootconstant now.
@@ -595,10 +603,12 @@ void LoadAssets()
     {
         //g_LerpCBV
         const UINT constantBufferSize = sizeof(Lerp); // CB size is required to be 256-byte aligned.
+        auto uploadProperties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
+        auto resourceDesc = CD3DX12_RESOURCE_DESC::Buffer(constantBufferSize);
         ThrowIfFailed(g_Device->CreateCommittedResource(
-            &CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD),
+            &uploadProperties,
             D3D12_HEAP_FLAG_NONE,
-            &CD3DX12_RESOURCE_DESC::Buffer(constantBufferSize),
+            &resourceDesc,
             D3D12_RESOURCE_STATE_GENERIC_READ,
             nullptr,
             IID_PPV_ARGS(&g_LerpConstantBuffer)));
@@ -633,15 +643,17 @@ void LoadAssets()
         textureDesc.SampleDesc.Quality = 0;
         textureDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
 
-        ThrowIfFailed(g_Device->CreateCommittedResource(
-            &CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT),
-            D3D12_HEAP_FLAG_NONE,
-            &textureDesc,
-            D3D12_RESOURCE_STATE_COPY_DEST,
-            nullptr,
-            IID_PPV_ARGS(&g_Texture)
-        ));
-        
+        {
+            auto uploadProperties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
+            ThrowIfFailed(g_Device->CreateCommittedResource(
+                &uploadProperties,
+                D3D12_HEAP_FLAG_NONE,
+                &textureDesc,
+                D3D12_RESOURCE_STATE_COPY_DEST,
+                nullptr,
+                IID_PPV_ARGS(&g_Texture)
+            ));
+        }
         // Copy data to the intermediate upload heap and then schedule a copy
         // from the upload heap to the Texture2D.
         std::unique_ptr<uint8_t[]> decodedData;
@@ -652,22 +664,27 @@ void LoadAssets()
 
         const UINT64 uploadBufferSize = GetRequiredIntermediateSize(g_Texture.Get(), 0, 1);
 
-        // Create the GPU upload buffer.
-        ThrowIfFailed(g_Device->CreateCommittedResource(
-            &CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD),
-            D3D12_HEAP_FLAG_NONE,
-            &CD3DX12_RESOURCE_DESC::Buffer(uploadBufferSize),
-            D3D12_RESOURCE_STATE_GENERIC_READ,
-            nullptr,
-            IID_PPV_ARGS(&textureUploadHeap)
-        ));
+        {
+            auto uploadProperties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
+            auto resourceDesc = CD3DX12_RESOURCE_DESC::Buffer(uploadBufferSize);
+            // Create the GPU upload buffer.
+            ThrowIfFailed(g_Device->CreateCommittedResource(
+                &uploadProperties,
+                D3D12_HEAP_FLAG_NONE,
+                &resourceDesc,
+                D3D12_RESOURCE_STATE_GENERIC_READ,
+                nullptr,
+                IID_PPV_ARGS(&textureUploadHeap)
+            ));
+        }
 
         // CommandList1 closes itself after creation, so we reset commandlist to call UpdateSubresources.
         g_CommandList->Reset(g_CommandAllocator.Get(), g_PipelineState.Get());
         // Copy upload contents to default heap.
         UpdateSubresources(g_CommandList.Get(), g_Texture.Get(), textureUploadHeap.Get(), 0, 0, 1, &subresouce);
         // Transistion the texture default heap to pixel shader resource. 
-        g_CommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(g_Texture.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE));
+        auto transition = CD3DX12_RESOURCE_BARRIER::Transition(g_Texture.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+        g_CommandList->ResourceBarrier(1, &transition);
         // Close command list once more.
         g_CommandList->Close();
         // Execute it.
@@ -700,8 +717,9 @@ void LoadAssets()
         textureDesc.SampleDesc.Quality = 0;
         textureDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
 
+        auto uploadProperties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
         ThrowIfFailed(g_Device->CreateCommittedResource(
-            &CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT),
+            &uploadProperties,
             D3D12_HEAP_FLAG_NONE,
             &textureDesc,
             D3D12_RESOURCE_STATE_COPY_DEST,
@@ -718,22 +736,27 @@ void LoadAssets()
 
         const UINT64 uploadBufferSize = GetRequiredIntermediateSize(g_Texture2.Get(), 0, 1);
 
-        // Create the GPU upload buffer.
-        ThrowIfFailed(g_Device->CreateCommittedResource(
-            &CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD),
-            D3D12_HEAP_FLAG_NONE,
-            &CD3DX12_RESOURCE_DESC::Buffer(uploadBufferSize),
-            D3D12_RESOURCE_STATE_GENERIC_READ,
-            nullptr,
-            IID_PPV_ARGS(&textureUploadHeap2)
-        ));
+        {
+            auto uploadProperties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
+            auto resourceDesc = CD3DX12_RESOURCE_DESC::Buffer(uploadBufferSize);
+            // Create the GPU upload buffer.
+            ThrowIfFailed(g_Device->CreateCommittedResource(
+                &uploadProperties,
+                D3D12_HEAP_FLAG_NONE,
+                &resourceDesc,
+                D3D12_RESOURCE_STATE_GENERIC_READ,
+                nullptr,
+                IID_PPV_ARGS(&textureUploadHeap2)
+            ));
+        }
 
         // CommandList1 closes itself after creation, so we reset commandlist to call UpdateSubresources.
         g_CommandList->Reset(g_CommandAllocator.Get(), g_PipelineState.Get());
         // Copy upload contents to default heap.
         UpdateSubresources(g_CommandList.Get(), g_Texture2.Get(), textureUploadHeap2.Get(), 0, 0, 1, &subresouce);
-        // Transistion the texture default heap to pixel shader resource. 
-        g_CommandList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(g_Texture2.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE));
+        // Transistion the texture default heap to pixel shader resource.
+        auto transition = CD3DX12_RESOURCE_BARRIER::Transition(g_Texture2.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE);
+        g_CommandList->ResourceBarrier(1, &transition);
         // Close command list once more.
         g_CommandList->Close();
         // Execute it.
