@@ -1,5 +1,5 @@
 # Seacrest
-While the repo name is opaque, I've grown fond of calling this project of mine **Seacrest**.
+Originally dubbed "Engine", I've grown fond of calling this project of mine **Seacrest**.
 - *What is this?* It's my attempt to create a DirectX 12 Engine.
 I've had multiple projects in the past that include OpenGL, and DirectX 11, thus I feel more confident in taking on a more "intimidating" API (i.e. DirectX 12) while complimenting what I love — game engines.
 
