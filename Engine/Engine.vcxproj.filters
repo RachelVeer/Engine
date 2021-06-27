@@ -28,9 +28,6 @@
     <ClInclude Include="src\Engine\Application.h">
       <Filter>Engine</Filter>
     </ClInclude>
-    <ClInclude Include="src\Engine\Core.h">
-      <Filter>Engine</Filter>
-    </ClInclude>
     <ClInclude Include="src\Engine\EntryPoint.h">
       <Filter>Engine</Filter>
     </ClInclude>
@@ -67,6 +64,7 @@
     <ClCompile Include="src\Platform\Windows\PlatformWin32.cpp">
       <Filter>Platform\Windows</Filter>
     </ClCompile>
+    <ClCompile Include="src\Engine\Core.ixx" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="src\Assets\shaders.hlsl">

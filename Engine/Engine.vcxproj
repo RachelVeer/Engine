@@ -98,7 +98,6 @@
   <ItemGroup>
     <ClInclude Include="src\Engine.h" />
     <ClInclude Include="src\Engine\Application.h" />
-    <ClInclude Include="src\Engine\Core.h" />
     <ClInclude Include="src\Engine\EntryPoint.h" />
     <ClInclude Include="src\Engine\GraphicsContext.h" />
     <ClInclude Include="src\Engine\ImGuiLocal\ImGuiLocal.h" />
@@ -110,6 +109,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Engine\Application.cpp" />
+    <ClCompile Include="src\Engine\Core.ixx" />
     <ClCompile Include="src\Engine\Log.cpp" />
     <ClCompile Include="src\Platform\Direct3D\D3D12Context.cpp" />
     <ClCompile Include="src\Platform\Windows\PlatformWin32.cpp" />

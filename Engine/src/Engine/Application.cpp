@@ -1,6 +1,5 @@
 #include "Application.h"
 #include "SandboxTypes.h"
-#include "Core.h"
 #include "Engine/GraphicsContext.h"
 #include "Log.h"
 
@@ -27,6 +26,8 @@ static ApplicationState appState;
 Platform platform;
 Graphics gfx;
 DearImGui imgui;
+
+import Core;
 
 void Application::Create(SandboxState* sandboxInstance)
 {
