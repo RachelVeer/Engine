@@ -1,4 +1,3 @@
-#include "pch.h"
 #include "Application.h"
 #include "SandboxTypes.h"
 #include "Engine/GraphicsContext.h"

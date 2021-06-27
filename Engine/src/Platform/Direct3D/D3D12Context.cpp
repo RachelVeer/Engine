@@ -2,7 +2,6 @@
 // Copyright (c) 2021 Rachel Veer.
 // Licensed under the Apache-2.0 License.
 //*********************************************************
-#include "pch.h"
 #include "Engine/GraphicsContext.h"
 #include "Platform/Platform.h"
 #include "Engine/Log.h"

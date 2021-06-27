@@ -3,7 +3,6 @@
 // Licensed under the Apache-2.0 License.
 //*********************************************************
 
-#include "pch.h"
 #include "Platform/Platform.h"
 #include "Engine/Log.h"
 

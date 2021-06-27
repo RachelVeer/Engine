@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdint>
+
 struct ClearColor
 {
     float r, g, b, a;
