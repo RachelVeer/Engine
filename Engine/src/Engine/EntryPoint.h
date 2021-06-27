@@ -3,7 +3,6 @@
 // Licensed under the Apache-2.0 License.
 //*********************************************************
 
-#include "Core.h"
 #include "Application.h"
 #include "SandboxTypes.h"
 
@@ -20,12 +19,8 @@ int main(int argc, char* argv[])
     // thus there should always be at least one count present.
     if (argc >= minimalArgumentCount)
     {
-        // Initialize sub-systems. 
-        Core();
-
         auto exeName = std::filesystem::path(argv[0]).filename();
-        ENGINE_CORE_INFO("Launched Executable: {0}", exeName.string());
-
+        printf("Launched Executable: %s\n", exeName.string().c_str());
         // Request the sandbox instance from the application.
         SandboxState sandboxInstance;
         // Define & allocate memory for application.

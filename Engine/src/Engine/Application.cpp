@@ -1,5 +1,6 @@
 #include "Application.h"
 #include "SandboxTypes.h"
+#include "Core.h"
 #include "Engine/GraphicsContext.h"
 #include "Log.h"
 
@@ -29,10 +30,11 @@ DearImGui imgui;
 
 void Application::Create(SandboxState* sandboxInstance)
 {
-    ENGINE_CORE_INFO("This is a test.");
-
     // Retrieve the original Sandbox instance & store it here.
     appState.sandboxInstance = sandboxInstance;
+
+    // Initialize sub-systems. 
+    Core();
 
     // If instance successfully retrieved, we're 
     // officially up and running at this point. 

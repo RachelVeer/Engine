@@ -21,7 +21,7 @@ public:
     }
     Sandbox(SandboxState* OutSandbox)
     {
-        ENGINE_WARN("Custom Sandbox constructor!");
+        printf("Custom Sandbox constructor!\n");
 
         // Sandbox has its own "config", to 
         // prevent passing in "magic" numbers. 
