@@ -34,9 +34,6 @@
     <ClInclude Include="src\Engine\GraphicsContext.h">
       <Filter>Engine</Filter>
     </ClInclude>
-    <ClInclude Include="src\Engine\ImGuiLocal\ImGuiLocal.h">
-      <Filter>Engine\ImGuiLocal</Filter>
-    </ClInclude>
     <ClInclude Include="src\Platform\Direct3D\Utils\DXHelper.h">
       <Filter>Platform\Direct3D\Utils</Filter>
     </ClInclude>
@@ -60,6 +57,7 @@
       <Filter>Platform\Windows</Filter>
     </ClCompile>
     <ClCompile Include="src\Engine\Log.ixx" />
+    <ClCompile Include="src\Engine\ImGuiLocal\ImGuiLocal.ixx" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="src\Assets\shaders.hlsl">

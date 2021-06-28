@@ -1,15 +1,14 @@
-#pragma once
+export module ImGuiLocal;
 
-import <imgui/imgui.h>;
-import <imgui/backends/imgui_impl_win32.h>;
-import <imgui/backends/imgui_impl_dx12.h>;
+export import <imgui/imgui.h>;
+export import <imgui/backends/imgui_impl_win32.h>;
+export import <imgui/backends/imgui_impl_dx12.h>;
 
-struct ClearColor;
+import "Engine/GraphicsContext.h";
 
-class DearImGui
+namespace ImGuiLocal
 {
-public:
-    static void Init()
+    export void Init()
     {
         // Setup Dear ImGui context
         IMGUI_CHECKVERSION();
@@ -27,7 +26,7 @@ public:
         ImGui::StyleColorsDark();
     }
 
-    void BeginFrame()
+    export void BeginFrame()
     {
         // Start the Dear ImGui frame
         ImGui_ImplDX12_NewFrame();
@@ -35,7 +34,7 @@ public:
         ImGui::NewFrame();
     }
 
-    void DemoWindows(ClearColor& color, bool& show)
+    export void DemoWindows(ClearColor& color, bool& show)
     {
         // 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
         if (show)
@@ -64,12 +63,12 @@ public:
         }
     }
 
-    void EndFrame()
+    export void EndFrame()
     {
         ImGui::Render();
     }
 
-    void Shutdown()
+    export void Shutdown()
     {
         ImGui_ImplDX12_Shutdown();
         ImGui_ImplWin32_Shutdown();
