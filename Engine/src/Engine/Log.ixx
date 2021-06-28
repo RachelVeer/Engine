@@ -4,22 +4,10 @@ module;
 #include "spdlog/sinks/stdout_color_sinks.h"
 export module Log;
 
-export class LogModule
-{
-public:
-    void Init();
+export std::shared_ptr<spdlog::logger> s_CoreLogger;
+export std::shared_ptr<spdlog::logger> s_ClientLogger;
 
-    std::shared_ptr<spdlog::logger>& GetCoreLogger() { return s_CoreLogger; }
-    std::shared_ptr<spdlog::logger>& GetClientLogger() { return s_ClientLogger; }
-private:
-    std::shared_ptr<spdlog::logger> s_CoreLogger;
-    std::shared_ptr<spdlog::logger> s_ClientLogger;
-};
-
-//std::shared_ptr<spdlog::logger> LogModule::s_CoreLogger;
-//std::shared_ptr<spdlog::logger> LogModule::s_ClientLogger;
-
-void LogModule::Init()
+export void LogInit()
 {
     spdlog::set_pattern("%^[%T] %n: %v%$");
     s_CoreLogger = spdlog::stdout_color_mt("SEACREST2");

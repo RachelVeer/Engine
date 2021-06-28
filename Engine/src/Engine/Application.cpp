@@ -6,6 +6,9 @@
 #include "ImGuiLocal/ImGuiLocal.h"
 
 #include <fstream> // For file functions.
+#include <memory>
+#include "spdlog/spdlog.h"
+#include "spdlog/sinks/stdout_color_sinks.h"
 
 
 typedef std::thread Thread;
@@ -29,8 +32,6 @@ DearImGui imgui;
 import Core;
 import Log;
 
-LogModule logger;
-
 void Application::Create(SandboxState* sandboxInstance)
 {
     // Retrieve the original Sandbox instance & store it here.
@@ -38,10 +39,11 @@ void Application::Create(SandboxState* sandboxInstance)
 
     // Initialize sub-systems. 
     //Core();
-    logger.Init();
+    LogInit();
     DearImGui::Init();
-    //logger.GetCoreLogger()->trace("This is from the module.");
-
+    s_CoreLogger->trace("This is from the module.");
+    //int b = 5;
+    //Trace("Yes. Var={0}", b);
 
     // If instance successfully retrieved, we're 
     // officially up and running at this point. 
