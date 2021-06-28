@@ -1,7 +1,6 @@
 #include "Application.h"
 #include "SandboxTypes.h"
 #include "Engine/GraphicsContext.h"
-#include "Log.h"
 
 // Dear ImGui functionality.
 #include "ImGuiLocal/ImGuiLocal.h"
@@ -30,15 +29,18 @@ DearImGui imgui;
 import Core;
 import Log;
 
+LogModule logger;
+
 void Application::Create(SandboxState* sandboxInstance)
 {
     // Retrieve the original Sandbox instance & store it here.
     appState.sandboxInstance = sandboxInstance;
 
     // Initialize sub-systems. 
-    Core();
-    LogModule::Init();
-    LogModule::GetCoreLogger()->trace("This is from the module.");
+    //Core();
+    logger.Init();
+    DearImGui::Init();
+    //logger.GetCoreLogger()->trace("This is from the module.");
 
 
     // If instance successfully retrieved, we're 
@@ -46,9 +48,9 @@ void Application::Create(SandboxState* sandboxInstance)
     appState.Running = true;
 
     int a = 5;
-    ENGINE_CORE_WARN("Application State Running?: ");
-    ENGINE_CORE_DEBUG(appState.Running ? "true" : "false");
-    Log::GetCoreLogger()->trace("This is a test spdlog print without a macro. Var={0}", a);
+    //ENGINE_CORE_WARN("Application State Running?: ");
+    //ENGINE_CORE_DEBUG(appState.Running ? "true" : "false");
+    //logger.GetCoreLogger()->trace("This is a test spdlog print without a macro. Var={0}", a);
 
     // App in this case simply encapsulates its configuration.
     auto app = appState.sandboxInstance->appConfig;
@@ -173,12 +175,12 @@ void Application::DoTime()
     {
         std::ofstream myFile;
         myFile.open("example.txt");
-        ENGINE_CORE_INFO("Writing elapsedTime to a file.");
+        //ENGINE_CORE_INFO("Writing elapsedTime to a file.");
         // This is what's actually written to the file.
         myFile << "Elapsed Time: "
             << appState.ElapsedTime;
         myFile.close();
     }
 
-    ENGINE_CORE_INFO("DoTime Thread Shutting down.");
+    //ENGINE_CORE_INFO("DoTime Thread Shutting down.");
 }

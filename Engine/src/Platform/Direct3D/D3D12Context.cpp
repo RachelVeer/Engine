@@ -4,7 +4,6 @@
 //*********************************************************
 #include "Engine/GraphicsContext.h"
 #include "Platform/Platform.h"
-#include "Engine/Log.h"
 
 #include "Engine/ImGuiLocal/ImGuiLocal.h"
 
@@ -154,7 +153,7 @@ using namespace DirectX;
 
 void Graphics::Init(int32_t width, int32_t height)
 {
-    ENGINE_CORE_DEBUG("Current Graphics API: Direct3D12.");
+    //ENGINE_CORE_DEBUG("Current Graphics API: Direct3D12.");
     
     // Storing incoming/external data.
     g_StoredHwnd = static_cast<HWND>(Platform::getAdditionalPlatformData());

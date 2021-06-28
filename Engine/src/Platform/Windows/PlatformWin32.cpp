@@ -2,9 +2,11 @@
 // Copyright (c) 2021 Rachel Veer.
 // Licensed under the Apache-2.0 License.
 //*********************************************************
+#include <Windows.h>
+#include <string>
+#include <iostream>
 
 #include "Platform/Platform.h"
-#include "Engine/Log.h"
 
 #include "Engine/ImGuiLocal/ImGuiLocal.h"
 
@@ -241,13 +243,13 @@ LRESULT CALLBACK Win32ProcessMessages(HWND lhWnd, UINT uMsg, WPARAM wParam, LPAR
         }
         case WM_KEYDOWN: 
         {
-            ENGINE_CORE_INFO("Wm_keydown");
+            //ENGINE_CORE_INFO("Wm_keydown");
             printf("wm_keydown\n");
             switch (wParam)
             {
                 case VK_UP:
                 {
-                    ENGINE_CORE_INFO("Arrow key up!");
+                    //ENGINE_CORE_INFO("Arrow key up!");
                     printf("ArrowKey up!\n");
                     if (simpleKeys.downArrow)
                         simpleKeys.downArrow = false;
