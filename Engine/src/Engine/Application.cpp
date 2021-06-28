@@ -2,9 +2,6 @@
 #include "SandboxTypes.h"
 #include "Engine/GraphicsContext.h"
 
-// Dear ImGui functionality.
-#include "ImGuiLocal/ImGuiLocal.h"
-
 #include <fstream> // For file functions.
 #include "LogDependencies.h"
 
@@ -25,9 +22,9 @@ static ApplicationState appState;
 // Interfaces. 
 Platform platform;
 Graphics gfx;
-DearImGui imgui;
 
 import Log;
+import ImGuiLocal;
 
 void Application::Create(SandboxState* sandboxInstance)
 {
@@ -37,7 +34,7 @@ void Application::Create(SandboxState* sandboxInstance)
     // Initialize sub-systems. 
     //Core();
     LogInit();
-    DearImGui::Init();
+    ImGuiLocal::Init();
     //s_CoreLogger->trace("This is from the module.");
     GetCoreLogger()->trace("GetCoreLogger() Test.");
     //int b = 5;
@@ -94,8 +91,8 @@ void Application::Run()
             }
             else            
             {
-                imgui.BeginFrame();
-                imgui.DemoWindows(color, show_demo_window);
+                ImGuiLocal::BeginFrame();
+                ImGuiLocal::DemoWindows(color, show_demo_window);
 
                 // Creating our own imgui stuff rather than just default code.
                 {
@@ -135,7 +132,7 @@ void Application::Run()
                 }
                
                 // Rendering
-                imgui.EndFrame(); // Actually render imgui setup
+                ImGuiLocal::EndFrame(); // Actually render imgui setup
                 gfx.Update(color, adjustOffset);
                 gfx.Render(color);
             }
@@ -158,7 +155,7 @@ void Application::Shutdown()
     // Cleanup interfaces.
     platform.Shutdown();
     gfx.Shutdown();
-    imgui.Shutdown();
+    ImGuiLocal::Shutdown();
 }
 
 void Application::DoTime()

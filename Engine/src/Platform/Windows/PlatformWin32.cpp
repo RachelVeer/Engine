@@ -8,11 +8,11 @@
 
 #include "Platform/Platform.h"
 
-#include "Engine/ImGuiLocal/ImGuiLocal.h"
-
 #include "Engine/LogDependencies.h"
-
 import Log;
+
+import ImGuiLocal;
+
 // Win32/Window specific code will only compile
 // relative to the platform layer if it's actually defined.
 #if defined(ENGINE_PLATFORM_WINDOWS)
