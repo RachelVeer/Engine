@@ -41,8 +41,10 @@ void Application::Create(SandboxState* sandboxInstance)
     // officially up and running at this point. 
     appState.Running = true;
 
+    int a = 5;
     ENGINE_CORE_WARN("Application State Running?: ");
     ENGINE_CORE_DEBUG(appState.Running ? "true" : "false");
+    Log::GetCoreLogger()->trace("This is a test spdlog print without a macro. Var={0}", a);
 
     // App in this case simply encapsulates its configuration.
     auto app = appState.sandboxInstance->appConfig;
