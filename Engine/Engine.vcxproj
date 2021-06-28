@@ -111,6 +111,7 @@
     <ClCompile Include="src\Engine\Application.cpp" />
     <ClCompile Include="src\Engine\Core.ixx" />
     <ClCompile Include="src\Engine\Log.cpp" />
+    <ClCompile Include="src\Engine\Log.ixx" />
     <ClCompile Include="src\Platform\Direct3D\D3D12Context.cpp" />
     <ClCompile Include="src\Platform\Windows\PlatformWin32.cpp" />
   </ItemGroup>

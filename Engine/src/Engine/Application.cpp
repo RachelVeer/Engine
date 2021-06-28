@@ -28,6 +28,7 @@ Graphics gfx;
 DearImGui imgui;
 
 import Core;
+import Log;
 
 void Application::Create(SandboxState* sandboxInstance)
 {
@@ -36,6 +37,9 @@ void Application::Create(SandboxState* sandboxInstance)
 
     // Initialize sub-systems. 
     Core();
+    LogModule::Init();
+    LogModule::GetCoreLogger()->trace("This is from the module.");
+
 
     // If instance successfully retrieved, we're 
     // officially up and running at this point. 
