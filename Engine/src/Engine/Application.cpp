@@ -29,7 +29,6 @@ Platform platform;
 Graphics gfx;
 DearImGui imgui;
 
-import Core;
 import Log;
 
 void Application::Create(SandboxState* sandboxInstance)

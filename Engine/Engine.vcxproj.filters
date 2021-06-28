@@ -47,7 +47,6 @@
       <Filter>Platform</Filter>
     </ClInclude>
     <ClInclude Include="src\SandboxTypes.h" />
-    <ClInclude Include="src\Engine\Log.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Engine\Application.cpp">
@@ -59,9 +58,7 @@
     <ClCompile Include="src\Platform\Windows\PlatformWin32.cpp">
       <Filter>Platform\Windows</Filter>
     </ClCompile>
-    <ClCompile Include="src\Engine\Core.ixx" />
     <ClCompile Include="src\Engine\Log.ixx" />
-    <ClCompile Include="src\Engine\Log.cpp" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="src\Assets\shaders.hlsl">
