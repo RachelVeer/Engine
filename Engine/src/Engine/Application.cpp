@@ -40,7 +40,8 @@ void Application::Create(SandboxState* sandboxInstance)
     //Core();
     LogInit();
     DearImGui::Init();
-    s_CoreLogger->trace("This is from the module.");
+    //s_CoreLogger->trace("This is from the module.");
+    GetCoreLogger()->trace("GetCoreLogger() Test.");
     //int b = 5;
     //Trace("Yes. Var={0}", b);
 

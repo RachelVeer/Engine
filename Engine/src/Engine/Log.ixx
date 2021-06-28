@@ -4,8 +4,11 @@ module;
 #include "spdlog/sinks/stdout_color_sinks.h"
 export module Log;
 
-export std::shared_ptr<spdlog::logger> s_CoreLogger;
-export std::shared_ptr<spdlog::logger> s_ClientLogger;
+std::shared_ptr<spdlog::logger> s_CoreLogger;
+std::shared_ptr<spdlog::logger> s_ClientLogger;
+
+export inline std::shared_ptr<spdlog::logger>& GetCoreLogger() { return s_CoreLogger; }
+export inline std::shared_ptr<spdlog::logger>& GetClientLogger() { return s_ClientLogger; }
 
 export void LogInit()
 {
