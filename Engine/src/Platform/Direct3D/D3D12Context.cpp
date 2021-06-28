@@ -7,6 +7,9 @@
 
 #include "Engine/ImGuiLocal/ImGuiLocal.h"
 
+#include "Engine/LogDependencies.h"
+import Log;
+
 // DirectX specific code & libraries will only link/compile
 // relative to the graphics layer if it's actually defined.
 
@@ -153,7 +156,7 @@ using namespace DirectX;
 
 void Graphics::Init(int32_t width, int32_t height)
 {
-    //ENGINE_CORE_DEBUG("Current Graphics API: Direct3D12.");
+    GetCoreLogger()->debug("Current Graphics API: Direct3D12.");
     
     // Storing incoming/external data.
     g_StoredHwnd = static_cast<HWND>(Platform::getAdditionalPlatformData());

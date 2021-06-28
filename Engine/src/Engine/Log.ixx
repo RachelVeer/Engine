@@ -13,11 +13,11 @@ export inline std::shared_ptr<spdlog::logger>& GetClientLogger() { return s_Clie
 export void LogInit()
 {
     spdlog::set_pattern("%^[%T] %n: %v%$");
-    s_CoreLogger = spdlog::stdout_color_mt("SEACREST2");
+    s_CoreLogger = spdlog::stdout_color_mt("SEACREST");
     s_CoreLogger->set_level(spdlog::level::trace);
 
-    s_ClientLogger = spdlog::stdout_color_mt("APP2");
+    s_ClientLogger = spdlog::stdout_color_mt("APP");
     s_ClientLogger->set_level(spdlog::level::trace);
 
-    s_CoreLogger->trace("Module logger initialized.");
+    s_CoreLogger->info("Module logger initialized.");
 }

@@ -6,9 +6,7 @@
 #include "ImGuiLocal/ImGuiLocal.h"
 
 #include <fstream> // For file functions.
-#include <memory>
-#include "spdlog/spdlog.h"
-#include "spdlog/sinks/stdout_color_sinks.h"
+#include "LogDependencies.h"
 
 
 typedef std::thread Thread;

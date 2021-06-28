@@ -10,6 +10,9 @@
 
 #include "Engine/ImGuiLocal/ImGuiLocal.h"
 
+#include "Engine/LogDependencies.h"
+
+import Log;
 // Win32/Window specific code will only compile
 // relative to the platform layer if it's actually defined.
 #if defined(ENGINE_PLATFORM_WINDOWS)
@@ -237,20 +240,20 @@ LRESULT CALLBACK Win32ProcessMessages(HWND lhWnd, UINT uMsg, WPARAM wParam, LPAR
                 // Store values for ImGui.
                 win32props.pt.x = pt.x;
                 win32props.pt.y = pt.y;
-                // ENGINE_CORE_DEBUG("Mouse Coords - width: {0}, height: {1} \r", pt.x, pt.y);
+                //("Mouse Coords - width: {0}, height: {1} \r", pt.x, pt.y);
             }
             return 0;
         }
         case WM_KEYDOWN: 
         {
-            //ENGINE_CORE_INFO("Wm_keydown");
-            printf("wm_keydown\n");
+            GetCoreLogger()->info("Wm_keydown");
+            //printf("wm_keydown\n");
             switch (wParam)
             {
                 case VK_UP:
                 {
-                    //ENGINE_CORE_INFO("Arrow key up!");
-                    printf("ArrowKey up!\n");
+                    GetCoreLogger()->info("Arrow key up!");
+                    //printf("ArrowKey up!\n");
                     if (simpleKeys.downArrow)
                         simpleKeys.downArrow = false;
                     else
@@ -259,6 +262,7 @@ LRESULT CALLBACK Win32ProcessMessages(HWND lhWnd, UINT uMsg, WPARAM wParam, LPAR
                 }
                 case VK_DOWN:
                 {
+                    GetCoreLogger()->info("Arrow key down!");
                     if (simpleKeys.upArrow)
                         simpleKeys.upArrow = false;
                     else
