@@ -25,7 +25,7 @@ export void LogInit()
 
 export
 template<typename FormatString, typename... Args>
-void Trace(const FormatString& fmt, Args &&...args)
+void CoreLoggerTrace(const FormatString& fmt, Args &&...args)
 {
     s_CoreLogger->trace(fmt, std::forward<Args>(args)...);
 }

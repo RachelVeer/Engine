@@ -41,8 +41,8 @@ void Application::Create(SandboxState* sandboxInstance)
     ImGuiLocal::Init();
     //s_CoreLogger->trace("This is from the module.");
     GetCoreLogger()->trace("GetCoreLogger() Test.");
-    Trace("Trace() test. Var={0}", a);
-    Trace("Trace() test. Var={0}", c);
+    CoreLoggerTrace("CoreLoggerTrace() test. Var={0}", a);
+    CoreLoggerTrace("CoreLoggerTrace() test. Var={0}", c);
     //int b = 5;
     //Trace("Yes. Var={0}", b);
 
