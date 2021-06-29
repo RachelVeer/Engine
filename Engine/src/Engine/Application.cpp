@@ -32,27 +32,24 @@ void Application::Create(SandboxState* sandboxInstance)
     // Retrieve the original Sandbox instance & store it here.
     appState.sandboxInstance = sandboxInstance;
 
-    int a = 5;
-    double c = 4.5;
-
     // Initialize sub-systems. 
-    //Core();
     LogInit();
     ImGuiLocal::Init();
-    //s_CoreLogger->trace("This is from the module.");
-    GetCoreLogger()->trace("GetCoreLogger() Test.");
-    CoreLoggerTrace("CoreLoggerTrace() test. Var={0}", a);
-    CoreLoggerTrace("CoreLoggerTrace() test. Var={0}", c);
-    //int b = 5;
-    //Trace("Yes. Var={0}", b);
+
+    // Testing our logger.
+    {
+        int a = 5;
+        double b = 4.5;
+        CoreLoggerTrace("CoreLoggerTrace() test. Var={0}", a);
+        CoreLoggerTrace("CoreLoggerTrace() test. Var={0}", b);
+    }
 
     // If instance successfully retrieved, we're 
     // officially up and running at this point. 
     appState.Running = true;
 
-    //ENGINE_CORE_WARN("Application State Running?: ");
-    //ENGINE_CORE_DEBUG(appState.Running ? "true" : "false");
-    //logger.GetCoreLogger()->trace("This is a test spdlog print without a macro. Var={0}", a);
+    CoreLoggerWarn("Application State Running?: ");
+    CoreLoggerDebug(appState.Running ? "true" : "false");
 
     // App in this case simply encapsulates its configuration.
     auto app = appState.sandboxInstance->appConfig;
@@ -177,12 +174,12 @@ void Application::DoTime()
     {
         std::ofstream myFile;
         myFile.open("example.txt");
-        //ENGINE_CORE_INFO("Writing elapsedTime to a file.");
+        CoreLoggerInfo("Writing elapsedTime to a file.");
         // This is what's actually written to the file.
         myFile << "Elapsed Time: "
             << appState.ElapsedTime;
         myFile.close();
     }
 
-    //ENGINE_CORE_INFO("DoTime Thread Shutting down.");
+    CoreLoggerInfo("DoTime Thread Shutting down.");
 }

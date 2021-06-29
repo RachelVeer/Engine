@@ -246,13 +246,13 @@ LRESULT CALLBACK Win32ProcessMessages(HWND lhWnd, UINT uMsg, WPARAM wParam, LPAR
         }
         case WM_KEYDOWN: 
         {
-            GetCoreLogger()->info("Wm_keydown");
+            CoreLoggerInfo("Wm_keydown");
             //printf("wm_keydown\n");
             switch (wParam)
             {
                 case VK_UP:
                 {
-                    GetCoreLogger()->info("Arrow key up!");
+                    CoreLoggerInfo("Arrow key up!");
                     //printf("ArrowKey up!\n");
                     if (simpleKeys.downArrow)
                         simpleKeys.downArrow = false;
@@ -262,7 +262,7 @@ LRESULT CALLBACK Win32ProcessMessages(HWND lhWnd, UINT uMsg, WPARAM wParam, LPAR
                 }
                 case VK_DOWN:
                 {
-                    GetCoreLogger()->info("Arrow key down!");
+                    CoreLoggerInfo("Arrow key down!");
                     if (simpleKeys.upArrow)
                         simpleKeys.upArrow = false;
                     else
