@@ -1,5 +1,6 @@
 module;
 #include <memory>
+#include <utility>
 #include "spdlog/spdlog.h"
 #include "spdlog/sinks/stdout_color_sinks.h"
 export module Log;
@@ -20,4 +21,11 @@ export void LogInit()
     s_ClientLogger->set_level(spdlog::level::trace);
 
     s_CoreLogger->info("Module logger initialized.");
+}
+
+export
+template<typename FormatString, typename... Args>
+void Trace(const FormatString& fmt, Args &&...args)
+{
+    s_CoreLogger->trace(fmt, std::forward<Args>(args)...);
 }

@@ -24,12 +24,16 @@ Platform platform;
 Graphics gfx;
 
 import Log;
-import ImGuiLocal;
+import ImGuiLocal;
+
 
 void Application::Create(SandboxState* sandboxInstance)
 {
     // Retrieve the original Sandbox instance & store it here.
     appState.sandboxInstance = sandboxInstance;
+
+    int a = 5;
+    double c = 4.5;
 
     // Initialize sub-systems. 
     //Core();
@@ -37,6 +41,8 @@ void Application::Create(SandboxState* sandboxInstance)
     ImGuiLocal::Init();
     //s_CoreLogger->trace("This is from the module.");
     GetCoreLogger()->trace("GetCoreLogger() Test.");
+    Trace("Trace() test. Var={0}", a);
+    Trace("Trace() test. Var={0}", c);
     //int b = 5;
     //Trace("Yes. Var={0}", b);
 
@@ -44,7 +50,6 @@ void Application::Create(SandboxState* sandboxInstance)
     // officially up and running at this point. 
     appState.Running = true;
 
-    int a = 5;
     //ENGINE_CORE_WARN("Application State Running?: ");
     //ENGINE_CORE_DEBUG(appState.Running ? "true" : "false");
     //logger.GetCoreLogger()->trace("This is a test spdlog print without a macro. Var={0}", a);
