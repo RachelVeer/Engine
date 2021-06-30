@@ -37,9 +37,8 @@ namespace ImGuiLocal
         ImGui::NewFrame();
     }
 
-    export void DemoWindows(float& r, float& g, float& b, float& a, bool& show)
+    export void DemoWindows(float& color, bool& show)
     {
-        ClearColor color = { r, g, b, a };
         // 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
         if (show)
             ImGui::ShowDemoWindow(&show);
@@ -55,7 +54,7 @@ namespace ImGuiLocal
             ImGui::Checkbox("Demo Window", &show);      // Edit bools storing our window open/close state
 
             ImGui::SliderFloat("float", &f, 0.0f, 1.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
-            ImGui::ColorEdit3("clear color", (float*)&color); // Edit 3 floats representing a color
+            ImGui::ColorEdit3("clear color", &color); // Edit 3 floats representing a color
 
             if (ImGui::Button("Button"))                            // Buttons return true when clicked (most widgets return true when edited/activated)
                 counter++;

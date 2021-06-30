@@ -93,7 +93,7 @@ void Application::Run()
             else            
             {
                 ImGuiLocal::BeginFrame();
-                ImGuiLocal::DemoWindows(color.r, color.g, color.b, color.a, show_demo_window);
+                ImGuiLocal::DemoWindows((float&)color, show_demo_window);
 
                 // Creating our own imgui stuff rather than just default code.
                 {
