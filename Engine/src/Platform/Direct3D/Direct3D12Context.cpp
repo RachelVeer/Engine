@@ -47,6 +47,13 @@ void GraphicsTest()
     printf("Graphics Implementation module.\n");
 }
 
+
+void GraphicsTest2()
+{
+    printf("Printing from Graphics Implementation module even under D3D12Context alias!\n");
+}
+
+
 // Defining the area we draw to.
 struct Surface
 {
