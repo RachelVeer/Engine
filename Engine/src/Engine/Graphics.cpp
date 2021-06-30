@@ -2,7 +2,7 @@ module Graphics;
 
 import <cstdio>;
 
-export void GraphicsTest()
+void GraphicsTest()
 {
     printf("Graphics Implementation module.\n");
 }

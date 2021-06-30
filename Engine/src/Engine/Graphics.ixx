@@ -108,7 +108,7 @@ struct CBVResources // Not so much literally accessing D3D constant buffers, but
 CBVResources cbvParams;
 
 // Relevant D3D parameters.
-static const uint32_t g_FrameCount = 2;
+const uint32_t g_FrameCount = 2;
 float g_aspectRatio = { 0 };
 
 // Pipeline objects.
@@ -131,7 +131,7 @@ uint32_t g_rtvDescriptorSize;
 uint32_t g_srvDescriptorSize;
 uint32_t g_samplerDescriptorSize;
 
-static D3D12_CPU_DESCRIPTOR_HANDLE  g_mainRenderTargetDescriptor[g_FrameCount] = {};
+D3D12_CPU_DESCRIPTOR_HANDLE  g_mainRenderTargetDescriptor[g_FrameCount] = {};
 
 // App resources 
 Microsoft::WRL::ComPtr<ID3D12Resource> g_VertexBuffer, g_IndexBuffer, g_ConstantBuffer, g_LerpConstantBuffer;
@@ -147,8 +147,8 @@ UINT8* g_pLerpCbvDataBegin;
 Microsoft::WRL::ComPtr<ID3D12Resource> g_Texture, g_Texture2;
 
 // For our textures.
-static const uint32_t TextureWidth = 512;
-static const uint32_t TextureHeight = 512;
+const uint32_t TextureWidth = 512;
+const uint32_t TextureHeight = 512;
 
 
 // Synchronization objects.

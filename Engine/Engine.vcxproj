@@ -107,7 +107,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Engine\Application.cpp" />
-    <ClCompile Include="src\Engine\GraphicsImpl.ixx" />
+    <ClCompile Include="src\Engine\Graphics.cpp" />
     <ClCompile Include="src\Engine\Graphics.ixx" />
     <ClCompile Include="src\Engine\ImGuiLocal\ImGuiLocal.ixx" />
     <ClCompile Include="src\Engine\Log.ixx" />
