@@ -50,6 +50,8 @@ export struct ClearColor
     float r, g, b, a;
 };
 
+export void GraphicsTest();
+
 namespace Graphics
 {
     export void Init(int32_t width, int32_t height);

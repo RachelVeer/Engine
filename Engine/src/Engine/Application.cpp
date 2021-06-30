@@ -40,6 +40,7 @@ void Application::Create(SandboxState* sandboxInstance)
         double b = 4.5;
         CoreLoggerTrace("CoreLoggerTrace() test. Var={0}", a);
         CoreLoggerTrace("CoreLoggerTrace() test. Var={0}", b);
+        GraphicsTest();
     }
 
     // If instance successfully retrieved, we're 
