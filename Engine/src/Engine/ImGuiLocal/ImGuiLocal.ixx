@@ -4,10 +4,13 @@ export import <imgui/imgui.h>;
 export import <imgui/backends/imgui_impl_win32.h>;
 export import <imgui/backends/imgui_impl_dx12.h>;
 
-import "Engine/GraphicsContext.h";
-
 namespace ImGuiLocal
 {
+    struct ClearColor
+    {
+        float r, g, b, a;
+    };
+
     export void Init()
     {
         // Setup Dear ImGui context
@@ -34,8 +37,9 @@ namespace ImGuiLocal
         ImGui::NewFrame();
     }
 
-    export void DemoWindows(ClearColor& color, bool& show)
+    export void DemoWindows(float& r, float& g, float& b, float& a, bool& show)
     {
+        ClearColor color = { r, g, b, a };
         // 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
         if (show)
             ImGui::ShowDemoWindow(&show);

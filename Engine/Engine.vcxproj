@@ -99,7 +99,6 @@
     <ClInclude Include="src\Engine.h" />
     <ClInclude Include="src\Engine\Application.h" />
     <ClInclude Include="src\Engine\EntryPoint.h" />
-    <ClInclude Include="src\Engine\GraphicsContext.h" />
     <ClInclude Include="src\Engine\LogDependencies.h" />
     <ClInclude Include="src\Platform\Direct3D\Utils\DXHelper.h" />
     <ClInclude Include="src\Platform\Direct3D\Utils\d3dx12.h" />
@@ -108,9 +107,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Engine\Application.cpp" />
+    <ClCompile Include="src\Engine\Graphics.ixx" />
     <ClCompile Include="src\Engine\ImGuiLocal\ImGuiLocal.ixx" />
     <ClCompile Include="src\Engine\Log.ixx" />
-    <ClCompile Include="src\Platform\Direct3D\D3D12Context.cpp" />
     <ClCompile Include="src\Platform\Windows\PlatformWin32.cpp" />
   </ItemGroup>
   <ItemGroup>

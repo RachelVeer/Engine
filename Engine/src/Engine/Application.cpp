@@ -1,6 +1,5 @@
 #include "Application.h"
 #include "SandboxTypes.h"
-#include "Engine/GraphicsContext.h"
 
 #include <fstream> // For file functions.
 #include "LogDependencies.h"
@@ -21,11 +20,10 @@ static ApplicationState appState;
 
 // Interfaces. 
 Platform platform;
-Graphics gfx;
 
 import Log;
 import ImGuiLocal;
-
+import Graphics;
 
 void Application::Create(SandboxState* sandboxInstance)
 {
@@ -66,7 +64,7 @@ void Application::Create(SandboxState* sandboxInstance)
     appState.ThreadTimer = std::thread(&Application::DoTime, this);
     
     // Initiate the actual graphics pipeline. 
-    gfx.Init(app.startWidth, app.startHeight);
+    Graphics::Init(app.startWidth, app.startHeight);
 
     // Assuming all functions have succeeded, reaching the end
     // of this function signals the application has initialized.
@@ -94,7 +92,7 @@ void Application::Run()
             else            
             {
                 ImGuiLocal::BeginFrame();
-                ImGuiLocal::DemoWindows(color, show_demo_window);
+                ImGuiLocal::DemoWindows(color.r, color.g, color.b, color.a, show_demo_window);
 
                 // Creating our own imgui stuff rather than just default code.
                 {
@@ -111,7 +109,7 @@ void Application::Run()
                     if (ImGui::Button("Screenshot"))
                     {
                         // Buttons return true when clicked (most widgets return true when edited/activated)
-                        gfx.Screenshot();
+                        Graphics::Screenshot();
                         counter++;
                     }
                     ImGui::SameLine();
@@ -135,8 +133,8 @@ void Application::Run()
                
                 // Rendering
                 ImGuiLocal::EndFrame(); // Actually render imgui setup
-                gfx.Update(color, adjustOffset);
-                gfx.Render(color);
+                Graphics::Update(color , adjustOffset);
+                Graphics::Render(color);
             }
         }
     }
@@ -156,7 +154,7 @@ void Application::Shutdown()
     appState.ThreadTimer.join();
     // Cleanup interfaces.
     platform.Shutdown();
-    gfx.Shutdown();
+    Graphics::Shutdown();
     ImGuiLocal::Shutdown();
 }
 

@@ -31,9 +31,6 @@
     <ClInclude Include="src\Engine\EntryPoint.h">
       <Filter>Engine</Filter>
     </ClInclude>
-    <ClInclude Include="src\Engine\GraphicsContext.h">
-      <Filter>Engine</Filter>
-    </ClInclude>
     <ClInclude Include="src\Platform\Direct3D\Utils\DXHelper.h">
       <Filter>Platform\Direct3D\Utils</Filter>
     </ClInclude>
@@ -50,14 +47,12 @@
     <ClCompile Include="src\Engine\Application.cpp">
       <Filter>Engine</Filter>
     </ClCompile>
-    <ClCompile Include="src\Platform\Direct3D\D3D12Context.cpp">
-      <Filter>Platform\Direct3D</Filter>
-    </ClCompile>
     <ClCompile Include="src\Platform\Windows\PlatformWin32.cpp">
       <Filter>Platform\Windows</Filter>
     </ClCompile>
     <ClCompile Include="src\Engine\Log.ixx" />
     <ClCompile Include="src\Engine\ImGuiLocal\ImGuiLocal.ixx" />
+    <ClCompile Include="src\Engine\Graphics.ixx" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="src\Assets\shaders.hlsl">

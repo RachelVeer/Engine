@@ -2,18 +2,10 @@
 // Copyright (c) 2021 Rachel Veer.
 // Licensed under the Apache-2.0 License.
 //*********************************************************
-#include "Engine/GraphicsContext.h"
+module;
+// Seacrest
 #include "Platform/Platform.h"
-
 #include "Engine/LogDependencies.h"
-import Log;
-
-import ImGuiLocal;
-
-// DirectX specific code & libraries will only link/compile
-// relative to the graphics layer if it's actually defined.
-
-#if defined(ENGINE_GRAPHICS_DIRECTX12)
 
 // Windows related.
 #include <wincodec.h>
@@ -39,6 +31,33 @@ import ImGuiLocal;
 // DirectX 12 Toolkit functionality.
 #include <ScreenGrab/ScreenGrab12.h>
 #include <WICTextureLoader/WICTextureLoader12.h>
+
+// STL
+#include <cstdint>
+export module Graphics;
+
+import Log;
+import ImGuiLocal;
+
+// NOTE(rachel): As one can see from #includes & #pragmas, we're directly interfacing 
+// with D3D rather than making the graphics interface more... agnostic. Technically, 
+// the graphics namespace *is*, but all the D3D, windows, & com jank is here (as in
+// the file) too. We'll try splitting this up more properly when we can. 
+
+
+export struct ClearColor
+{
+    float r, g, b, a;
+};
+
+namespace Graphics
+{
+    export void Init(int32_t width, int32_t height);
+    export void Update(ClearColor& color, bool adjustOffset);
+    export void Render(ClearColor& color);
+    export void Shutdown();
+    export void Screenshot();
+};
 
 // Defining the area we draw to.
 struct Surface
@@ -80,7 +99,7 @@ struct CBVResources // Not so much literally accessing D3D constant buffers, but
     bool forward = true;
     const float translationSpeed = 0.005f;
     // "bounds" relative to uniformed space within DirectX, not our screens.  
-    const float offsetBounds    =  1.25f; // Right edge
+    const float offsetBounds = 1.25f; // Right edge
     const float negoffsetBounds = -0.55f; // Left edge
 };
 
@@ -100,7 +119,7 @@ Microsoft::WRL::ComPtr<ID3D12CommandQueue> g_CommandQueue;
 Microsoft::WRL::ComPtr<ID3D12Resource> g_RenderTargets[g_FrameCount];
 Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> g_rtvHeap; // Render Target View Heap.
 Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> g_srvHeap; // Our main Descriptor Heap.
-Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> g_samplerHeap; 
+Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> g_samplerHeap;
 Microsoft::WRL::ComPtr<ID3D12CommandAllocator> g_CommandAllocator;
 Microsoft::WRL::ComPtr<ID3D12RootSignature> g_RootSignature;
 Microsoft::WRL::ComPtr<ID3D12PipelineState> g_PipelineState;
@@ -157,7 +176,7 @@ using namespace DirectX;
 void Graphics::Init(int32_t width, int32_t height)
 {
     CoreLoggerDebug("Current Graphics API: Direct3D12.");
-    
+
     // Storing incoming/external data.
     g_StoredHwnd = static_cast<HWND>(Platform::getAdditionalPlatformData());
     surface.width = width;
@@ -166,9 +185,9 @@ void Graphics::Init(int32_t width, int32_t height)
     // Now preparing data for pipeline.
     g_aspectRatio = static_cast<float>(surface.width) / static_cast<float>(surface.height);
 
-    g_Viewport.Width     = (float)surface.width;
-    g_Viewport.Height    = (float)surface.height;
-    g_ScissorRect.right  = surface.width;
+    g_Viewport.Width = (float)surface.width;
+    g_Viewport.Height = (float)surface.height;
+    g_ScissorRect.right = surface.width;
     g_ScissorRect.bottom = surface.height;
 
     // Then we can call upon the actual api. 
@@ -336,7 +355,7 @@ void LoadPipeline()
         }
     }
 
-    { 
+    {
         // Describe and create a shader resource view (SRV) heap for the texture.
         D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc = {};
         srvHeapDesc.NumDescriptors = 3; // Texture 1 is our first descriptor, Texture 2 our second, and lastly Dear Imgui (Though I'd like it to be first). 
@@ -358,7 +377,7 @@ void LoadPipeline()
 
     // Create frame resources.
     CreateRenderTarget();
-    
+
     // Create command allocator.
     {
         ThrowIfFailed(g_Device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&g_CommandAllocator)));
@@ -421,7 +440,7 @@ void LoadAssets()
         sampler.MinLOD = 0.0f;
         sampler.MaxLOD = D3D12_FLOAT32_MAX;
         g_Device->CreateSampler(&sampler, g_samplerHeap->GetCPUDescriptorHandleForHeapStart());
-        
+
         D3D12_SAMPLER_DESC sampler2 = {};
         sampler2.Filter = D3D12_FILTER_MIN_MAG_LINEAR_MIP_POINT;
         sampler2.AddressU = D3D12_TEXTURE_ADDRESS_MODE_WRAP;
@@ -499,7 +518,7 @@ void LoadAssets()
 
     // Create command list. (version "1" automatically closes itself - one less step). 
     g_Device->CreateCommandList1(0, D3D12_COMMAND_LIST_TYPE_DIRECT, D3D12_COMMAND_LIST_FLAG_NONE, IID_PPV_ARGS(&g_CommandList));
-    
+
     // Create the vertex buffer.
     {
         // Define the geometry for a triangle.
@@ -661,7 +680,7 @@ void LoadAssets()
         D3D12_SUBRESOURCE_DATA subresouce;
         //LoadWICTextureFromFile(g_Device.Get(), L"container.jpg", &g_Texture, decodedData, subresouce);
         LoadWICTextureFromFile(g_Device.Get(), L"container.jpg", &g_Texture, decodedData, subresouce);
-        
+
 
         const UINT64 uploadBufferSize = GetRequiredIntermediateSize(g_Texture.Get(), 0, 1);
 
@@ -804,7 +823,7 @@ void PopulateCommandList()
     ThrowIfFailed(g_CommandAllocator->Reset());
 
     CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(g_rtvHeap->GetCPUDescriptorHandleForHeapStart(), g_FrameIndex, g_rtvDescriptorSize);
-  
+
     UINT backBufferIdx = g_SwapChain->GetCurrentBackBufferIndex();
 
     // Preparing resource barrier, alternatively, there's -> CD3DX12_RESOURCE_BARRIER::Transition
@@ -854,17 +873,17 @@ void PopulateCommandList()
     // Render target view.
     g_CommandList->ClearRenderTargetView(g_mainRenderTargetDescriptor[backBufferIdx], clear_color_with_alpha, 0, NULL);
     g_CommandList->OMSetRenderTargets(1, &g_mainRenderTargetDescriptor[backBufferIdx], FALSE, NULL);
-    
+
     g_CommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
     // First triangle.
     g_CommandList->IASetVertexBuffers(0, 1, &g_VertexBufferView);
     g_CommandList->IASetIndexBuffer(&g_IndexBufferView);
-    g_CommandList->DrawIndexedInstanced(6, 1, 0, 0, 0); 
-    
+    g_CommandList->DrawIndexedInstanced(6, 1, 0, 0, 0);
+
     // Related to Imgui.
     ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), g_CommandList.Get());
-    
+
     // Prepare frame for presenting/drawing. 
     barrier.Transition.StateBefore = D3D12_RESOURCE_STATE_RENDER_TARGET;
     barrier.Transition.StateAfter = D3D12_RESOURCE_STATE_PRESENT;
@@ -974,5 +993,3 @@ void GetHardwareAdapter(IDXGIFactory4* pFactory, IDXGIAdapter1** ppAdapter,
 
     *ppAdapter = adapter.Detach();
 }
-
-#endif
