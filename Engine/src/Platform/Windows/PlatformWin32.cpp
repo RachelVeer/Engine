@@ -74,7 +74,7 @@ void Platform::Startup(
     wc.hInstance     = win32props.hInstance;
     wc.hIcon         = NULL;
     wc.hCursor       = LoadCursor(NULL, IDC_ARROW);
-    wc.hbrBackground = NULL;
+    wc.hbrBackground = CreateSolidBrush(RGB(22, 22, 22));
     wc.lpszMenuName  = NULL;
     wc.lpszClassName = win32props.wndClass.c_str();
     wc.hIconSm       = NULL;
@@ -220,11 +220,6 @@ LRESULT CALLBACK Win32ProcessMessages(HWND lhWnd, UINT uMsg, WPARAM wParam, LPAR
 
     switch (uMsg)
     {
-        case WM_ERASEBKGND:
-        {
-            // Notify the OS that erasing will be handled by the application to prevent flicker.
-            return 1;
-        }
         //case WM_CLOSE:
         //{
         //    return 0; //(We're letting application handle the closing). 
