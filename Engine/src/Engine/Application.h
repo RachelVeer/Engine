@@ -2,8 +2,6 @@
 
 #include <thread>
 
-#include "Platform/Platform.h"
-
 struct SandboxState;
 
 // Application configuration.

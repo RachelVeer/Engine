@@ -1,36 +1,29 @@
-//*********************************************************
-// Copyright (c) 2021 Rachel Veer.
-// Licensed under the Apache-2.0 License.
-//*********************************************************
+module;
 #include <Windows.h>
 #include <string>
 #include <iostream>
 
-#include "Platform/Platform.h"
-
 #include "Engine/LogDependencies.h"
+module Platform;
+
 import Log;
 
 import ImGuiLocal;
 
-// Win32/Window specific code will only compile
-// relative to the platform layer if it's actually defined.
-#if defined(ENGINE_PLATFORM_WINDOWS)
-
 struct Clock
 {
-    double ClockFrequency   = { 0 };
+    double ClockFrequency = { 0 };
     LARGE_INTEGER StartTime = { 0 };
 };
 
 struct Win32Props // Win32 Properties. 
 {
-    HWND hWnd                   = nullptr;
-    HINSTANCE hInstance         = nullptr;
+    HWND hWnd = nullptr;
+    HINSTANCE hInstance = nullptr;
     const std::wstring wndClass = L"Engine Window Class";
-    int Width                   = { 0 };
-    int Height                  = { 0 };
-    POINTS pt                   = { 0 };
+    int Width = { 0 };
+    int Height = { 0 };
+    POINTS pt = { 0 };
 };
 
 struct Keys
@@ -62,22 +55,22 @@ void Platform::Startup(
     win32props.hInstance = GetModuleHandle(0);
     win32props.Width = width;
     win32props.Height = height;
-    
+
     // Register the window class.
     WNDCLASSEX wc = {};
     SecureZeroMemory(&wc, sizeof(wc));
-    wc.cbSize        = sizeof(WNDCLASSEX);
-    wc.style         = CS_HREDRAW | CS_VREDRAW;
-    wc.lpfnWndProc   = Win32ProcessMessages;
-    wc.cbClsExtra    = 0;
-    wc.cbWndExtra    = 0;
-    wc.hInstance     = win32props.hInstance;
-    wc.hIcon         = NULL;
-    wc.hCursor       = LoadCursor(NULL, IDC_ARROW);
+    wc.cbSize = sizeof(WNDCLASSEX);
+    wc.style = CS_HREDRAW | CS_VREDRAW;
+    wc.lpfnWndProc = Win32ProcessMessages;
+    wc.cbClsExtra = 0;
+    wc.cbWndExtra = 0;
+    wc.hInstance = win32props.hInstance;
+    wc.hIcon = NULL;
+    wc.hCursor = LoadCursor(NULL, IDC_ARROW);
     wc.hbrBackground = CreateSolidBrush(RGB(22, 22, 22));
-    wc.lpszMenuName  = NULL;
+    wc.lpszMenuName = NULL;
     wc.lpszClassName = win32props.wndClass.c_str();
-    wc.hIconSm       = NULL;
+    wc.hIconSm = NULL;
 
     if (!RegisterClassEx(&wc))
     {
@@ -170,14 +163,14 @@ std::optional<int> Platform::PumpMessages()
     return {};
 }
 
-double Platform::GetAbsoluteTime() const
+const double Platform::GetAbsoluteTime()
 {
     LARGE_INTEGER currentTime;
     QueryPerformanceCounter(&currentTime);
     return (double)currentTime.QuadPart * winclock.ClockFrequency;
 }
 
-double Platform::Peek() const
+const double Platform::Peek()
 {
     LARGE_INTEGER currentTime;
     QueryPerformanceCounter(&currentTime);
@@ -185,12 +178,12 @@ double Platform::Peek() const
     return elapsedTime;
 }
 
-int16_t Platform::GetXScreenCoordinates() const
+const int16_t Platform::GetXScreenCoordinates()
 {
     return win32props.pt.x;
 }
 
-int16_t Platform::GetYScreenCoordinates() const
+const int16_t Platform::GetYScreenCoordinates()
 {
     return win32props.pt.y;
 }
@@ -228,7 +221,7 @@ LRESULT CALLBACK Win32ProcessMessages(HWND lhWnd, UINT uMsg, WPARAM wParam, LPAR
         {
             // Capture mouse coordinates from lParam. 
             const POINTS pt = MAKEPOINTS(lParam);
-            
+
             // If in client region -> log move. 
             if (pt.x >= 0 && pt.x < win32props.Width && pt.y >= 0 && pt.y < win32props.Height)
             {
@@ -239,7 +232,7 @@ LRESULT CALLBACK Win32ProcessMessages(HWND lhWnd, UINT uMsg, WPARAM wParam, LPAR
             }
             return 0;
         }
-        case WM_KEYDOWN: 
+        case WM_KEYDOWN:
         {
             CoreLoggerInfo("Wm_keydown");
             //printf("wm_keydown\n");
@@ -276,5 +269,3 @@ LRESULT CALLBACK Win32ProcessMessages(HWND lhWnd, UINT uMsg, WPARAM wParam, LPAR
     }
     return DefWindowProc(lhWnd, uMsg, wParam, lParam);
 }
-
-#endif

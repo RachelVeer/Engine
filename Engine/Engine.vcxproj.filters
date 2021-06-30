@@ -37,9 +37,6 @@
     <ClInclude Include="src\Platform\Direct3D\Utils\d3dx12.h">
       <Filter>Platform\Direct3D\Utils</Filter>
     </ClInclude>
-    <ClInclude Include="src\Platform\Platform.h">
-      <Filter>Platform</Filter>
-    </ClInclude>
     <ClInclude Include="src\SandboxTypes.h" />
     <ClInclude Include="src\Engine\LogDependencies.h" />
   </ItemGroup>
@@ -47,13 +44,12 @@
     <ClCompile Include="src\Engine\Application.cpp">
       <Filter>Engine</Filter>
     </ClCompile>
-    <ClCompile Include="src\Platform\Windows\PlatformWin32.cpp">
-      <Filter>Platform\Windows</Filter>
-    </ClCompile>
     <ClCompile Include="src\Engine\Log.ixx" />
     <ClCompile Include="src\Engine\ImGuiLocal\ImGuiLocal.ixx" />
     <ClCompile Include="src\Engine\Graphics.ixx" />
     <ClCompile Include="src\Platform\Direct3D\Direct3D12Context.cpp" />
+    <ClCompile Include="src\Platform\Platform.ixx" />
+    <ClCompile Include="src\Platform\Platform.cpp" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="src\Assets\shaders.hlsl">

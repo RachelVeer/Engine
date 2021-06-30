@@ -1,6 +1,5 @@
 module;
 // Seacrest
-#include "Platform/Platform.h"
 #include "Engine/LogDependencies.h"
 
 // Windows related.
@@ -36,6 +35,7 @@ import <cstdio>;
 
 import Log;
 import ImGuiLocal;
+import Platform;
 
 // NOTE(rachel): As one can see from #includes & #pragmas, we're directly interfacing 
 // with D3D rather than making the graphics interface more... agnostic. Technically, 

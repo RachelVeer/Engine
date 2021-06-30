@@ -19,10 +19,9 @@ struct ApplicationState
 static ApplicationState appState;
 
 // Interfaces. 
-Platform platform;
-
 import Log;
 import ImGuiLocal;
+import Platform;
 import Graphics;
 
 void Application::Create(SandboxState* sandboxInstance)
@@ -54,7 +53,7 @@ void Application::Create(SandboxState* sandboxInstance)
     // App in this case simply encapsulates its configuration.
     auto app = appState.sandboxInstance->appConfig;
     
-    platform.Startup(
+    Platform::Startup(
         app.Name,
         app.startPosX,
         app.startPosY,
@@ -86,7 +85,7 @@ void Application::Run()
         while (appState.Running)
         {
             // Exit code (ecode) is only processed from platform-side Quit message.
-            if (const auto ecode = platform.PumpMessages()) {
+            if (const auto ecode = Platform::PumpMessages()) {
                 if (ecode) {
                     appState.Running = false;
                 }
@@ -103,8 +102,8 @@ void Application::Run()
                     ImGui::Text("Application life-time: = %.2f /s", appState.ElapsedTime);
 
                     // Track mouse coords.
-                    int16_t x = platform.GetXScreenCoordinates();
-                    int16_t y = platform.GetYScreenCoordinates();
+                    int16_t x = Platform::GetXScreenCoordinates();
+                    int16_t y = Platform::GetYScreenCoordinates();
                     ImGui::Text("Mouse X coords: = %d", x);
                     ImGui::Text("Mouse Y coords: = %d", y);
 
@@ -127,7 +126,7 @@ void Application::Run()
                     // Update clear color.
                     if (updatingClearColor)
                     {
-                        float timeValue = static_cast<float>(platform.GetAbsoluteTime());
+                        float timeValue = static_cast<float>(Platform::GetAbsoluteTime());
                         float greenValue = sin(timeValue) / 2.0f + 0.5f;
                         color.g = greenValue;
                     }
@@ -155,7 +154,7 @@ void Application::Shutdown()
     // (So it isn't still running and/or forcefully cut off).
     appState.ThreadTimer.join();
     // Cleanup interfaces.
-    platform.Shutdown();
+    Platform::Shutdown();
     Graphics::Shutdown();
     ImGuiLocal::Shutdown();
 }
@@ -165,7 +164,7 @@ void Application::DoTime()
     // To "peek" is to get a glimpse at time. 
     while (appState.Running)
     {
-        appState.ElapsedTime = platform.Peek();
+        appState.ElapsedTime = Platform::Peek();
         // The results of Peek() undergo formatting for readablitiy.
         // ENGINE_CORE_DEBUG("Application's life-time: {:.2f} \r", appState.ElapsedTime);
     }
