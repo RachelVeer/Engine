@@ -2,7 +2,7 @@
 // Our Direct3D 12 Context.                    
 //=========================
 module;
-// Windows related.
+// Platform specific.
 #include <wincodec.h>
 
 // Com & D3D headers.
@@ -26,13 +26,13 @@ module;
 // DirectX 12 Toolkit functionality.
 #include <ScreenGrab/ScreenGrab12.h>
 #include <WICTextureLoader/WICTextureLoader12.h>
-
-// STL
-#include <cstdint>
 module Graphics;
 
+// STL
+import <cstdint>;
 import <cstdio>;
 
+// Seacrest modules.
 import Log;
 import ImGuiLocal;
 import Platform;

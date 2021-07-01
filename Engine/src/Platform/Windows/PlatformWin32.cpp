@@ -1,12 +1,14 @@
 module;
+// Platform-specific.
 #include <Windows.h>
-#include <string>
-#include <iostream>
-
 module Platform;
 
-import Log;
+// STL.
+import <iostream>;
+import <string>;
 
+// Seacrest modules.
+import Log;
 import ImGuiLocal;
 
 struct Clock
