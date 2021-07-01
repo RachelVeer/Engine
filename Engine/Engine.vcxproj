@@ -106,6 +106,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Engine\Application.cpp" />
+    <ClCompile Include="src\Engine\ImGuiLocal\ImGuiLocal.cpp" />
     <ClCompile Include="src\Platform\Direct3D\GraphicsD3D12.cpp" />
     <ClCompile Include="src\Engine\Graphics.ixx" />
     <ClCompile Include="src\Engine\ImGuiLocal\ImGuiLocal.ixx" />
