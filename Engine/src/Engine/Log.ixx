@@ -1,11 +1,12 @@
 module;
-// STL.
-#include <memory>
-#include <utility>
 // Spdlog lib.
 #include "spdlog/spdlog.h"
 #include "spdlog/sinks/stdout_color_sinks.h"
 export module Log;
+
+// STL.
+import <memory>;
+import <utility>;
 
 std::shared_ptr<spdlog::logger> g_CoreLogger;
 std::shared_ptr<spdlog::logger> g_ClientLogger;
