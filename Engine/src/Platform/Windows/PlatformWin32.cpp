@@ -3,7 +3,6 @@ module;
 #include <string>
 #include <iostream>
 
-#include "Engine/LogDependencies.h"
 module Platform;
 
 import Log;

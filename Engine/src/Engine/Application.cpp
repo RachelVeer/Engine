@@ -2,7 +2,6 @@
 #include "SandboxTypes.h"
 
 #include <fstream> // For file functions.
-#include "LogDependencies.h"
 
 
 typedef std::thread Thread;

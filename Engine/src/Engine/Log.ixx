@@ -1,8 +1,13 @@
 module;
 // Spdlog lib.
 #include "spdlog/spdlog.h"
-#include "spdlog/sinks/stdout_color_sinks.h"
 export module Log;
+
+// This is what was missing from the program outside this module to compile.
+// I wonder if the getters originally here would've solved this, since the
+// templated functions below directly access these "color" loggers. Thus 
+// they need this header.
+export import <spdlog/sinks/stdout_color_sinks.h>;
 
 // STL.
 import <memory>;

@@ -99,7 +99,6 @@
     <ClInclude Include="src\Engine.h" />
     <ClInclude Include="src\Engine\Application.h" />
     <ClInclude Include="src\Engine\EntryPoint.h" />
-    <ClInclude Include="src\Engine\LogDependencies.h" />
     <ClInclude Include="src\Platform\Direct3D\Utils\DXHelper.h" />
     <ClInclude Include="src\Platform\Direct3D\Utils\d3dx12.h" />
     <ClInclude Include="src\SandboxTypes.h" />

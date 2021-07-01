@@ -38,7 +38,6 @@
       <Filter>Platform\Direct3D\Utils</Filter>
     </ClInclude>
     <ClInclude Include="src\SandboxTypes.h" />
-    <ClInclude Include="src\Engine\LogDependencies.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Engine\Application.cpp">

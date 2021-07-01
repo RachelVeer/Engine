@@ -2,9 +2,6 @@
 // Our Direct3D 12 Context.                    
 //=========================
 module;
-// Seacrest
-#include "Engine/LogDependencies.h"
-
 // Windows related.
 #include <wincodec.h>
 
