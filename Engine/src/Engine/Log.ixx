@@ -4,9 +4,7 @@ module;
 export module Log;
 
 // This is what was missing from the program outside this module to compile.
-// I wonder if the getters originally here would've solved this, since the
-// templated functions below directly access these "color" loggers. Thus 
-// they need this header.
+// Using getters would not solve this "requirement". 
 export import <spdlog/sinks/stdout_color_sinks.h>;
 
 // STL.
