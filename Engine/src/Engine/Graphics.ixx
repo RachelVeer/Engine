@@ -15,7 +15,7 @@ export struct ClearColor
 export void GraphicsTest();
 export void GraphicsTest2();
 
-// Current implementation: Platform/Direct3D/Direct3D12Context.cpp!
+// Current implementation: Platform/Direct3D/GraphicsD3D12.cpp!
 namespace Graphics
 {
     export void Init(int32_t width, int32_t height);

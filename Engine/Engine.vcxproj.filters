@@ -47,7 +47,7 @@
     <ClCompile Include="src\Engine\Log.ixx" />
     <ClCompile Include="src\Engine\ImGuiLocal\ImGuiLocal.ixx" />
     <ClCompile Include="src\Engine\Graphics.ixx" />
-    <ClCompile Include="src\Platform\Direct3D\Direct3D12Context.cpp" />
+    <ClCompile Include="src\Platform\Direct3D\GraphicsD3D12.cpp" />
     <ClCompile Include="src\Platform\Platform.ixx" />
     <ClCompile Include="src\Platform\Windows\PlatformWin32.cpp" />
   </ItemGroup>
