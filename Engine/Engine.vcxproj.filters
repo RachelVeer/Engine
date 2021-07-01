@@ -25,9 +25,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Engine.h" />
-    <ClInclude Include="src\Engine\EntryPoint.h">
-      <Filter>Engine</Filter>
-    </ClInclude>
     <ClInclude Include="src\Platform\Direct3D\Utils\DXHelper.h">
       <Filter>Platform\Direct3D\Utils</Filter>
     </ClInclude>
@@ -47,6 +44,9 @@
     <ClCompile Include="src\Engine\Application.ixx" />
     <ClCompile Include="src\Engine\Application.cpp" />
     <ClCompile Include="src\SandboxTypes.ixx" />
+    <ClCompile Include="src\Engine\EntryPoint.ixx">
+      <Filter>Engine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="src\Assets\shaders.hlsl">

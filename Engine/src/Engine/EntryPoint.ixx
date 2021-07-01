@@ -2,16 +2,17 @@
 // Copyright (c) 2021 Rachel Veer.
 // Licensed under the Apache-2.0 License.
 //*********************************************************
-
+module;
 #include <filesystem>
+export module EntryPoint;
 
 import Application;
 import SandboxTypes;
 
 // Externally defined function to create a sandbox.
-extern Application* CreateApplication(SandboxState* OutSandbox);
+export Application* CreateApplication(SandboxState* OutSandbox);
 
-int main(int argc, char* argv[])
+export int main(int argc, char* argv[])
 {
     int minimalArgumentCount = { 1 };
 

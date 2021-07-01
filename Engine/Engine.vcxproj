@@ -97,7 +97,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="src\Engine.h" />
-    <ClInclude Include="src\Engine\EntryPoint.h" />
+    <ClCompile Include="src\Engine\EntryPoint.ixx">
+      <FileType>Document</FileType>
+    </ClCompile>
     <ClInclude Include="src\Platform\Direct3D\Utils\DXHelper.h" />
     <ClInclude Include="src\Platform\Direct3D\Utils\d3dx12.h" />
     <ClInclude Include="src\SandboxTypes.h" />
