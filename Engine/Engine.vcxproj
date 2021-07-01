@@ -112,6 +112,7 @@
     <ClCompile Include="src\Engine\Log.ixx" />
     <ClCompile Include="src\Platform\Windows\PlatformWin32.cpp" />
     <ClCompile Include="src\Platform\Platform.ixx" />
+    <ClCompile Include="src\SandboxTypes.ixx" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="src\Assets\shaders.hlsl">

@@ -8,6 +8,7 @@ import Log;
 import ImGuiLocal;
 import Platform;
 import Graphics;
+import SandboxTypes;
 
 typedef std::thread Thread;
 

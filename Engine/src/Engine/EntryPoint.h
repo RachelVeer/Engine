@@ -6,6 +6,7 @@
 #include <filesystem>
 
 import Application;
+import SandboxTypes;
 
 // Externally defined function to create a sandbox.
 extern Application* CreateApplication(SandboxState* OutSandbox);
