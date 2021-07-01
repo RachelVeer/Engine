@@ -1,11 +1,12 @@
 module;
 // Spdlog lib.
 #include "spdlog/spdlog.h"
+#include "spdlog/sinks/stdout_color_sinks.h"
 export module Log;
 
 // This is what was missing from the program outside this module to compile.
 // Using getters would not solve this "requirement". 
-export import <spdlog/sinks/stdout_color_sinks.h>;
+//export import <spdlog/sinks/stdout_color_sinks.h>;
 
 // STL.
 import <memory>;

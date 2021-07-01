@@ -1,4 +1,4 @@
-#pragma once
+/*#pragma once
 
 #include "Engine/Application.h"
 
@@ -13,3 +13,4 @@ struct SandboxState
     // Sandbox-specific sandbox state. Created and managed by the sandbox.
     void* state;
 };
+*/

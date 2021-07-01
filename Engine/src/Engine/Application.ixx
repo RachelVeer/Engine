@@ -1,8 +1,10 @@
-#pragma once
-
+//===================
+// Application Layer.
+//===================
+module;
+#include <cstdint>
 #include <thread>
-
-struct SandboxState;
+export module Application;
 
 // Application configuration.
 struct ApplicationConfiguration
@@ -25,7 +27,16 @@ struct ApplicationConfiguration
 
 };
 
-class Application
+export struct SandboxState
+{
+    // The application configuration.
+    ApplicationConfiguration appConfig;
+
+    // Sandbox-specific sandbox state. Created and managed by the sandbox.
+    void* state;
+};
+
+export class Application
 {
 public:
     Application() = default;

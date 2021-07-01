@@ -1,27 +1,26 @@
-#include "Application.h"
-#include "SandboxTypes.h"
-
+module;
 #include <fstream> // For file functions.
-
-
-typedef std::thread Thread;
-
-struct ApplicationState
-{
-    SandboxState* sandboxInstance = {};
-    bool Initialized   = false;
-    bool Running       = false;
-    double ElapsedTime = { 0.0 };
-    Thread ThreadTimer;
-};
-
-static ApplicationState appState;
+#include "spdlog/sinks/stdout_color_sinks.h"
+module Application;
 
 // Interfaces. 
 import Log;
 import ImGuiLocal;
 import Platform;
 import Graphics;
+
+typedef std::thread Thread;
+
+struct ApplicationState
+{
+    SandboxState* sandboxInstance = {};
+    bool Initialized = false;
+    bool Running = false;
+    double ElapsedTime = { 0.0 };
+    Thread ThreadTimer;
+};
+
+ApplicationState appState;
 
 void Application::Create(SandboxState* sandboxInstance)
 {
@@ -51,7 +50,7 @@ void Application::Create(SandboxState* sandboxInstance)
 
     // App in this case simply encapsulates its configuration.
     auto app = appState.sandboxInstance->appConfig;
-    
+
     Platform::Startup(
         app.Name,
         app.startPosX,
@@ -62,7 +61,7 @@ void Application::Create(SandboxState* sandboxInstance)
     // Platform setups time, thus time
     // thread comes after its initialization.
     appState.ThreadTimer = std::thread(&Application::DoTime, this);
-    
+
     // Initiate the actual graphics pipeline. 
     Graphics::Init(app.startWidth, app.startHeight);
 
@@ -89,7 +88,7 @@ void Application::Run()
                     appState.Running = false;
                 }
             }
-            else            
+            else
             {
                 ImGuiLocal::BeginFrame();
                 ImGuiLocal::DemoWindows((float&)color, show_demo_window);
@@ -130,10 +129,10 @@ void Application::Run()
                         color.g = greenValue;
                     }
                 }
-               
+
                 // Rendering
                 ImGuiLocal::EndFrame(); // Actually render imgui setup
-                Graphics::Update(color , adjustOffset);
+                Graphics::Update(color, adjustOffset);
                 Graphics::Render(color);
             }
         }

@@ -1,6 +1,8 @@
 module;
 // Platform-specific.
 #include <Windows.h>
+
+#include "spdlog/sinks/stdout_color_sinks.h"
 module Platform;
 
 // STL.

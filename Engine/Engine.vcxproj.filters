@@ -25,9 +25,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Engine.h" />
-    <ClInclude Include="src\Engine\Application.h">
-      <Filter>Engine</Filter>
-    </ClInclude>
     <ClInclude Include="src\Engine\EntryPoint.h">
       <Filter>Engine</Filter>
     </ClInclude>
@@ -40,9 +37,6 @@
     <ClInclude Include="src\SandboxTypes.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\Engine\Application.cpp">
-      <Filter>Engine</Filter>
-    </ClCompile>
     <ClCompile Include="src\Engine\Log.ixx" />
     <ClCompile Include="src\Engine\ImGuiLocal\ImGuiLocal.ixx" />
     <ClCompile Include="src\Engine\Graphics.ixx" />
@@ -50,6 +44,8 @@
     <ClCompile Include="src\Platform\Platform.ixx" />
     <ClCompile Include="src\Platform\Windows\PlatformWin32.cpp" />
     <ClCompile Include="src\Engine\ImGuiLocal\ImGuiLocal.cpp" />
+    <ClCompile Include="src\Engine\Application.ixx" />
+    <ClCompile Include="src\Engine\Application.cpp" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="src\Assets\shaders.hlsl">

@@ -26,6 +26,8 @@ module;
 // DirectX 12 Toolkit functionality.
 #include <ScreenGrab/ScreenGrab12.h>
 #include <WICTextureLoader/WICTextureLoader12.h>
+
+#include "spdlog/sinks/stdout_color_sinks.h"
 module Graphics;
 
 // STL

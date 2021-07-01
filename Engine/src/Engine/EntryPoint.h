@@ -3,10 +3,9 @@
 // Licensed under the Apache-2.0 License.
 //*********************************************************
 
-#include "Application.h"
-#include "SandboxTypes.h"
-
 #include <filesystem>
+
+import Application;
 
 // Externally defined function to create a sandbox.
 extern Application* CreateApplication(SandboxState* OutSandbox);
