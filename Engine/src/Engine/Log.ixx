@@ -1,6 +1,8 @@
 module;
+// STL.
 #include <memory>
 #include <utility>
+// Spdlog lib.
 #include "spdlog/spdlog.h"
 #include "spdlog/sinks/stdout_color_sinks.h"
 export module Log;
@@ -8,21 +10,20 @@ export module Log;
 std::shared_ptr<spdlog::logger> g_CoreLogger;
 std::shared_ptr<spdlog::logger> g_ClientLogger;
 
-// No need to directly access, or "get" our logger. 
-//export inline std::shared_ptr<spdlog::logger>& GetCoreLogger() { return g_CoreLogger; }
-//export inline std::shared_ptr<spdlog::logger>& GetClientLogger() { return g_ClientLogger; }
-
-export void LogInit()
+namespace Log
 {
-    spdlog::set_pattern("%^[%T] %n: %v%$");
-    g_CoreLogger = spdlog::stdout_color_mt("SEACREST");
-    g_CoreLogger->set_level(spdlog::level::trace);
+    export void Init()
+    {
+        spdlog::set_pattern("%^[%T] %n: %v%$");
+        g_CoreLogger = spdlog::stdout_color_mt("SEACREST");
+        g_CoreLogger->set_level(spdlog::level::trace);
 
-    g_ClientLogger = spdlog::stdout_color_mt("APP");
-    g_ClientLogger->set_level(spdlog::level::trace);
+        g_ClientLogger = spdlog::stdout_color_mt("APP");
+        g_ClientLogger->set_level(spdlog::level::trace);
 
-    g_CoreLogger->info("Module core logger initialized.");
-    g_ClientLogger->info("Module client logger initialized.");
+        g_CoreLogger->info("Module core logger initialized.");
+        g_ClientLogger->info("Module client logger initialized.");
+    }
 }
 
 // Mocking spdlogs own implementation. 

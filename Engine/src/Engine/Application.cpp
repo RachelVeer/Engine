@@ -30,7 +30,7 @@ void Application::Create(SandboxState* sandboxInstance)
     appState.sandboxInstance = sandboxInstance;
 
     // Initialize sub-systems. 
-    LogInit();
+    Log::Init();
     ImGuiLocal::Init();
 
     // Testing our logger.
