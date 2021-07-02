@@ -8,7 +8,10 @@ export module EntryPoint;
 
 import Application;
 
-export int main(int argc, char* argv[])
+// While not exactly exported in a 1 to 1 module sense, Sandbox application needs to see it.
+// Thus we export int main(), without the need to call it - just to see & link it. 
+export 
+int main(int argc, char* argv[])
 {
     int minimalArgumentCount = { 1 };
 
