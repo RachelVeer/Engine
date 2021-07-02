@@ -14,7 +14,8 @@
 // http://go.microsoft.com/fwlink/?LinkID=615561
 //--------------------------------------------------------------------------------------
 
-#include "DDSTextureLoader12.h"
+module;
+#include <d3d12.h>
 
 #include <algorithm>
 #include <cassert>
@@ -42,6 +43,7 @@
 #else
 #include "d3dx12.h"
 #endif
+module DDSTextureLoader12;
 
 using namespace DirectX;
 

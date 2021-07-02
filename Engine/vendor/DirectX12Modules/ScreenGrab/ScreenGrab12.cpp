@@ -21,7 +21,8 @@
 
 // For 2D array textures and cubemaps, it captures only the first image in the array
 
-#include "ScreenGrab12.h"
+module;
+#include <d3d12.h>
 
 #include <algorithm>
 #include <cassert>
@@ -52,6 +53,8 @@
 #else
 #include "d3dx12.h"
 #endif
+
+module ScreenGrab12;
 
 using Microsoft::WRL::ComPtr;
 

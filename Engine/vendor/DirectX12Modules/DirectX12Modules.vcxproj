@@ -96,9 +96,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="DDSTextureLoader\DDSTextureLoader12.h" />
-    <ClInclude Include="ScreenGrab\ScreenGrab12.h" />
-    <ClInclude Include="WICTextureLoader\WICTextureLoader12.h" />
+    <ClCompile Include="DDSTextureLoader\DDSTextureLoader12.ixx">
+      <FileType>Document</FileType>
+    </ClCompile>
+    <ClCompile Include="ScreenGrab\ScreenGrab12.ixx">
+      <FileType>Document</FileType>
+    </ClCompile>
+    <ClCompile Include="WICTextureLoader\WICTextureLoader12.ixx">
+      <FileType>Document</FileType>
+    </ClCompile>
     <ClInclude Include="d3dx12.h" />
   </ItemGroup>
   <ItemGroup>

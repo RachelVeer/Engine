@@ -12,15 +12,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="DDSTextureLoader\DDSTextureLoader12.h">
-      <Filter>DDSTextureLoader</Filter>
-    </ClInclude>
-    <ClInclude Include="ScreenGrab\ScreenGrab12.h">
-      <Filter>ScreenGrab</Filter>
-    </ClInclude>
-    <ClInclude Include="WICTextureLoader\WICTextureLoader12.h">
-      <Filter>WICTextureLoader</Filter>
-    </ClInclude>
     <ClInclude Include="d3dx12.h" />
   </ItemGroup>
   <ItemGroup>
@@ -32,6 +23,15 @@
     </ClCompile>
     <ClCompile Include="WICTextureLoader\WICTextureLoader12.cpp">
       <Filter>WICTextureLoader</Filter>
+    </ClCompile>
+    <ClCompile Include="WICTextureLoader\WICTextureLoader12.ixx">
+      <Filter>WICTextureLoader</Filter>
+    </ClCompile>
+    <ClCompile Include="ScreenGrab\ScreenGrab12.ixx">
+      <Filter>ScreenGrab</Filter>
+    </ClCompile>
+    <ClCompile Include="DDSTextureLoader\DDSTextureLoader12.ixx">
+      <Filter>DDSTextureLoader</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

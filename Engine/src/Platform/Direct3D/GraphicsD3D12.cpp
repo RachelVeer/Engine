@@ -23,8 +23,8 @@ module;
 #include "Platform/Direct3D/Utils/d3dx12.h"
 
 // DirectX 12 Toolkit functionality.
-#include <ScreenGrab/ScreenGrab12.h>
-#include <WICTextureLoader/WICTextureLoader12.h>
+//#include <ScreenGrab/ScreenGrab12.h>
+//#include <WICTextureLoader/WICTextureLoader12.h>
 
 #include "spdlog/sinks/stdout_color_sinks.h"
 module Graphics;
@@ -39,6 +39,8 @@ import ImGuiLocal;
 import Platform;
 
 import DXHelper;
+import WICTextureLoader12;
+import ScreenGrab12;
 
 // NOTE(rachel): As one can see from #includes & #pragmas, we're directly interfacing 
 // with D3D rather than making the graphics interface more... agnostic. Technically, 
