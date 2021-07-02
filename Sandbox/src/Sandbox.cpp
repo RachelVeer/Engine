@@ -1,15 +1,10 @@
-module;
 #include <cstdint>
 #include <stdio.h>
 #include <memory>
-module EntryPoint;
 
 import Application;
 import SandboxTypes;
 import EntryPoint;
-
-// TOOD(rachel): I'd like this to not be an implementation file of the entry point.
-// This is temp to deal with the "extern" application create function. 
 
 // Note(rachel): Sandbox is simply an alias for a game;
 // or any desirable application.

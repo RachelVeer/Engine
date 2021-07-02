@@ -10,7 +10,7 @@ import Application;
 import SandboxTypes;
 
 // Externally defined function to create a sandbox.
-export Application* CreateApplication(SandboxState* OutSandbox);
+export extern "C++" Application* CreateApplication(SandboxState * OutSandbox);
 
 export int main(int argc, char* argv[])
 {
