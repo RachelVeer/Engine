@@ -27,13 +27,22 @@ export struct ApplicationConfiguration
 
 };
 
-export class Application
+export struct SandboxState
 {
-public:
-    Application() = default;
-    ~Application() = default;
-    void Create(struct SandboxState* sandboxInstance);
+    // The application configuration.
+    ApplicationConfiguration appConfig;
+
+    // Sandbox-specific sandbox state. Created and managed by the sandbox.
+    void* state;
+};
+
+export namespace Application
+{
+    void Create(SandboxState* sandboxInstance);
     void Run();
     void Shutdown();
     void DoTime();
+
+    // Externally defined function to create a sandbox.
+    extern "C++" void CreateApplication(SandboxState * OutSandbox);
 };

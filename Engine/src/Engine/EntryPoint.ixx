@@ -7,10 +7,6 @@ module;
 export module EntryPoint;
 
 import Application;
-import SandboxTypes;
-
-// Externally defined function to create a sandbox.
-export extern "C++" Application* CreateApplication(SandboxState * OutSandbox);
 
 export int main(int argc, char* argv[])
 {
@@ -24,15 +20,15 @@ export int main(int argc, char* argv[])
         printf("Launched Executable: %s\n", exeName.string().c_str());
         // Request the sandbox instance from the application.
         SandboxState sandboxInstance;
-        // Define & allocate memory for application.
-        auto app = CreateApplication(&sandboxInstance);
+        // External creation of application.
+        Application::CreateApplication(&sandboxInstance);
         
-        app->Create(&sandboxInstance);
-        app->Run();
+        // Our actual application layer. 
+        Application::Create(&sandboxInstance);
+        Application::Run();
         // In any event where the application  
         // loop is broken out of - shutdown. 
-        app->Shutdown();
-        delete app;
+        Application::Shutdown();
     }
 
     return 0;

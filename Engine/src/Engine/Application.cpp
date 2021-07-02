@@ -8,7 +8,6 @@ import Log;
 import ImGuiLocal;
 import Platform;
 import Graphics;
-import SandboxTypes;
 
 typedef std::thread Thread;
 
@@ -61,7 +60,7 @@ void Application::Create(SandboxState* sandboxInstance)
 
     // Platform setups time, thus time
     // thread comes after its initialization.
-    appState.ThreadTimer = std::thread(&Application::DoTime, this);
+    appState.ThreadTimer = std::thread(&Application::DoTime);
 
     // Initiate the actual graphics pipeline. 
     Graphics::Init(app.startWidth, app.startHeight);

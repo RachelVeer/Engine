@@ -41,7 +41,6 @@
     <ClCompile Include="src\Engine\ImGuiLocal\ImGuiLocal.cpp" />
     <ClCompile Include="src\Engine\Application.ixx" />
     <ClCompile Include="src\Engine\Application.cpp" />
-    <ClCompile Include="src\SandboxTypes.ixx" />
     <ClCompile Include="src\Engine\EntryPoint.ixx">
       <Filter>Engine</Filter>
     </ClCompile>

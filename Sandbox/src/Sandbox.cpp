@@ -3,7 +3,6 @@
 #include <memory>
 
 import Application;
-import SandboxTypes;
 import EntryPoint;
 
 // Note(rachel): Sandbox is simply an alias for a game;
@@ -18,37 +17,27 @@ struct SandboxConfiguration
     const wchar_t* Name = L"Seacrest Engine Sandbox";
 };
 
-class Sandbox : public Application
+void Sandbox(SandboxState* OutSandbox)
 {
-public:
-    Sandbox()
-    {
-        //ENGINE_INFO("Default Sandbox constructor!\n");
-    }
-    Sandbox(SandboxState* OutSandbox)
-    {
-        printf("Custom Sandbox constructor!\n");
+    printf("Custom Sandbox constructor!\n");
 
-        // Sandbox has its own "config", to 
-        // prevent passing in "magic" numbers. 
-        SandboxConfiguration sandboxConfig;
+    // Sandbox has its own "config", to 
+    // prevent passing in "magic" numbers. 
+    SandboxConfiguration sandboxConfig;
 
-        // Application configuration.
-        OutSandbox->appConfig.startPosX   = sandboxConfig.startPosX;
-        OutSandbox->appConfig.startPosY   = sandboxConfig.startPosY;
-        OutSandbox->appConfig.startWidth  = sandboxConfig.startWidth;
-        OutSandbox->appConfig.startHeight = sandboxConfig.startHeight;
-        OutSandbox->appConfig.Name        = sandboxConfig.Name;
+    // Application configuration.
+    OutSandbox->appConfig.startPosX   = sandboxConfig.startPosX;
+    OutSandbox->appConfig.startPosY   = sandboxConfig.startPosY;
+    OutSandbox->appConfig.startWidth  = sandboxConfig.startWidth;
+    OutSandbox->appConfig.startHeight = sandboxConfig.startHeight;
+    OutSandbox->appConfig.Name        = sandboxConfig.Name;
 
-        // Create the sandbox state.
-        OutSandbox->state = malloc(sizeof(SandboxState));
+    // Create the sandbox state.
+    OutSandbox->state = malloc(sizeof(SandboxState));
 
-    }
-    ~Sandbox()
-    {}
-};
+}
 
-Application* CreateApplication(SandboxState* sandboxInstance)
+void Application::CreateApplication(SandboxState* sandboxInstance)
 {
-    return new Sandbox(sandboxInstance);
+    Sandbox(sandboxInstance);
 }
