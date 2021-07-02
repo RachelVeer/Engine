@@ -1,10 +1,11 @@
 //===================
 // Application Layer.
 //===================
-module;
-#include <cstdint>
-#include <thread>
 export module Application;
+
+// STL.
+import <cstdint>;
+import <thread>;
 
 // Application configuration.
 export struct ApplicationConfiguration

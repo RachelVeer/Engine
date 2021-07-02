@@ -2,10 +2,12 @@
 // Copyright (c) 2021 Rachel Veer.
 // Licensed under the Apache-2.0 License.
 //*********************************************************
-module;
-#include <filesystem>
 export module EntryPoint;
 
+// STL.
+import <filesystem>;
+
+// Seacrest.
 import Application;
 
 // While not exactly exported in a 1 to 1 module sense, Sandbox application needs to see it.

@@ -1,7 +1,9 @@
 module;
-#include <fstream> // For file functions.
 #include "spdlog/sinks/stdout_color_sinks.h"
 module Application;
+
+// For file functions.
+import <fstream>;
 
 // Interfaces. 
 import Log;
