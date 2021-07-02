@@ -27,6 +27,7 @@
     <ClInclude Include="src\Platform\Direct3D\Utils\d3dx12.h">
       <Filter>Platform\Direct3D\Utils</Filter>
     </ClInclude>
+    <ClInclude Include="src\Platform\Direct3D\D3D12Bridge.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Engine\Log.ixx" />
