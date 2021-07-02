@@ -24,9 +24,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Platform\Direct3D\Utils\DXHelper.h">
-      <Filter>Platform\Direct3D\Utils</Filter>
-    </ClInclude>
     <ClInclude Include="src\Platform\Direct3D\Utils\d3dx12.h">
       <Filter>Platform\Direct3D\Utils</Filter>
     </ClInclude>
@@ -43,6 +40,9 @@
     <ClCompile Include="src\Engine\Application.cpp" />
     <ClCompile Include="src\Engine\EntryPoint.ixx">
       <Filter>Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Platform\Direct3D\Utils\DXHelper.ixx">
+      <Filter>Platform\Direct3D\Utils</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

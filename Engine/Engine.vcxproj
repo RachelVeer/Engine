@@ -99,7 +99,7 @@
     <ClCompile Include="src\Engine\EntryPoint.ixx">
       <FileType>Document</FileType>
     </ClCompile>
-    <ClInclude Include="src\Platform\Direct3D\Utils\DXHelper.h" />
+    <ClCompile Include="src\Platform\Direct3D\Utils\DXHelper.ixx" />
     <ClInclude Include="src\Platform\Direct3D\Utils\d3dx12.h" />
   </ItemGroup>
   <ItemGroup>

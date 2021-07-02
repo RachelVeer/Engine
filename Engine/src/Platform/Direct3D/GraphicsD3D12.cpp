@@ -20,8 +20,7 @@ module;
 #pragma comment (lib, "dxguid.lib") // For DX Modules functionality. 
 
 // D3D12 Helper functions.
-#include "Platform/Direct3D/Utils/d3dx12.h" 
-#include "Platform/Direct3D/Utils/DXHelper.h"
+#include "Platform/Direct3D/Utils/d3dx12.h"
 
 // DirectX 12 Toolkit functionality.
 #include <ScreenGrab/ScreenGrab12.h>
@@ -38,6 +37,8 @@ import <cstdio>;
 import Log;
 import ImGuiLocal;
 import Platform;
+
+import DXHelper;
 
 // NOTE(rachel): As one can see from #includes & #pragmas, we're directly interfacing 
 // with D3D rather than making the graphics interface more... agnostic. Technically, 
