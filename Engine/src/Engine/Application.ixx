@@ -45,5 +45,5 @@ export namespace Application
     void DoTime();
 
     // Externally defined function to create a sandbox.
-    extern "C++" void CreateApplication(SandboxState * OutSandbox);
+    extern "C++" void CreateApplication(SandboxState* OutSandbox);
 };
