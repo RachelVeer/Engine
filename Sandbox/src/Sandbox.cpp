@@ -1,7 +1,5 @@
 // STL.
-import <cstdint>;
-import <stdio.h>;
-import <memory>;
+import std.core;
 
 // Seacrest.
 import Application;
