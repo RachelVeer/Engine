@@ -127,13 +127,19 @@ export
 
     void HelloDirectXMath()
     {
+        // Defining a vector.
         XMVECTOR vec = XMVectorSet(1.0f, 0.0f, 0.0f, 1.0f);
+        // Explicit initialization of identity matrix. 
         XMMATRIX trans = DirectX::XMMatrixIdentity();
+        // Creating transformation matrix. 
         trans = DirectX::XMMatrixTranslation(1.0f, 1.0f, 0.0f);
+        // Then we multiply our vector by the transformation matrix. 
         XMVECTOR vec_transform = XMVector4Transform(vec, trans);
-
+        // DirectX math fun: storing resulting transform into a float4
+        // for ease of access (x, y, z).
         XMFLOAT4 result;
         XMStoreFloat4(&result, vec_transform);
+        // Printing transformed vector. 
         std::cout << "(" << result.x << ", " 
                          << result.y << ", " 
                          << result.z << ")" 
