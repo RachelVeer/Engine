@@ -1,17 +1,14 @@
 module;
-// Spdlog lib.
-//#include "spdlog/spdlog.h"
 #include <Windows.h>
 #include <memoryapi.h>
+// Spdlog lib.
+#include "spdlog/spdlog.h"
 #include "spdlog/sinks/stdout_color_sinks.h"
 export module Log;
 
 // This is what was missing from the program outside this module to compile.
 // Using getters would not solve this "requirement". 
 //export import <spdlog/sinks/stdout_color_sinks.h>;
-
-import "spdlog/spdlog.h";
-//import "spdlog/sinks/stdout_color_sinks.h";
 
 // STL.
 import <memory>;
@@ -24,7 +21,7 @@ namespace Log
 {
     export void Init()
     {
-        //spdlog::set_pattern("%^[%T] %n: %v%$");
+        spdlog::set_pattern("%^[%T] %n: %v%$");
         g_CoreLogger = spdlog::stdout_color_mt("SEACREST");
         g_CoreLogger->set_level(spdlog::level::trace);
 
