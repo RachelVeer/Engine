@@ -58,7 +58,7 @@ export
     CBVResources cbvParams;
 
     // Relevant D3D parameters.
-    const uint32_t g_FrameCount = 2;
+    extern const uint32_t g_FrameCount = 2;
     float g_aspectRatio = { 0 };
 
     // Pipeline objects.
@@ -97,8 +97,8 @@ export
     Microsoft::WRL::ComPtr<ID3D12Resource> g_Texture, g_Texture2;
 
     // For our textures.
-    const uint32_t TextureWidth = 512;
-    const uint32_t TextureHeight = 512;
+    extern const uint32_t TextureWidth = 512;
+    extern const uint32_t TextureHeight = 512;
 
 
     // Synchronization objects.
