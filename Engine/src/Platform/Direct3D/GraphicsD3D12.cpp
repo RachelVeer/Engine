@@ -47,6 +47,7 @@ void Graphics::Init(int32_t width, int32_t height)
 {
     D3D12ContextMod();
     CoreLoggerDebug("Current Graphics API: Direct3D12.");
+    HelloDirectXMath();
 
     // Storing incoming/external data.
     g_StoredHwnd = static_cast<HWND>(Platform::getAdditionalPlatformData());

@@ -1,10 +1,12 @@
-module; 
+module;
+#include <iostream>
 #include "D3D12Bridge.h"
+using namespace DirectX;
 export module D3D12Context;
 
 // STL
 import <cstdint>;
-// . . .
+// Seacrest
 import ImGuiLocal;
 
 export 
@@ -117,8 +119,24 @@ export
     void WaitForPreviousFrame();
     void PopulateCommandList();
 
+    // Internal functions.
     void D3D12ContextMod()
     {
         printf("Printing from D3D12Context module.\n");
+    }
+
+    void HelloDirectXMath()
+    {
+        XMVECTOR vec = XMVectorSet(1.0f, 0.0f, 0.0f, 1.0f);
+        XMMATRIX trans = DirectX::XMMatrixIdentity();
+        trans = DirectX::XMMatrixTranslation(1.0f, 1.0f, 0.0f);
+        XMVECTOR vec_transform = XMVector4Transform(vec, trans);
+
+        XMFLOAT4 result;
+        XMStoreFloat4(&result, vec_transform);
+        std::cout << "(" << result.x << ", " 
+                         << result.y << ", " 
+                         << result.z << ")" 
+                         << '\n';
     }
 }
