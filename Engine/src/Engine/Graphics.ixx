@@ -15,7 +15,6 @@ export struct ClearColor
 
 // Test functions.
 export void GraphicsTest();
-export void GraphicsTest2();
 
 // Current implementation: Platform/Direct3D/GraphicsD3D12.cpp!
 namespace Graphics

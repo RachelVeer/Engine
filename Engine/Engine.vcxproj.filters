@@ -45,6 +45,7 @@
     <ClCompile Include="src\Platform\Direct3D\Utils\DXHelper.ixx">
       <Filter>Platform\Direct3D\Utils</Filter>
     </ClCompile>
+    <ClCompile Include="src\Platform\Direct3D\D3D12Context.ixx" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="src\Assets\shaders.hlsl">
