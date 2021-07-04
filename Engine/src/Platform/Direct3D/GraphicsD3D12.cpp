@@ -59,6 +59,10 @@ void Graphics::Init(int32_t width, int32_t height)
 
     g_Viewport.Width = (float)surface.width;
     g_Viewport.Height = (float)surface.height;
+    g_Viewport.MinDepth = 0.0f;
+    g_Viewport.MaxDepth = 1.0f;
+    g_Viewport.TopLeftX = 0.0f;
+    g_Viewport.TopLeftY = 0.0f;
     g_ScissorRect.right = surface.width;
     g_ScissorRect.bottom = surface.height;
 
@@ -107,11 +111,11 @@ void Graphics::Update(ClearColor& color, bool adjustOffset)
 
         g_constantBufferData.cbcolor.y = color.g;
         // Defining a vector.
-        XMVECTOR vec = XMVectorSet(0.5f, 0.0f, 0.0f, 1.0f);
+        XMVECTOR vec = XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
         // Explicit initialization of identity matrix. 
         XMMATRIX trans = DirectX::XMMatrixIdentity();
         // Creating transformation matrix. 
-        trans = DirectX::XMMatrixTranslation(0.3f, 1.0f, 0.0f);
+        trans = DirectX::XMMatrixTranslation(0.3f, -0.3f, 0.0f);
         // Then we multiply our vector by the transformation matrix. 
         XMVECTOR vec_transform = XMVector4Transform(vec, trans);
         // DirectX math fun: storing resulting transform into a float4
