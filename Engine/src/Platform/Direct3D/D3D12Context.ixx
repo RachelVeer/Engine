@@ -33,9 +33,15 @@ export
     // Detailing a constant occuring within our scene. 
     struct SceneConstantBuffer
     {
-        DirectX::XMFLOAT4 offset;
-        DirectX::XMFLOAT4 cbcolor;
-        float padding[56]; // Padding so the constant buffer is 256-byte aligned. 
+        // Each float = 4 bytes.
+        DirectX::XMFLOAT4 offset;    // 4x4 floats -> 64 bytes.
+        DirectX::XMFLOAT4 cbcolor;   // 4 floats -> 16 bytes. 
+        //DirectX::XMMATRIX transform; // 4x4 floats -> 64 bytes. 
+        float padding[56];           // Padding so the constant buffer is 256-byte aligned. 
+        // To recap:
+        // offset + cbcolor + = 96 bytes. 
+        // Thus 40 floats x 4 (bytes) = 160 bytes.
+        // 96 + 160 = 256. 
     };
     static_assert((sizeof(SceneConstantBuffer) % 256) == 0, "Constant Buffer size must be 256-byte aligned");
 

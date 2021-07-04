@@ -73,38 +73,55 @@ void Graphics::Init(int32_t width, int32_t height)
         srvHandleCPU, srvHandleGPU);
 }
 
+
 // Update frame-based values.
 void Graphics::Update(ClearColor& color, bool adjustOffset)
-{
+{    
     // Do we want to move our geometry in the first place?
     if (adjustOffset)
     {
-        // By default it moves forward, thus once we reach offsetBounds - set it false.
-        if (g_constantBufferData.offset.x > cbvParams.offsetBounds) { cbvParams.forward = false; }
-        // And once it reaches negative bounds, it can move forward again.
-        if (g_constantBufferData.offset.x < cbvParams.negoffsetBounds) { cbvParams.forward = true; }
-
-        if (cbvParams.forward)
-        {
-            g_constantBufferData.offset.x += cbvParams.translationSpeed;
-        }
-
-        if (Platform::getUpArrowKey())
-        {
-            g_LerpCBData.mixColor += cbvParams.translationSpeed;
-        }
-
-        if (Platform::getDownArrowKey())
-        {
-            g_LerpCBData.mixColor -= cbvParams.translationSpeed;
-        }
-
-        if (!cbvParams.forward)
-        {
-            g_constantBufferData.offset.x -= cbvParams.translationSpeed;
-        }
+        //// By default it moves forward, thus once we reach offsetBounds - set it false.
+        //if (g_constantBufferData.offset.x > cbvParams.offsetBounds) { cbvParams.forward = false; }
+        //// And once it reaches negative bounds, it can move forward again.
+        //if (g_constantBufferData.offset.x < cbvParams.negoffsetBounds) { cbvParams.forward = true; }
+        //
+        //if (cbvParams.forward)
+        //{
+        //    g_constantBufferData.offset.x += cbvParams.translationSpeed;
+        //}
+        //
+        //if (Platform::getUpArrowKey())
+        //{
+        //    g_LerpCBData.mixColor += cbvParams.translationSpeed;
+        //}
+        //
+        //if (Platform::getDownArrowKey())
+        //{
+        //    g_LerpCBData.mixColor -= cbvParams.translationSpeed;
+        //}
+        //
+        //if (!cbvParams.forward)
+        //{
+        //    g_constantBufferData.offset.x -= cbvParams.translationSpeed;
+        //}
 
         g_constantBufferData.cbcolor.y = color.g;
+        // Defining a vector.
+        XMVECTOR vec = XMVectorSet(0.5f, 0.0f, 0.0f, 1.0f);
+        // Explicit initialization of identity matrix. 
+        XMMATRIX trans = DirectX::XMMatrixIdentity();
+        // Creating transformation matrix. 
+        trans = DirectX::XMMatrixTranslation(0.3f, 1.0f, 0.0f);
+        // Then we multiply our vector by the transformation matrix. 
+        XMVECTOR vec_transform = XMVector4Transform(vec, trans);
+        // DirectX math fun: storing resulting transform into a float4
+        // for ease of access (x, y, z).
+        //XMFLOAT4 result;
+        XMStoreFloat4(&g_constantBufferData.offset, vec_transform);
+
+        
+        //DirectX::XMStoreFloat4x4(&g_constantBufferData.offset, transform);
+        //std::cout << g_constantBufferData.offset.x << '\n';
 
         memcpy(g_pCbvDataBegin, &g_constantBufferData, sizeof(g_constantBufferData));
         memcpy(g_pLerpCbvDataBegin, &g_LerpCBData, sizeof(g_LerpCBData));
@@ -287,8 +304,9 @@ void LoadAssets()
         // Descriptor table, which will point to our SRV descriptor within our original SRV descriptor heap. 
         rootParameters[2].InitAsDescriptorTable(1, &ranges[1], D3D12_SHADER_VISIBILITY_PIXEL);
 
-        // "3" values, reflecting our constant buffer (yes, even including the padding). 
+        // "3" values, reflecting our Scene constant buffer (yes, even including the padding). 
         rootParameters[0].InitAsConstants(3, 0, 0, D3D12_SHADER_VISIBILITY_VERTEX);
+        // Our Lerp constant. 
         rootParameters[5].InitAsConstants(2, 1, 0, D3D12_SHADER_VISIBILITY_PIXEL);
 
         ranges[2].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER, 1, 0);
@@ -721,6 +739,7 @@ void PopulateCommandList()
 
     // Again, 3 values to reflect our contant buffer members (including padding).
     g_CommandList->SetGraphicsRoot32BitConstants(0, 3, g_pCbvDataBegin, 0);
+
     // Set Texture 1
     g_CommandList->SetGraphicsRootDescriptorTable(1, g_srvHeap->GetGPUDescriptorHandleForHeapStart());
     // Get a proper handle to our second descriptor.
@@ -752,6 +771,7 @@ void PopulateCommandList()
     g_CommandList->IASetVertexBuffers(0, 1, &g_VertexBufferView);
     g_CommandList->IASetIndexBuffer(&g_IndexBufferView);
     g_CommandList->DrawIndexedInstanced(6, 1, 0, 0, 0);
+
 
     // Related to Imgui.
     ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), g_CommandList.Get());

@@ -8,7 +8,6 @@
 // PURPOSE, MERCHANTABILITY, OR NON-INFRINGEMENT.
 //
 //*********************************************************
-
 cbuffer SceneConstantBuffer : register(b0)
 {
     float4 offset;
@@ -38,6 +37,9 @@ PSInput VSMain(float4 position : POSITION, float4 color: COLOR, float2 uv : TEXC
 {
     PSInput result;
 
+    //result.position = position;
+    //result.position = position + offset;
+    // For "mul" if X is a vector, it is treated as row-major (HLSL logic). 
     result.position = position + offset;
     //color.y = cbcolor.y;
     result.color = color;
