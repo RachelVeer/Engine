@@ -114,8 +114,9 @@ void Graphics::Update(ClearColor& color, bool adjustOffset)
         // Explicit initialization of identity matrix. 
         XMMATRIX trans = DirectX::XMMatrixIdentity();
         // Creating transformation matrix.
-        trans = DirectX::XMMatrixTranspose(
-             XMMatrixRotationZ(XMConvertToRadians(90.0f)));
+        trans = DirectX::XMMatrixTranspose( 
+            XMMatrixRotationZ(XMConvertToRadians(90.0f)) *       // Rotating around the Zed axis by 90 radians.
+            XMMatrixScaling((9.0f / 16.0f) * 1.0f, 1.0f, 1.0f)); // Scaling by our Aspect Ratio.
 
         g_constantBufferData.transform = trans;
 
@@ -414,10 +415,10 @@ void LoadAssets()
         Vertex triangleVertices[] =
         {
             // Clockwise.
-            { { -0.25f,  0.25f * g_aspectRatio, 0.0f}, { 1.0f, 0.0f, 0.0f, 1.0f }, { 0.0f, 0.0f } }, // top left
-            { {  0.25f, -0.25f * g_aspectRatio, 0.0f}, { 0.0f, 1.0f, 0.0f, 1.0f }, { 2.0f, 2.0f } }, // bottom right
-            { { -0.25f, -0.25f * g_aspectRatio, 0.0f}, { 0.0f, 0.0f, 1.0f, 1.0f }, { 0.0f, 2.0f } }, // bottom left
-            { {  0.25f,  0.25f * g_aspectRatio, 0.0f}, { 1.0f, 1.0f, 0.0f, 1.0f }, { 2.0f, 0.0f } }, // top right
+            { { -0.45f,  0.45f, 0.0f}, { 1.0f, 0.0f, 0.0f, 1.0f }, { 0.0f, 0.0f } }, // top left
+            { {  0.45f, -0.45f, 0.0f}, { 0.0f, 1.0f, 0.0f, 1.0f }, { 2.0f, 2.0f } }, // bottom right
+            { { -0.45f, -0.45f, 0.0f}, { 0.0f, 0.0f, 1.0f, 1.0f }, { 0.0f, 2.0f } }, // bottom left
+            { {  0.45f,  0.45f, 0.0f}, { 1.0f, 1.0f, 0.0f, 1.0f }, { 2.0f, 0.0f } }, // top right
         };
 
         const uint32_t vertexBufferSize = sizeof(triangleVertices);
