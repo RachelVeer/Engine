@@ -39,7 +39,7 @@ export
         DirectX::XMMATRIX transform; // 4x4 floats -> 64 bytes. 
         float padding[40];           // Padding so the constant buffer is 256-byte aligned. 
         // To recap:
-        // offset + cbcolor + = 96 bytes. 
+        // offset + cbcolor + transform = 96 bytes. 
         // Thus 40 floats x 4 (bytes) = 160 bytes.
         // 96 + 160 = 256. 
     };
