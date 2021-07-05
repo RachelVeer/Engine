@@ -70,8 +70,8 @@ void Graphics::Init(int32_t width, int32_t height)
     LoadPipeline();
     LoadAssets();
     // Dear Imgui is our third descriptor within our main Shader Resource View Descriptor Heap. (Starting from 0 -> 1 -> 2 (2 being our "third" one)).
-    CD3DX12_CPU_DESCRIPTOR_HANDLE srvHandleCPU(g_srvHeap->GetCPUDescriptorHandleForHeapStart(), 2, g_srvDescriptorSize);
-    CD3DX12_GPU_DESCRIPTOR_HANDLE srvHandleGPU(g_srvHeap->GetGPUDescriptorHandleForHeapStart(), 2, g_srvDescriptorSize);
+    CD3DX12_CPU_DESCRIPTOR_HANDLE srvHandleCPU(g_srvHeap->GetCPUDescriptorHandleForHeapStart(), 3, g_srvDescriptorSize);
+    CD3DX12_GPU_DESCRIPTOR_HANDLE srvHandleGPU(g_srvHeap->GetGPUDescriptorHandleForHeapStart(), 3, g_srvDescriptorSize);
     ImGui_ImplDX12_Init(g_Device.Get(), g_FrameCount,
         DXGI_FORMAT_R8G8B8A8_UNORM, g_srvHeap.Get(),
         srvHandleCPU, srvHandleGPU);
@@ -115,7 +115,7 @@ void Graphics::Update(ClearColor& color, bool adjustOffset)
         // Explicit initialization of identity matrix. 
         XMMATRIX trans = DirectX::XMMatrixIdentity();
         // Creating transformation matrix. 
-        trans = DirectX::XMMatrixTranslation(0.3f, -0.3f, 0.0f);
+        trans = DirectX::XMMatrixTranslation(0.7f, -0.3f, 0.0f);
         // Then we multiply our vector by the transformation matrix. 
         XMVECTOR vec_transform = XMVector4Transform(vec, trans);
         // DirectX math fun: storing resulting transform into a float4
@@ -251,7 +251,7 @@ void LoadPipeline()
     {
         // Describe and create a shader resource view (SRV) heap for the texture.
         D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc = {};
-        srvHeapDesc.NumDescriptors = 3; // Texture 1 is our first descriptor, Texture 2 our second, and lastly Dear Imgui (Though I'd like it to be first). 
+        srvHeapDesc.NumDescriptors = 4; // CBV is 1, Texture 1 is our 2nd descriptor, Texture 2 our 3rd, and lastly Dear Imgui (Though I'd like it to be first). 
         srvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
         srvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
         ThrowIfFailed(g_Device->CreateDescriptorHeap(&srvHeapDesc, IID_PPV_ARGS(&g_srvHeap)));
@@ -294,30 +294,33 @@ void LoadAssets()
         // We only need one range for the shader resource view.
         // Whereas two rootparameters are used to not only account for the SRV,
         // but to describe our constant buffer as well - or RootConstant in this case. 
-        CD3DX12_DESCRIPTOR_RANGE1 ranges[4];
+        CD3DX12_DESCRIPTOR_RANGE1 ranges[5];
         CD3DX12_ROOT_PARAMETER1 rootParameters[6];
 
+        // Constant Buffer View
+        ranges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_CBV, 1, 0, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC);
+        rootParameters[0].InitAsDescriptorTable(1, &ranges[0], D3D12_SHADER_VISIBILITY_VERTEX);
+
         // Texture 1
-        ranges[0].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC);
+        ranges[1].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC);
         // Descriptor table, which will point to our SRV descriptor within our original SRV descriptor heap. 
-        rootParameters[1].InitAsDescriptorTable(1, &ranges[0], D3D12_SHADER_VISIBILITY_PIXEL);
+        rootParameters[1].InitAsDescriptorTable(1, &ranges[1], D3D12_SHADER_VISIBILITY_PIXEL);
 
         // Texture 2
         // Notice its baseShaderRegister is set 1, as next texture register is (t1)
-        ranges[1].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 1, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC);
+        ranges[2].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 1, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC);
         // Descriptor table, which will point to our SRV descriptor within our original SRV descriptor heap. 
-        rootParameters[2].InitAsDescriptorTable(1, &ranges[1], D3D12_SHADER_VISIBILITY_PIXEL);
+        rootParameters[2].InitAsDescriptorTable(1, &ranges[2], D3D12_SHADER_VISIBILITY_PIXEL);
 
-        // "3" values, reflecting our Scene constant buffer (yes, even including the padding). 
-        rootParameters[0].InitAsConstants(3, 0, 0, D3D12_SHADER_VISIBILITY_VERTEX);
+        // Samplers
+        ranges[3].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER, 1, 0);
+        rootParameters[3].InitAsDescriptorTable(1, &ranges[3], D3D12_SHADER_VISIBILITY_PIXEL);
+
+        ranges[4].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER, 1, 1);
+        rootParameters[4].InitAsDescriptorTable(1, &ranges[4], D3D12_SHADER_VISIBILITY_PIXEL);
+
         // Our Lerp constant. 
         rootParameters[5].InitAsConstants(2, 1, 0, D3D12_SHADER_VISIBILITY_PIXEL);
-
-        ranges[2].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER, 1, 0);
-        rootParameters[3].InitAsDescriptorTable(1, &ranges[2], D3D12_SHADER_VISIBILITY_PIXEL);
-
-        ranges[3].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER, 1, 1);
-        rootParameters[4].InitAsDescriptorTable(1, &ranges[3], D3D12_SHADER_VISIBILITY_PIXEL);
 
         D3D12_SAMPLER_DESC sampler = {};
         sampler.Filter = D3D12_FILTER_MIN_MAG_LINEAR_MIP_POINT;
@@ -504,8 +507,11 @@ void LoadAssets()
             nullptr,
             IID_PPV_ARGS(&g_ConstantBuffer)));
 
-        // NOTE: No constant buffer view is being created here anymore - 
-        // as the rootsignature handles it being 'set' as a rootconstant now.
+        // Describe and create a constant buffer view.
+        D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc = {};
+        cbvDesc.BufferLocation = g_ConstantBuffer->GetGPUVirtualAddress();
+        cbvDesc.SizeInBytes = constantBufferSize;
+        g_Device->CreateConstantBufferView(&cbvDesc, g_srvHeap->GetCPUDescriptorHandleForHeapStart());
 
         // Map and intialize the constant buffer. We don't unmap this until the
         // app closes. Keeping things mapped for the lifetime of the resource is okay.
@@ -611,7 +617,9 @@ void LoadAssets()
         srvDesc.Format = textureDesc.Format;
         srvDesc.ViewDimension = D3D12_SRV_DIMENSION_TEXTURE2D;
         srvDesc.Texture2D.MipLevels = 1;
-        g_Device->CreateShaderResourceView(g_Texture.Get(), &srvDesc, g_srvHeap->GetCPUDescriptorHandleForHeapStart());
+
+        CD3DX12_CPU_DESCRIPTOR_HANDLE srvHandle(g_srvHeap->GetCPUDescriptorHandleForHeapStart(), 1, g_srvDescriptorSize);
+        g_Device->CreateShaderResourceView(g_Texture.Get(), &srvDesc, srvHandle);
     }
 
     // Release previous temp resource to reuse again.
@@ -686,7 +694,7 @@ void LoadAssets()
         // Here is how we access & store the texture into the SECOND descriptor of our Heap.
         // It's only "1" because of index counting ([0], [1]), either way - we include the proper
         // size of the descriptor heap type as well. 
-        CD3DX12_CPU_DESCRIPTOR_HANDLE srvHandle(g_srvHeap->GetCPUDescriptorHandleForHeapStart(), 1, g_srvDescriptorSize);
+        CD3DX12_CPU_DESCRIPTOR_HANDLE srvHandle(g_srvHeap->GetCPUDescriptorHandleForHeapStart(), 2, g_srvDescriptorSize);
         g_Device->CreateShaderResourceView(g_Texture2.Get(), &srvDesc, srvHandle);
     }
 
@@ -741,15 +749,17 @@ void PopulateCommandList()
     ID3D12DescriptorHeap* ppHeaps[] = { g_srvHeap.Get(), g_samplerHeap.Get() };
     g_CommandList->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
 
-    // Again, 3 values to reflect our contant buffer members (including padding).
-    g_CommandList->SetGraphicsRoot32BitConstants(0, 3, g_pCbvDataBegin, 0);
+    // Constant Buffer View
+    g_CommandList->SetGraphicsRootDescriptorTable(0, g_srvHeap->GetGPUDescriptorHandleForHeapStart());
+    
 
     // Set Texture 1
-    g_CommandList->SetGraphicsRootDescriptorTable(1, g_srvHeap->GetGPUDescriptorHandleForHeapStart());
-    // Get a proper handle to our second descriptor.
     CD3DX12_GPU_DESCRIPTOR_HANDLE srvHandle(g_srvHeap->GetGPUDescriptorHandleForHeapStart(), 1, g_srvDescriptorSize);
+    g_CommandList->SetGraphicsRootDescriptorTable(1, srvHandle);
+    // Get a proper handle to our second descriptor.
+    CD3DX12_GPU_DESCRIPTOR_HANDLE srvHandle2(g_srvHeap->GetGPUDescriptorHandleForHeapStart(), 2, g_srvDescriptorSize);
     // Then set Texture 2
-    g_CommandList->SetGraphicsRootDescriptorTable(2, srvHandle);
+    g_CommandList->SetGraphicsRootDescriptorTable(2, srvHandle2);
 
     CD3DX12_GPU_DESCRIPTOR_HANDLE sampleHandle(g_samplerHeap->GetGPUDescriptorHandleForHeapStart(), 1, g_samplerDescriptorSize);
     g_CommandList->SetGraphicsRootDescriptorTable(3, g_samplerHeap->GetGPUDescriptorHandleForHeapStart());
