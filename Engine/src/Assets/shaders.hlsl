@@ -38,9 +38,9 @@ PSInput VSMain(float4 position : POSITION, float4 color: COLOR, float2 uv : TEXC
     PSInput result;
 
     //result.position = position;
-    //result.position = position + offset;
     // For "mul" if X is a vector, it is treated as row-major (HLSL logic). 
     result.position = mul(float4(position.x, position.y, 0.0f, 1.0f), transform);
+    //result.position = position + offset;
     //color.y = cbcolor.y;
     result.color = color;
     result.uv = uv;

@@ -83,33 +83,37 @@ void Graphics::Update(ClearColor& color, bool adjustOffset)
 {    
     // Do we want to move our geometry in the first place?
     if (adjustOffset)
-    {
-        //// By default it moves forward, thus once we reach offsetBounds - set it false.
-        //if (g_constantBufferData.offset.x > cbvParams.offsetBounds) { cbvParams.forward = false; }
-        //// And once it reaches negative bounds, it can move forward again.
-        //if (g_constantBufferData.offset.x < cbvParams.negoffsetBounds) { cbvParams.forward = true; }
-        //
-        //if (cbvParams.forward)
-        //{
-        //    g_constantBufferData.offset.x += cbvParams.translationSpeed;
-        //}
-        //
-        //if (Platform::getUpArrowKey())
-        //{
-        //    g_LerpCBData.mixColor += cbvParams.translationSpeed;
-        //}
-        //
-        //if (Platform::getDownArrowKey())
-        //{
-        //    g_LerpCBData.mixColor -= cbvParams.translationSpeed;
-        //}
-        //
-        //if (!cbvParams.forward)
-        //{
-        //    g_constantBufferData.offset.x -= cbvParams.translationSpeed;
-        //}
+    {   
+        /*
+        Update: Moving with constants still works, however it doesn't retain proper scaling.
+        ------------------------------------------------------------------------------------
+        // By default it moves forward, thus once we reach offsetBounds - set it false.
+        if (g_constantBufferData.offset.x > cbvParams.offsetBounds) { cbvParams.forward = false; }
+        // And once it reaches negative bounds, it can move forward again.
+        if (g_constantBufferData.offset.x < cbvParams.negoffsetBounds) { cbvParams.forward = true; }
+        
+        if (cbvParams.forward)
+        {
+            g_constantBufferData.offset.x += cbvParams.translationSpeed;
+        }
 
-        //g_constantBufferData.cbcolor.y = color.g;
+        if (!cbvParams.forward)
+        {
+            g_constantBufferData.offset.x -= cbvParams.translationSpeed;
+        }
+
+        g_constantBufferData.cbcolor.y = color.g;
+        */
+        
+        if (Platform::getUpArrowKey())
+        {
+            g_LerpCBData.mixColor += cbvParams.translationSpeed;
+        }
+        
+        if (Platform::getDownArrowKey())
+        {
+            g_LerpCBData.mixColor -= cbvParams.translationSpeed;
+        }
         
         // Explicit initialization of identity matrix. 
         XMMATRIX trans = DirectX::XMMatrixIdentity();
