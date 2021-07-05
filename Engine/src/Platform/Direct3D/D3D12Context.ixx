@@ -8,9 +8,27 @@ export module D3D12Context;
 import <cstdint>;
 // Seacrest
 import ImGuiLocal;
+import Graphics;
 
 export 
 {
+    namespace D3D12Context
+    {
+        void Init(int32_t width, int32_t height);
+        void Update(ClearColor& color, bool adjustOffset);
+        void Render(ClearColor& color);
+        void Shutdown();
+        void Screenshot();
+    }
+    void CreateRenderTarget();
+    void CleanupRenderTarget();
+    void LoadPipeline();
+    void LoadAssets();
+    void GetHardwareAdapter(IDXGIFactory4* pFactory, IDXGIAdapter1** ppAdapter,
+        bool requestHighPerformanceAdapter);
+    void WaitForPreviousFrame();
+    void PopulateCommandList();
+
     // Defining the area we draw to.
     struct Surface
     {
@@ -114,16 +132,6 @@ export
     uint64_t g_FenceValue = 0;
 
     HWND g_StoredHwnd;
-
-    // Forward declarations. 
-    void CreateRenderTarget();
-    void CleanupRenderTarget();
-    void LoadPipeline();
-    void LoadAssets();
-    void GetHardwareAdapter(IDXGIFactory4* pFactory, IDXGIAdapter1** ppAdapter,
-        bool requestHighPerformanceAdapter);
-    void WaitForPreviousFrame();
-    void PopulateCommandList();
 
     // Internal functions.
     void D3D12ContextMod()

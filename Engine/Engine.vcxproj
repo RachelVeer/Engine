@@ -99,6 +99,7 @@
     <ClCompile Include="src\Engine\EntryPoint.ixx">
       <FileType>Document</FileType>
     </ClCompile>
+    <ClCompile Include="src\Engine\Graphics.cpp" />
     <ClCompile Include="src\Platform\Direct3D\D3D12Context.ixx" />
     <ClCompile Include="src\Platform\Direct3D\Utils\DXHelper.ixx" />
     <ClInclude Include="src\Platform\Direct3D\D3D12Bridge.h" />
@@ -108,7 +109,7 @@
     <ClCompile Include="src\Engine\Application.cpp" />
     <ClCompile Include="src\Engine\Application.ixx" />
     <ClCompile Include="src\Engine\ImGuiLocal\ImGuiLocal.cpp" />
-    <ClCompile Include="src\Platform\Direct3D\GraphicsD3D12.cpp" />
+    <ClCompile Include="src\Platform\Direct3D\D3D12Context.cpp" />
     <ClCompile Include="src\Engine\Graphics.ixx" />
     <ClCompile Include="src\Engine\ImGuiLocal\ImGuiLocal.ixx" />
     <ClCompile Include="src\Engine\Log.ixx" />

@@ -8,7 +8,7 @@ module;
 #include "D3D12Bridge.h"
 // Logger.
 #include "spdlog/sinks/stdout_color_sinks.h"
-module Graphics;
+module D3D12Context;
 
 // STL
 import <cstdint>;
@@ -33,17 +33,7 @@ import ScreenGrab12;
 using namespace Microsoft::WRL;
 using namespace DirectX;
 
-// NOTE(rachel): As one can see from #includes & #pragmas, we're directly interfacing 
-// with D3D rather than making the graphics interface more... agnostic. Technically, 
-// the graphics namespace *is*, but all the D3D, windows, & com jank is here (as in
-// the file) too. We'll try splitting this up more properly when we can. 
-
-void GraphicsTest()
-{
-    printf("Graphics Implementation module.\n");
-}
-
-void Graphics::Init(int32_t width, int32_t height)
+void D3D12Context::Init(int32_t width, int32_t height)
 {
     D3D12ContextMod();
     CoreLoggerDebug("Current Graphics API: Direct3D12.");
@@ -79,7 +69,7 @@ void Graphics::Init(int32_t width, int32_t height)
 
 
 // Update frame-based values.
-void Graphics::Update(ClearColor& color, bool adjustOffset)
+void D3D12Context::Update(ClearColor& color, bool adjustOffset)
 {    
     // Do we want to move our geometry in the first place?
     if (adjustOffset)
@@ -129,7 +119,7 @@ void Graphics::Update(ClearColor& color, bool adjustOffset)
     }
 }
 
-void Graphics::Render(ClearColor& color)
+void D3D12Context::Render(ClearColor& color)
 {
     clear_color = ImVec4(color.r, color.g, color.b, color.a);
 
@@ -146,13 +136,13 @@ void Graphics::Render(ClearColor& color)
     WaitForPreviousFrame();
 }
 
-void Graphics::Screenshot()
+void D3D12Context::Screenshot()
 {
     UINT backBufferIdx = g_SwapChain->GetCurrentBackBufferIndex();
     SaveWICTextureToFile(g_CommandQueue.Get(), g_RenderTargets[backBufferIdx].Get(), GUID_ContainerFormatJpeg, L"Screenshot.jpeg", D3D12_RESOURCE_STATE_PRESENT, D3D12_RESOURCE_STATE_PRESENT);
 }
 
-void Graphics::Shutdown()
+void D3D12Context::Shutdown()
 {
     CleanupRenderTarget();
 }
