@@ -12,7 +12,7 @@ cbuffer SceneConstantBuffer : register(b0)
 {
     float4 offset;
     float4 cbcolor;
-    float padding[16];
+    matrix transform;
 }
 
 cbuffer Lerp : register(b1)
@@ -40,7 +40,7 @@ PSInput VSMain(float4 position : POSITION, float4 color: COLOR, float2 uv : TEXC
     //result.position = position;
     //result.position = position + offset;
     // For "mul" if X is a vector, it is treated as row-major (HLSL logic). 
-    result.position = position + offset;
+    result.position = mul(float4(position.x, position.y, 0.0f, 1.0f), transform);
     //color.y = cbcolor.y;
     result.color = color;
     result.uv = uv;

@@ -109,23 +109,15 @@ void Graphics::Update(ClearColor& color, bool adjustOffset)
         //    g_constantBufferData.offset.x -= cbvParams.translationSpeed;
         //}
 
-        g_constantBufferData.cbcolor.y = color.g;
-        // Defining a vector.
-        XMVECTOR vec = XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
+        //g_constantBufferData.cbcolor.y = color.g;
+        
         // Explicit initialization of identity matrix. 
         XMMATRIX trans = DirectX::XMMatrixIdentity();
-        // Creating transformation matrix. 
-        trans = DirectX::XMMatrixTranslation(0.7f, -0.3f, 0.0f);
-        // Then we multiply our vector by the transformation matrix. 
-        XMVECTOR vec_transform = XMVector4Transform(vec, trans);
-        // DirectX math fun: storing resulting transform into a float4
-        // for ease of access (x, y, z).
-        //XMFLOAT4 result;
-        XMStoreFloat4(&g_constantBufferData.offset, vec_transform);
+        // Creating transformation matrix.
+        trans = DirectX::XMMatrixTranspose(
+             XMMatrixRotationZ(XMConvertToRadians(90.0f)));
 
-        
-        //DirectX::XMStoreFloat4x4(&g_constantBufferData.offset, transform);
-        //std::cout << g_constantBufferData.offset.x << '\n';
+        g_constantBufferData.transform = trans;
 
         memcpy(g_pCbvDataBegin, &g_constantBufferData, sizeof(g_constantBufferData));
         memcpy(g_pLerpCbvDataBegin, &g_LerpCBData, sizeof(g_LerpCBData));
