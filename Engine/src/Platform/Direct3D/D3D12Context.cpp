@@ -8,30 +8,10 @@ module;
 #include "D3D12Bridge.h"
 // Logger.
 #include "spdlog/sinks/stdout_color_sinks.h"
-module D3D12Context;
 
-// STL
-import <cstdint>;
-import <cstdio>;
-
-// Seacrest modules.
-import Log;
-import ImGuiLocal;
-import Platform;
-
-// Directly related module (no pun intended).
-import D3D12Context;
-
-// Extended/External utilities & helpers. 
-import DXHelper;
-import WICTextureLoader12;
-import ScreenGrab12;
-
-// We only namespace after variables to make it obvious where 
-// ComPtr truly originated from. Plus general explicitness on 
-// variable creation. 
 using namespace Microsoft::WRL;
 using namespace DirectX;
+module D3D12Context;
 
 void D3D12Context::Init(int32_t width, int32_t height)
 {

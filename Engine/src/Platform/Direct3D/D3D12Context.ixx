@@ -1,3 +1,6 @@
+//===============//
+//    Backend    //
+//===============//
 module;
 #include <iostream>
 #include "D3D12Bridge.h"
@@ -6,9 +9,18 @@ export module D3D12Context;
 
 // STL
 import <cstdint>;
-// Seacrest
+import <cstdio>;
+
+// Seacrest modules.
+import Log;
 import ImGuiLocal;
+import Platform;
 import Graphics;
+
+// Extended/External utilities & helpers. 
+import DXHelper;
+import WICTextureLoader12;
+import ScreenGrab12;
 
 // Public interface.
 export
