@@ -23,7 +23,7 @@ namespace Graphics
 {
     export void Init(int32_t width, int32_t height);
     export void Update(ClearColor& color, bool adjustOffset);
-    export void Render(ClearColor& color);
+    export void Render();
     export void Shutdown();
     export void Screenshot();
 };

@@ -134,7 +134,7 @@ void Application::Run()
                 // Rendering
                 ImGuiLocal::EndFrame(); // Actually render imgui setup
                 Graphics::Update(color, adjustOffset);
-                Graphics::Render(color);
+                Graphics::Render();
             }
         }
     }

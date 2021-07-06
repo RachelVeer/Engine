@@ -22,9 +22,9 @@ void Graphics::Update(ClearColor& color, bool adjustOffset)
     D3D12Context::Update(color, adjustOffset);
 }
 
-void Graphics::Render(ClearColor& color)
+void Graphics::Render()
 {
-    D3D12Context::Render(color);
+    D3D12Context::Render();
 }
 
 void Graphics::Screenshot()
