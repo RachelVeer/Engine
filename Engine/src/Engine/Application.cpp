@@ -77,7 +77,7 @@ void Application::Run()
     bool show_demo_window = false;
     static int counter = { 0 };
     bool updatingClearColor = false;
-    bool adjustOffset = true;
+    bool adjustOffset = false;
 
     if (appState.Initialized)
     {

@@ -55,10 +55,7 @@ void D3D12Context::Update(ClearColor& color, bool adjustOffset)
 
     // Do we want to move our geometry in the first place?
     if (adjustOffset)
-    {   
-        /*
-        Update: Moving with constants still works, however it doesn't retain proper scaling.
-        ------------------------------------------------------------------------------------
+    {
         // By default it moves forward, thus once we reach offsetBounds - set it false.
         if (g_constantBufferData.offset.x > cbvParams.offsetBounds) { cbvParams.forward = false; }
         // And once it reaches negative bounds, it can move forward again.
@@ -74,8 +71,8 @@ void D3D12Context::Update(ClearColor& color, bool adjustOffset)
             g_constantBufferData.offset.x -= cbvParams.translationSpeed;
         }
 
-        g_constantBufferData.cbcolor.y = color.g;
-        */
+        //g_constantBufferData.cbcolor.y = color.g;
+        
         
         if (Platform::getUpArrowKey())
         {
@@ -89,6 +86,7 @@ void D3D12Context::Update(ClearColor& color, bool adjustOffset)
         
         // Explicit initialization of identity matrix. 
         XMMATRIX trans = DirectX::XMMatrixIdentity();
+
         // Creating transformation matrix.
         trans = DirectX::XMMatrixTranspose( 
             XMMatrixRotationZ(XMConvertToRadians(90.0f)) *       // Rotating around the Zed axis by 90 radians.
@@ -484,6 +482,18 @@ void LoadAssets()
         // app closes. Keeping things mapped for the lifetime of the resource is okay.
         CD3DX12_RANGE readRange(0, 0); // We do not intend to read from this resource of the CPU.
         ThrowIfFailed(g_ConstantBuffer->Map(0, &readRange, reinterpret_cast<void**>(&g_pCbvDataBegin)));
+        memcpy(g_pCbvDataBegin, &g_constantBufferData, sizeof(g_constantBufferData));
+
+        // Feed data immediately to not make square appearance dependent on enabling update loop.
+        // Explicit initialization of identity matrix. 
+        XMMATRIX trans = DirectX::XMMatrixIdentity();
+
+        // Creating transformation matrix.
+        trans = DirectX::XMMatrixTranspose(
+            XMMatrixScaling((9.0f / 16.0f) * 1.0f, 1.0f, 1.0f)); // Scaling by our Aspect Ratio.
+
+        g_constantBufferData.transform = trans;
+
         memcpy(g_pCbvDataBegin, &g_constantBufferData, sizeof(g_constantBufferData));
     }
 
