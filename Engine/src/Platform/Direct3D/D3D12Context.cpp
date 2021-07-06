@@ -90,7 +90,7 @@ void D3D12Context::Update(ClearColor& color, bool adjustOffset, float angle)
         // Creating transformation matrix.
         trans = DirectX::XMMatrixTranspose(
             XMMatrixRotationZ(angle) *// Rotating around the Zed axis by 90 radians.
-            XMMatrixTranslation(0.8f, -0.5f, 0.0f) *
+            XMMatrixTranslation(0.5f, -0.5f, 0.0f) *
             XMMatrixScaling((9.0f / 16.0f) * 1.0f, 1.0f, 1.0f) // Scaling by our Aspect Ratio.
             );
 
@@ -389,10 +389,10 @@ void LoadAssets()
         Vertex triangleVertices[] =
         {
             // Clockwise.
-            { { -0.25f,  0.25f, 0.0f}, { 1.0f, 0.0f, 0.0f, 1.0f }, { 0.0f, 0.0f } }, // top left
-            { {  0.25f, -0.25f, 0.0f}, { 0.0f, 1.0f, 0.0f, 1.0f }, { 1.0f, 1.0f } }, // bottom right
-            { { -0.25f, -0.25f, 0.0f}, { 0.0f, 0.0f, 1.0f, 1.0f }, { 0.0f, 1.0f } }, // bottom left
-            { {  0.25f,  0.25f, 0.0f}, { 1.0f, 1.0f, 0.0f, 1.0f }, { 1.0f, 0.0f } }, // top right
+            { { -0.5f,  0.5f, 0.0f}, { 1.0f, 0.0f, 0.0f, 1.0f }, { 0.0f, 0.0f } }, // top left
+            { {  0.5f, -0.5f, 0.0f}, { 0.0f, 1.0f, 0.0f, 1.0f }, { 1.0f, 1.0f } }, // bottom right
+            { { -0.5f, -0.5f, 0.0f}, { 0.0f, 0.0f, 1.0f, 1.0f }, { 0.0f, 1.0f } }, // bottom left
+            { {  0.5f,  0.5f, 0.0f}, { 1.0f, 1.0f, 0.0f, 1.0f }, { 1.0f, 0.0f } }, // top right
         };
 
         const uint32_t vertexBufferSize = sizeof(triangleVertices);
