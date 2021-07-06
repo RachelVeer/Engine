@@ -49,7 +49,7 @@ void D3D12Context::Init(int32_t width, int32_t height)
 
 
 // Update frame-based values.
-void D3D12Context::Update(ClearColor& color, bool adjustOffset)
+void D3D12Context::Update(ClearColor& color, bool adjustOffset, float angle)
 {    
     clear_color = ImVec4(color.r, color.g, color.b, color.a);
 
@@ -57,7 +57,7 @@ void D3D12Context::Update(ClearColor& color, bool adjustOffset)
     if (adjustOffset)
     {
         // By default it moves forward, thus once we reach offsetBounds - set it false.
-        if (g_constantBufferData.offset.x > cbvParams.offsetBounds) { cbvParams.forward = false; }
+        /*if (g_constantBufferData.offset.x > cbvParams.offsetBounds) { cbvParams.forward = false; }
         // And once it reaches negative bounds, it can move forward again.
         if (g_constantBufferData.offset.x < cbvParams.negoffsetBounds) { cbvParams.forward = true; }
         
@@ -72,7 +72,7 @@ void D3D12Context::Update(ClearColor& color, bool adjustOffset)
         }
 
         //g_constantBufferData.cbcolor.y = color.g;
-        
+        */
         
         if (Platform::getUpArrowKey())
         {
@@ -88,9 +88,11 @@ void D3D12Context::Update(ClearColor& color, bool adjustOffset)
         XMMATRIX trans = DirectX::XMMatrixIdentity();
 
         // Creating transformation matrix.
-        trans = DirectX::XMMatrixTranspose( 
-            XMMatrixRotationZ(XMConvertToRadians(90.0f)) *       // Rotating around the Zed axis by 90 radians.
-            XMMatrixScaling((9.0f / 16.0f) * 1.0f, 1.0f, 1.0f)); // Scaling by our Aspect Ratio.
+        trans = DirectX::XMMatrixTranspose(
+            XMMatrixRotationZ(angle) *// Rotating around the Zed axis by 90 radians.
+            XMMatrixTranslation(0.8f, -0.5f, 0.0f) *
+            XMMatrixScaling((9.0f / 16.0f) * 1.0f, 1.0f, 1.0f) // Scaling by our Aspect Ratio.
+            );
 
         g_constantBufferData.transform = trans;
 
@@ -387,10 +389,10 @@ void LoadAssets()
         Vertex triangleVertices[] =
         {
             // Clockwise.
-            { { -0.45f,  0.45f, 0.0f}, { 1.0f, 0.0f, 0.0f, 1.0f }, { 0.0f, 0.0f } }, // top left
-            { {  0.45f, -0.45f, 0.0f}, { 0.0f, 1.0f, 0.0f, 1.0f }, { 1.0f, 1.0f } }, // bottom right
-            { { -0.45f, -0.45f, 0.0f}, { 0.0f, 0.0f, 1.0f, 1.0f }, { 0.0f, 1.0f } }, // bottom left
-            { {  0.45f,  0.45f, 0.0f}, { 1.0f, 1.0f, 0.0f, 1.0f }, { 1.0f, 0.0f } }, // top right
+            { { -0.25f,  0.25f, 0.0f}, { 1.0f, 0.0f, 0.0f, 1.0f }, { 0.0f, 0.0f } }, // top left
+            { {  0.25f, -0.25f, 0.0f}, { 0.0f, 1.0f, 0.0f, 1.0f }, { 1.0f, 1.0f } }, // bottom right
+            { { -0.25f, -0.25f, 0.0f}, { 0.0f, 0.0f, 1.0f, 1.0f }, { 0.0f, 1.0f } }, // bottom left
+            { {  0.25f,  0.25f, 0.0f}, { 1.0f, 1.0f, 0.0f, 1.0f }, { 1.0f, 0.0f } }, // top right
         };
 
         const uint32_t vertexBufferSize = sizeof(triangleVertices);

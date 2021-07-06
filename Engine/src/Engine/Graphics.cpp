@@ -17,9 +17,9 @@ void Graphics::Init(int32_t width, int32_t height)
 
 
 // Update frame-based values.
-void Graphics::Update(ClearColor& color, bool adjustOffset)
+void Graphics::Update(ClearColor& color, bool adjustOffset, float angle)
 {
-    D3D12Context::Update(color, adjustOffset);
+    D3D12Context::Update(color, adjustOffset, angle);
 }
 
 void Graphics::Render()

@@ -83,6 +83,7 @@ void Application::Run()
     {
         while (appState.Running)
         {
+
             // Exit code (ecode) is only processed from platform-side Quit message.
             if (const auto ecode = Platform::PumpMessages()) {
                 if (ecode) {
@@ -133,7 +134,7 @@ void Application::Run()
 
                 // Rendering
                 ImGuiLocal::EndFrame(); // Actually render imgui setup
-                Graphics::Update(color, adjustOffset);
+                Graphics::Update(color, adjustOffset, appState.ElapsedTime);
                 Graphics::Render();
             }
         }

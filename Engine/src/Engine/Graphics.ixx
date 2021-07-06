@@ -22,7 +22,7 @@ export void GraphicsTest();
 namespace Graphics
 {
     export void Init(int32_t width, int32_t height);
-    export void Update(ClearColor& color, bool adjustOffset);
+    export void Update(ClearColor& color, bool adjustOffset, float angle);
     export void Render();
     export void Shutdown();
     export void Screenshot();
