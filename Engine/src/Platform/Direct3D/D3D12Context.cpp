@@ -129,124 +129,18 @@ void D3D12Context::Shutdown()
 
 void LoadPipeline()
 {
-    // Enable the D3D12 debug layer. 
-    // This must be called before the D3D12 device is created. 
-    // Otherwise the D3D12 device will be removed. 
-    {
-        Microsoft::WRL::ComPtr<ID3D12Debug> debugController;
-        if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController))))
-        {
-            debugController->EnableDebugLayer();
-        }
-    }
-
-    // Create the device. 
-    {
-        // Don't mix the use of DXGI 1.0 (IDXGIFactory) and DXGI 1.1 (IDXGIFactory1) in an application.
-        ThrowIfFailed(CreateDXGIFactory2(0, IID_PPV_ARGS(&g_Factory)));
-
-        Microsoft::WRL::ComPtr<IDXGIAdapter1> hardwareAdapter;
-        GetHardwareAdapter(g_Factory.Get(), &hardwareAdapter, true);
-
-        ThrowIfFailed(D3D12CreateDevice(hardwareAdapter.Get(), D3D_FEATURE_LEVEL_11_0,
-            IID_PPV_ARGS(&g_Device)));
-    }
-
-    // Create the command queue. 
-    {
-        D3D12_COMMAND_QUEUE_DESC cmdQueueDesc = {};
-        cmdQueueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
-        cmdQueueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
-
-        ThrowIfFailed(g_Device->CreateCommandQueue(&cmdQueueDesc, IID_PPV_ARGS(&g_CommandQueue)));
-    }
-
-    // Create the swap chain
-    DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {};
-    swapChainDesc.Width = 0;
-    swapChainDesc.Height = 0;
-    swapChainDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-    swapChainDesc.Stereo = false;
-    swapChainDesc.SampleDesc.Count = 1;
-    swapChainDesc.SampleDesc.Quality = 0;
-    swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-    swapChainDesc.BufferCount = g_FrameCount;
-    swapChainDesc.Scaling = DXGI_SCALING_NONE;
-    swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
-    swapChainDesc.AlphaMode = DXGI_ALPHA_MODE_IGNORE; // Don't worry about transparency (for now).
-    swapChainDesc.Flags = 0;
-
-    Microsoft::WRL::ComPtr<IDXGISwapChain1> swapChain;
-    ThrowIfFailed(g_Factory->CreateSwapChainForHwnd(
-        g_CommandQueue.Get(), // In D3D12, it points to a direct Command Queue.
-        g_StoredHwnd,
-        &swapChainDesc,
-        nullptr,              // Not worrying about fullscreen capabilities as of now. 
-        nullptr,
-        &swapChain
-    ));
-
-    // This sample does not support fullscreen transitions.
-    ThrowIfFailed(g_Factory->MakeWindowAssociation(g_StoredHwnd, DXGI_MWA_NO_ALT_ENTER));
-
-    ThrowIfFailed(swapChain.As(&g_SwapChain));
-    g_FrameIndex = g_SwapChain->GetCurrentBackBufferIndex();
-
-    // Create a render target view (RTV) descriptor heap.
-    {
-        D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
-        rtvHeapDesc.NumDescriptors = g_FrameCount;
-        rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
-        rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-        ThrowIfFailed(g_Device->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&g_rtvHeap)));
-
-        g_rtvDescriptorSize = g_Device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
-    }
-
-    // Create frame resources (RTV for each frame).
-    {
-        CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(g_rtvHeap->GetCPUDescriptorHandleForHeapStart());
-
-        // Create a RTV for each frame.
-        for (uint32_t n = 0; n < g_FrameCount; n++)
-        {
-            g_mainRenderTargetDescriptor[n] = rtvHandle;
-            rtvHandle.ptr += g_rtvDescriptorSize;
-        }
-    }
-
-    {
-        // Describe and create a shader resource view (SRV) heap for the texture.
-        D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc = {};
-        srvHeapDesc.NumDescriptors = 4; // CBV is 1, Texture 1 is our 2nd descriptor, Texture 2 our 3rd, and lastly Dear Imgui (Though I'd like it to be first). 
-        srvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
-        srvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-        ThrowIfFailed(g_Device->CreateDescriptorHeap(&srvHeapDesc, IID_PPV_ARGS(&g_srvHeap)));
-        g_srvDescriptorSize = g_Device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
-    }
-
-    {
-        // Describe and create a shader resource view (SRV) heap for the texture.
-        D3D12_DESCRIPTOR_HEAP_DESC samplerHeapDesc = {};
-        samplerHeapDesc.NumDescriptors = 2;
-        samplerHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER;
-        samplerHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-        ThrowIfFailed(g_Device->CreateDescriptorHeap(&samplerHeapDesc, IID_PPV_ARGS(&g_samplerHeap)));
-        g_samplerDescriptorSize = g_Device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER);
-    }
-
-    // Create frame resources.
+    EnableDebugLayer();
+    CreateDevice();
+    CreateCommandQueue();
+    CreateSwapChain();
+    CreateDescriptorHeaps();
     CreateRenderTarget();
-
-    // Create command allocator.
-    {
-        ThrowIfFailed(g_Device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&g_CommandAllocator)));
-    }
+    CreateCommandAllocator();
 }
 
 void LoadAssets()
 {
-    // Create a root signature of a descriptor table with a single CBV. 
+    // Create a root signature and necessary descriptor heap contents. 
     {
         D3D12_FEATURE_DATA_ROOT_SIGNATURE featureData = {};
 
@@ -877,4 +771,122 @@ void GetHardwareAdapter(IDXGIFactory4* pFactory, IDXGIAdapter1** ppAdapter,
     }
 
     *ppAdapter = adapter.Detach();
+}
+
+
+void EnableDebugLayer()
+{
+    // This must be called before the D3D12 device is created. 
+    // Otherwise the D3D12 device will be removed. 
+    Microsoft::WRL::ComPtr<ID3D12Debug> debugController;
+    if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController))))
+    {
+        debugController->EnableDebugLayer();
+    }
+}
+
+void CreateDevice()
+{
+    // Don't mix the use of DXGI 1.0 (IDXGIFactory) and DXGI 1.1 (IDXGIFactory1) in an application.
+    ThrowIfFailed(CreateDXGIFactory2(0, IID_PPV_ARGS(&g_Factory)));
+
+    Microsoft::WRL::ComPtr<IDXGIAdapter1> hardwareAdapter;
+    GetHardwareAdapter(g_Factory.Get(), &hardwareAdapter, true);
+
+    ThrowIfFailed(D3D12CreateDevice(hardwareAdapter.Get(), D3D_FEATURE_LEVEL_11_0,
+        IID_PPV_ARGS(&g_Device)));
+}
+
+void CreateCommandQueue()
+{
+    D3D12_COMMAND_QUEUE_DESC cmdQueueDesc = {};
+    cmdQueueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
+    cmdQueueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
+
+    ThrowIfFailed(g_Device->CreateCommandQueue(&cmdQueueDesc, IID_PPV_ARGS(&g_CommandQueue)));
+}
+
+void CreateSwapChain()
+{
+    // Create the swap chain
+    DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {};
+    swapChainDesc.Width = 0;
+    swapChainDesc.Height = 0;
+    swapChainDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+    swapChainDesc.Stereo = false;
+    swapChainDesc.SampleDesc.Count = 1;
+    swapChainDesc.SampleDesc.Quality = 0;
+    swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+    swapChainDesc.BufferCount = g_FrameCount;
+    swapChainDesc.Scaling = DXGI_SCALING_NONE;
+    swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
+    swapChainDesc.AlphaMode = DXGI_ALPHA_MODE_IGNORE; // Don't worry about transparency (for now).
+    swapChainDesc.Flags = 0;
+
+    Microsoft::WRL::ComPtr<IDXGISwapChain1> swapChain;
+    ThrowIfFailed(g_Factory->CreateSwapChainForHwnd(
+        g_CommandQueue.Get(), // In D3D12, it points to a direct Command Queue.
+        g_StoredHwnd,
+        &swapChainDesc,
+        nullptr,              // Not worrying about fullscreen capabilities as of now. 
+        nullptr,
+        &swapChain
+    ));
+
+    // This sample does not support fullscreen transitions.
+    ThrowIfFailed(g_Factory->MakeWindowAssociation(g_StoredHwnd, DXGI_MWA_NO_ALT_ENTER));
+
+    ThrowIfFailed(swapChain.As(&g_SwapChain));
+    g_FrameIndex = g_SwapChain->GetCurrentBackBufferIndex();
+}
+
+void CreateDescriptorHeaps()
+{
+    // Create a render target view (RTV) descriptor heap.
+    {
+        D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
+        rtvHeapDesc.NumDescriptors = g_FrameCount;
+        rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
+        rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+        ThrowIfFailed(g_Device->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&g_rtvHeap)));
+
+        g_rtvDescriptorSize = g_Device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+    }
+
+    // Create frame resources (RTV for each frame).
+    {
+        CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(g_rtvHeap->GetCPUDescriptorHandleForHeapStart());
+
+        // Create a RTV for each frame.
+        for (uint32_t n = 0; n < g_FrameCount; n++)
+        {
+            g_mainRenderTargetDescriptor[n] = rtvHandle;
+            rtvHandle.ptr += g_rtvDescriptorSize;
+        }
+    }
+
+    {
+        // Describe and create a shader resource view (SRV) heap for the texture.
+        D3D12_DESCRIPTOR_HEAP_DESC srvHeapDesc = {};
+        srvHeapDesc.NumDescriptors = 4; // CBV is 1, Texture 1 is our 2nd descriptor, Texture 2 our 3rd, and lastly Dear Imgui (Though I'd like it to be first). 
+        srvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV;
+        srvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+        ThrowIfFailed(g_Device->CreateDescriptorHeap(&srvHeapDesc, IID_PPV_ARGS(&g_srvHeap)));
+        g_srvDescriptorSize = g_Device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+    }
+
+    {
+        // Describe and create a shader resource view (SRV) heap for the texture.
+        D3D12_DESCRIPTOR_HEAP_DESC samplerHeapDesc = {};
+        samplerHeapDesc.NumDescriptors = 2;
+        samplerHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER;
+        samplerHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+        ThrowIfFailed(g_Device->CreateDescriptorHeap(&samplerHeapDesc, IID_PPV_ARGS(&g_samplerHeap)));
+        g_samplerDescriptorSize = g_Device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER);
+    }
+}
+
+void CreateCommandAllocator()
+{
+    ThrowIfFailed(g_Device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&g_CommandAllocator)));
 }

@@ -33,11 +33,25 @@ namespace D3D12Context
     void Screenshot();
 }
 
-// Further implementation details.
+//=================================//
+// Further implementation details. //
+//=================================//
+
+// Render Target View.
 void CreateRenderTarget();
 void CleanupRenderTarget();
+// Pipeline.
 void LoadPipeline();
+void EnableDebugLayer();
+void CreateDevice();
+void CreateCommandQueue();
+void CreateSwapChain();
+void CreateDescriptorHeaps();
+void CreateCommandAllocator();
+// Assets.
 void LoadAssets();
+void CreateRootSignatureAndHeapContents() {}
+// . . .
 void GetHardwareAdapter(IDXGIFactory4* pFactory, IDXGIAdapter1** ppAdapter,
     bool requestHighPerformanceAdapter);
 void WaitForPreviousFrame();
