@@ -10,11 +10,6 @@ export module Graphics;
 
 import <cstdint>;
 
-export struct ClearColor
-{
-    float r, g, b, a;
-};
-
 // Test functions.
 export void GraphicsTest();
 
@@ -22,7 +17,7 @@ export void GraphicsTest();
 namespace Graphics
 {
     export void Init(int32_t width, int32_t height);
-    export void Update(ClearColor& color, bool adjustOffset, float angle);
+    export void Update(float color[], bool adjustOffset, float angle);
     export void Render();
     export void Shutdown();
     export void Screenshot();

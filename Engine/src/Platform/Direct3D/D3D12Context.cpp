@@ -49,10 +49,10 @@ void D3D12Context::Init(int32_t width, int32_t height)
 
 
 // Update frame-based values.
-void D3D12Context::Update(ClearColor& color, bool adjustOffset, float angle)
+void D3D12Context::Update(float color[], bool adjustOffset, float angle)
 {    
-    clear_color = ImVec4(color.r, color.g, color.b, color.a);
-
+    clear_color = { color[0], color[1], color[2], color[3] };
+    
     // Do we want to move our geometry in the first place?
     if (adjustOffset)
     {

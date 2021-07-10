@@ -27,7 +27,7 @@ export
 namespace D3D12Context
 {
     void Init(int32_t width, int32_t height);
-    void Update(ClearColor& color, bool adjustOffset, float angle);
+    void Update(float color[], bool adjustOffset, float angle);
     void Render();
     void Shutdown();
     void Screenshot();

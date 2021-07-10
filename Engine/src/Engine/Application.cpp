@@ -73,7 +73,7 @@ void Application::Create(SandboxState* sandboxInstance)
 
 void Application::Run()
 {
-    ClearColor color = { 0.086f, 0.086f, 0.086f, 1.0f }; // #161616
+    float color[] = { 0.086f, 0.086f, 0.086f, 1.0f }; // #161616
     bool show_demo_window = false;
     static int counter = { 0 };
     bool updatingClearColor = false;
@@ -93,7 +93,7 @@ void Application::Run()
             else
             {
                 ImGuiLocal::BeginFrame();
-                ImGuiLocal::DemoWindows((float&)color, show_demo_window);
+                ImGuiLocal::DemoWindows(color, show_demo_window);
 
                 // Creating our own imgui stuff rather than just default code.
                 {
@@ -128,7 +128,7 @@ void Application::Run()
                     {
                         float timeValue = static_cast<float>(Platform::GetAbsoluteTime());
                         float greenValue = sin(timeValue) / 2.0f + 0.5f;
-                        color.g = greenValue;
+                        color[1] = greenValue;
                     }
                 }
 
