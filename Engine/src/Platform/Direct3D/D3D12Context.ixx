@@ -50,7 +50,14 @@ void CreateDescriptorHeaps();
 void CreateCommandAllocator();
 // Assets.
 void LoadAssets();
-void CreateRootSignatureAndHeapContents() {}
+void CreateRootSignatureAndHeapContents();
+void CreatePipelineState();
+void CreateCommandList();
+void CreateVertexBuffer();
+void CreateIndexBuffer();
+void CreateConstantBuffers(); // Take heed of sudden plurals,
+void CreateTextures();        // we're handling multiple x's now.
+void CreateSyncObjectsAndWaitForAssetUpload();
 // . . .
 void GetHardwareAdapter(IDXGIFactory4* pFactory, IDXGIAdapter1** ppAdapter,
     bool requestHighPerformanceAdapter);
