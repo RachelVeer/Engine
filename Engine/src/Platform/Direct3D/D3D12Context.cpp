@@ -106,7 +106,7 @@ void D3D12Context::Update(float color[], bool adjustOffset, float angle)
         trans = DirectX::XMMatrixTranspose(
             // Scale -> Rotation -> Translation.
             XMMatrixScaling(1.0f, 1.0f, 1.0f) *
-            XMMatrixRotationZ(-angle) *
+            XMMatrixRotationZ(-angle * 0.5f) *
             XMMatrixTranslation(-0.5f, 0.5f, 0.0f)
         );
 
@@ -494,32 +494,46 @@ void CreateRootSignatureAndHeapContents()
     // We only need one range for the shader resource view.
     // Whereas two rootparameters are used to not only account for the SRV,
     // but to describe our constant buffer as well - or RootConstant in this case. 
-    CD3DX12_DESCRIPTOR_RANGE1 ranges[5];
-    CD3DX12_ROOT_PARAMETER1 rootParameters[6];
+    const int Tex1Range = 0;
+    const int Tex2Range = 1;
+    const int Sampler1Range = 2;
+    const int Sampler2Range = 3;
+    const int maxRanges = 4;
 
-    // Constant Buffer View
-    rootParameters[0].InitAsConstantBufferView(0, 0, D3D12_ROOT_DESCRIPTOR_FLAG_NONE, D3D12_SHADER_VISIBILITY_VERTEX);
+    const int CBVParam  = 0;
+    const int Tex1Param = 1;
+    const int Tex2Param = 2;
+    const int Sampler1Param = 3;
+    const int Sampler2Param = 4;
+    const int LerpConstantParam = 5;
+    const int maxParams = 6;
+    
+    CD3DX12_DESCRIPTOR_RANGE1 ranges[maxRanges];
+    CD3DX12_ROOT_PARAMETER1 rootParameters[maxParams];
+
+    // Constant Buffer View, as a Root Descriptor (...!= Descriptor table).
+    rootParameters[CBVParam].InitAsConstantBufferView(0, 0, D3D12_ROOT_DESCRIPTOR_FLAG_NONE, D3D12_SHADER_VISIBILITY_VERTEX);
 
     // Texture 1
-    ranges[1].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC);
+    ranges[Tex1Range].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 0, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC);
     // Descriptor table, which will point to our SRV descriptor within our original SRV descriptor heap. 
-    rootParameters[1].InitAsDescriptorTable(1, &ranges[1], D3D12_SHADER_VISIBILITY_PIXEL);
+    rootParameters[Tex1Param].InitAsDescriptorTable(1, &ranges[0], D3D12_SHADER_VISIBILITY_PIXEL);
 
     // Texture 2
     // Notice its baseShaderRegister is set 1, as next texture register is (t1)
-    ranges[2].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 1, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC);
+    ranges[Tex2Range].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SRV, 1, 1, 0, D3D12_DESCRIPTOR_RANGE_FLAG_DATA_STATIC);
     // Descriptor table, which will point to our SRV descriptor within our original SRV descriptor heap. 
-    rootParameters[2].InitAsDescriptorTable(1, &ranges[2], D3D12_SHADER_VISIBILITY_PIXEL);
+    rootParameters[Tex2Param].InitAsDescriptorTable(1, &ranges[1], D3D12_SHADER_VISIBILITY_PIXEL);
 
     // Samplers
-    ranges[3].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER, 1, 0);
-    rootParameters[3].InitAsDescriptorTable(1, &ranges[3], D3D12_SHADER_VISIBILITY_PIXEL);
+    ranges[Sampler1Range].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER, 1, 0);
+    rootParameters[Sampler1Param].InitAsDescriptorTable(1, &ranges[2], D3D12_SHADER_VISIBILITY_PIXEL);
 
-    ranges[4].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER, 1, 1);
-    rootParameters[4].InitAsDescriptorTable(1, &ranges[4], D3D12_SHADER_VISIBILITY_PIXEL);
+    ranges[Sampler2Range].Init(D3D12_DESCRIPTOR_RANGE_TYPE_SAMPLER, 1, 1);
+    rootParameters[Sampler2Param].InitAsDescriptorTable(1, &ranges[3], D3D12_SHADER_VISIBILITY_PIXEL);
 
     // Our Lerp constant. 
-    rootParameters[5].InitAsConstants(2, 1, 0, D3D12_SHADER_VISIBILITY_PIXEL);
+    rootParameters[LerpConstantParam].InitAsConstants(2, 1, 0, D3D12_SHADER_VISIBILITY_PIXEL);
 
     D3D12_SAMPLER_DESC sampler = {};
     sampler.Filter = D3D12_FILTER_MIN_MAG_LINEAR_MIP_POINT;
