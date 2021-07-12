@@ -58,6 +58,7 @@ void CreateIndexBuffer();
 void CreateConstantBuffers(); // Take heed of sudden plurals,
 void CreateTextures();        // we're handling multiple x's now.
 void CreateSyncObjectsAndWaitForAssetUpload();
+void BuildMatrices();
 // . . .
 void GetHardwareAdapter(IDXGIFactory4* pFactory, IDXGIAdapter1** ppAdapter,
     bool requestHighPerformanceAdapter);

@@ -106,7 +106,7 @@ void D3D12Context::Update(float color[], bool adjustOffset, float angle)
         trans = DirectX::XMMatrixTranspose(
             // Scale -> Rotation -> Translation.
             XMMatrixScaling(1.0f, 1.0f, 1.0f) *
-            XMMatrixRotationZ(angle) *
+            XMMatrixRotationZ(-angle) *
             XMMatrixTranslation(-0.5f, 0.5f, 0.0f)
         );
 
@@ -165,6 +165,7 @@ void LoadAssets()
     CreateConstantBuffers(); // Take heed of sudden plurals,
     CreateTextures();        // we're handling multiple x's now.
     //^----Handles: "CreateSyncObjectsAndWaitForAssetUpload()".
+    BuildMatrices();
 }
 
 void PopulateCommandList()
@@ -704,8 +705,9 @@ void CreateConstantBuffers()
     // Create the constant buffer.
     {
         const UINT constantBufferSize = sizeof(SceneConstantBuffer); // CB size is required to be 256-byte aligned.
+        const uint64_t AlignedKB = 1024 * 64; // Must be 64KB aligned. 
         auto uploadProperties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
-        auto resourceDesc = CD3DX12_RESOURCE_DESC::Buffer(1024 * 64);
+        auto resourceDesc = CD3DX12_RESOURCE_DESC::Buffer(AlignedKB);
         ThrowIfFailed(g_Device->CreateCommittedResource(
             &uploadProperties,
             D3D12_HEAP_FLAG_NONE,
@@ -932,4 +934,35 @@ void CreateSyncObjectsAndWaitForAssetUpload()
     // complete before continuing. 
     WaitForPreviousFrame();
 
+}
+
+void BuildMatrices()
+{
+    // Explicit initialization of identity matrix. 
+    XMMATRIX trans = DirectX::XMMatrixIdentity();
+
+    // Creating transformation matrix.
+    trans = DirectX::XMMatrixTranspose(
+        // Scale -> Rotation -> Translation.
+        XMMatrixScaling(1.0f, 1.0f, 1.0f) *
+        XMMatrixTranslation(0.5f, -0.5f, 0.0f)
+    );
+
+    g_constantBufferData.transform = trans;
+
+    memcpy(g_pCbvDataBegin, &g_constantBufferData, sizeof(g_constantBufferData));
+
+    // Explicit initialization of identity matrix. 
+    trans = DirectX::XMMatrixIdentity();
+
+    // Creating transformation matrix.
+    trans = DirectX::XMMatrixTranspose(
+        // Scale -> Rotation -> Translation.
+        XMMatrixScaling(1.0f, 1.0f, 1.0f) *
+        XMMatrixTranslation(-0.5f, 0.5f, 0.0f)
+    );
+
+    g_constantBufferData.transform = trans;
+
+    memcpy(g_pCbvDataBegin + sizeof(SceneConstantBuffer), &g_constantBufferData, sizeof(g_constantBufferData));
 }
