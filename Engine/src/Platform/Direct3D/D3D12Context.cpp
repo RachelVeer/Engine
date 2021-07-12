@@ -98,6 +98,22 @@ void D3D12Context::Update(float color[], bool adjustOffset, float angle)
         g_constantBufferData.transform = trans;
 
         memcpy(g_pCbvDataBegin, &g_constantBufferData, sizeof(g_constantBufferData));
+
+        // Explicit initialization of identity matrix. 
+        trans = DirectX::XMMatrixIdentity();
+
+        // Creating transformation matrix.
+        trans = DirectX::XMMatrixTranspose(
+            // Scale -> Rotation -> Translation.
+            XMMatrixScaling(1.0f, 1.0f, 1.0f) *
+            XMMatrixRotationZ(angle) *
+            XMMatrixTranslation(-0.5f, 0.5f, 0.0f)
+        );
+
+        g_constantBufferData.transform = trans;
+
+        memcpy(g_pCbvDataBegin + sizeof(SceneConstantBuffer), &g_constantBufferData, sizeof(g_constantBufferData));
+
         memcpy(g_pLerpCbvDataBegin, &g_LerpCBData, sizeof(g_LerpCBData));
     }
 }
@@ -183,10 +199,6 @@ void PopulateCommandList()
     ID3D12DescriptorHeap* ppHeaps[] = { g_srvHeap.Get(), g_samplerHeap.Get() };
     g_CommandList->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
 
-    // Constant Buffer View
-    g_CommandList->SetGraphicsRootConstantBufferView(0, g_ConstantBuffer->GetGPUVirtualAddress());
-    
-
     // Set Texture 1
     CD3DX12_GPU_DESCRIPTOR_HANDLE srvHandle(g_srvHeap->GetGPUDescriptorHandleForHeapStart(), 1, g_srvDescriptorSize);
     g_CommandList->SetGraphicsRootDescriptorTable(1, srvHandle);
@@ -218,8 +230,16 @@ void PopulateCommandList()
     // First triangle.
     g_CommandList->IASetVertexBuffers(0, 1, &g_VertexBufferView);
     g_CommandList->IASetIndexBuffer(&g_IndexBufferView);
+
+    // Constant Buffer View
+    g_CommandList->SetGraphicsRootConstantBufferView(0, g_ConstantBuffer->GetGPUVirtualAddress());
     g_CommandList->DrawIndexedInstanced(6, 1, 0, 0, 0);
 
+
+    // Second Triangle
+    // Constant Buffer View
+    g_CommandList->SetGraphicsRootConstantBufferView(0, g_ConstantBuffer->GetGPUVirtualAddress() + sizeof(SceneConstantBuffer));
+    g_CommandList->DrawIndexedInstanced(6, 1, 0, 0, 0);
 
     // Related to Imgui.
     ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), g_CommandList.Get());
@@ -685,7 +705,7 @@ void CreateConstantBuffers()
     {
         const UINT constantBufferSize = sizeof(SceneConstantBuffer); // CB size is required to be 256-byte aligned.
         auto uploadProperties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
-        auto resourceDesc = CD3DX12_RESOURCE_DESC::Buffer(constantBufferSize);
+        auto resourceDesc = CD3DX12_RESOURCE_DESC::Buffer(1024 * 64);
         ThrowIfFailed(g_Device->CreateCommittedResource(
             &uploadProperties,
             D3D12_HEAP_FLAG_NONE,
@@ -694,29 +714,20 @@ void CreateConstantBuffers()
             nullptr,
             IID_PPV_ARGS(&g_ConstantBuffer)));
 
-        // Describe and create a constant buffer view.
-        D3D12_CONSTANT_BUFFER_VIEW_DESC cbvDesc = {};
-        cbvDesc.BufferLocation = g_ConstantBuffer->GetGPUVirtualAddress();
-        cbvDesc.SizeInBytes = constantBufferSize;
-        g_Device->CreateConstantBufferView(&cbvDesc, g_srvHeap->GetCPUDescriptorHandleForHeapStart());
-
         // Map and intialize the constant buffer. We don't unmap this until the
         // app closes. Keeping things mapped for the lifetime of the resource is okay.
         CD3DX12_RANGE readRange(0, 0); // We do not intend to read from this resource of the CPU.
         ThrowIfFailed(g_ConstantBuffer->Map(0, &readRange, reinterpret_cast<void**>(&g_pCbvDataBegin)));
         memcpy(g_pCbvDataBegin, &g_constantBufferData, sizeof(g_constantBufferData));
+        memcpy(g_pCbvDataBegin + sizeof(SceneConstantBuffer), &g_constantBufferData, sizeof(g_constantBufferData));
 
         // Feed data immediately to not make square appearance dependent on enabling update loop.
         // Explicit initialization of identity matrix. 
-        XMMATRIX trans = DirectX::XMMatrixIdentity();
+        //XMMATRIX trans = DirectX::XMMatrixIdentity();
 
-        // Creating transformation matrix.
-        //trans = DirectX::XMMatrixTranspose(
-          //  XMMatrixScaling((9.0f / 16.0f) * 1.0f, 1.0f, 1.0f)); // Scaling by our Aspect Ratio.
+        //g_constantBufferData.transform = trans;
 
-        g_constantBufferData.transform = trans;
-
-        memcpy(g_pCbvDataBegin, &g_constantBufferData, sizeof(g_constantBufferData));
+        //memcpy(g_pCbvDataBegin, &g_constantBufferData, sizeof(g_constantBufferData));
     }
 
     {
