@@ -38,15 +38,6 @@ void Application::Create()
     Log::Init();
     ImGuiLocal::Init();
 
-    // Testing our logger.
-    {
-        int a = 5;
-        double b = 4.5;
-        CoreLoggerTrace("CoreLoggerTrace() test. Var={0}", a);
-        CoreLoggerTrace("CoreLoggerTrace() test. Var={0}", b);
-        GraphicsTest();
-    }
-
     // If instance successfully retrieved, we're 
     // officially up and running at this point. 
     appState.Running = true;
