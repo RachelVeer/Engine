@@ -2,8 +2,9 @@ module;
 #include "spdlog/sinks/stdout_color_sinks.h"
 module Application;
 
-// For file functions.
-import <fstream>;
+// STL.
+import <thread>;
+import <fstream>; // For file functions.
 
 // Interfaces. 
 import Log;
@@ -11,24 +12,29 @@ import ImGuiLocal;
 import Platform;
 import Graphics;
 
-typedef std::thread Thread;
+struct ApplicationConfiguration
+{
+    // Note: variables could be applicable or not via platform.
+    int startPosX       = 100;
+    int startPosY       = 100;
+    int startWidth      = 1280;
+    int startHeight     = 720;
+    const wchar_t* Name = L"Seacrest Engine Sandbox.";
+};
 
 struct ApplicationState
 {
-    SandboxState* sandboxInstance = {};
-    bool Initialized = false;
-    bool Running = false;
+    ApplicationConfiguration appConfig;
+    bool Initialized   = false;
+    bool Running       = false;
     double ElapsedTime = { 0.0 };
-    Thread ThreadTimer;
+    std::thread ThreadTimer;
 };
 
 ApplicationState appState;
 
-void Application::Create(SandboxState* sandboxInstance)
+void Application::Create()
 {
-    // Retrieve the original Sandbox instance & store it here.
-    appState.sandboxInstance = sandboxInstance;
-
     // Initialize sub-systems. 
     Log::Init();
     ImGuiLocal::Init();
@@ -50,7 +56,7 @@ void Application::Create(SandboxState* sandboxInstance)
     CoreLoggerDebug(appState.Running ? "true" : "false");
 
     // App in this case simply encapsulates its configuration.
-    auto app = appState.sandboxInstance->appConfig;
+    auto app = appState.appConfig;
 
     Platform::Startup(
         app.Name,
