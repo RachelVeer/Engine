@@ -1,10 +1,9 @@
 module;
+#include <thread>
+#include <fstream>
 #include "spdlog/sinks/stdout_color_sinks.h"
+#include "ImGuiLocal/ImGuiBridge.h"
 module Application;
-
-// STL.
-import <thread>;
-import <fstream>; // For file functions.
 
 // Interfaces. 
 import Log;
@@ -140,7 +139,7 @@ void Application::Run()
 
                 // Rendering
                 ImGuiLocal::EndFrame(); // Actually render imgui setup
-                Graphics::Update(color, adjustOffset, appState.ElapsedTime);
+                Graphics::Update(color, adjustOffset, static_cast<float>(appState.ElapsedTime));
                 Graphics::Render();
             }
         }

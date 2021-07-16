@@ -1,13 +1,14 @@
 module;
 // Platform-specific.
-#include <Windows.h>
-
-#include "spdlog/sinks/stdout_color_sinks.h"
-module Platform;
-
+#include <Windows.h> 
 // STL.
-import <iostream>;
-import <string>;
+#include <iostream>
+#include <string>
+#include <optional>
+// Libraries.
+#include "spdlog/sinks/stdout_color_sinks.h"
+#include "Engine/ImGuiLocal/ImGuiBridge.h"
+module Platform;
 
 // Seacrest modules.
 import Log;
@@ -43,10 +44,10 @@ static LRESULT CALLBACK Win32ProcessMessages(HWND hWnd, UINT uMsg, WPARAM wParam
 
 void Platform::Startup(
     const wchar_t* applicationName,
-    int32_t x,
-    int32_t y,
-    int32_t width,
-    int32_t height)
+    int x,
+    int y,
+    int width,
+    int height)
 {
     // Windows 10 Creators update adds Per Monitor V2 DPI awareness context.
     // Using this awareness context allows the client area of the window 
@@ -181,12 +182,12 @@ const double Platform::Peek()
     return elapsedTime;
 }
 
-const int16_t Platform::GetXScreenCoordinates()
+const int Platform::GetXScreenCoordinates()
 {
     return win32props.pt.x;
 }
 
-const int16_t Platform::GetYScreenCoordinates()
+const int Platform::GetYScreenCoordinates()
 {
     return win32props.pt.y;
 }

@@ -6,9 +6,9 @@
 //================//
 //    Frontend    //
 //================//
+module;
+#include <cstdint>
 export module Graphics;
-
-import <cstdint>;
 
 // Test functions.
 export void GraphicsTest();

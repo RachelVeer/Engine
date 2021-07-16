@@ -1,6 +1,9 @@
 module;
 #include <Windows.h>
 #include <memoryapi.h>
+// STL.
+#include <memory>
+#include <utility>
 // Spdlog lib.
 #include "spdlog/spdlog.h"
 #include "spdlog/sinks/stdout_color_sinks.h"
@@ -9,10 +12,6 @@ export module Log;
 // This is what was missing from the program outside this module to compile.
 // Using getters would not solve this "requirement". 
 //export import <spdlog/sinks/stdout_color_sinks.h>;
-
-// STL.
-import <memory>;
-import <utility>;
 
 std::shared_ptr<spdlog::logger> g_CoreLogger;
 std::shared_ptr<spdlog::logger> g_ClientLogger;

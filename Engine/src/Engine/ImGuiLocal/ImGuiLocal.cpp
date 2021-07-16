@@ -1,8 +1,6 @@
+module;
+#include "ImGuiBridge.h"
 module ImGuiLocal;
-
-import <imgui/imgui.h>;
-import <imgui/backends/imgui_impl_win32.h>;
-import <imgui/backends/imgui_impl_dx12.h>;
 
 void ImGuiLocal::Init()
 {

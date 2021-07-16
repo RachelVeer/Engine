@@ -3,13 +3,11 @@
 //===============//
 module;
 #include <iostream>
+#include <cstdint>
+#include <cstdio>
 #include "D3D12Bridge.h"
-using namespace DirectX;
+#include "Engine/ImGuiLocal/ImGuiBridge.h"
 export module D3D12Context;
-
-// STL
-import <cstdint>;
-import <cstdio>;
 
 // Seacrest modules.
 import Log;
@@ -36,6 +34,7 @@ namespace D3D12Context
 //=================================//
 // Further implementation details. //
 //=================================//
+using namespace DirectX;
 
 // Render Target View.
 void CreateRenderTarget();

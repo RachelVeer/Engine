@@ -8,10 +8,11 @@ module;
 #include "D3D12Bridge.h"
 // Logger.
 #include "spdlog/sinks/stdout_color_sinks.h"
+#include "Engine/ImGuiLocal/ImGuiBridge.h"
+module D3D12Context;
 
 using namespace Microsoft::WRL;
 using namespace DirectX;
-module D3D12Context;
 
 void D3D12Context::Init(int32_t width, int32_t height)
 {

@@ -28,6 +28,7 @@
       <Filter>Platform\Direct3D\Utils</Filter>
     </ClInclude>
     <ClInclude Include="src\Platform\Direct3D\D3D12Bridge.h" />
+    <ClInclude Include="src\Engine\ImGuiLocal\ImGuiBridge.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Engine\Log.ixx" />
