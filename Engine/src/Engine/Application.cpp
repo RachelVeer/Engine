@@ -1,9 +1,9 @@
 module;
-#include <thread>
-#include <fstream>
-#include "spdlog/sinks/stdout_color_sinks.h"
 #include "ImGuiLocal/ImGuiBridge.h"
 module Application;
+
+import std.core;
+import std.threading;
 
 // Interfaces. 
 import Log;
