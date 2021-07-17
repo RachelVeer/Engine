@@ -808,9 +808,12 @@ void CreateTextures()
         // from the upload heap to the Texture2D.
         std::unique_ptr<uint8_t[]> decodedData;
         D3D12_SUBRESOURCE_DATA subresouce;
-        //LoadWICTextureFromFile(g_Device.Get(), L"container.jpg", &g_Texture, decodedData, subresouce);
         LoadWICTextureFromFile(g_Device.Get(), L"container.jpg", &g_Texture, decodedData, subresouce);
 
+        if (g_Texture == nullptr)
+        {
+            MessageBox(nullptr, L"Texture not found!", L"Error", MB_ICONEXCLAMATION | MB_OK);
+        }
 
         const UINT64 uploadBufferSize = GetRequiredIntermediateSize(g_Texture.Get(), 0, 1);
 
@@ -885,6 +888,10 @@ void CreateTextures()
         D3D12_SUBRESOURCE_DATA subresouce;
         LoadWICTextureFromFile(g_Device.Get(), L"awesomeface.png", &g_Texture2, decodedData, subresouce);
 
+        if (g_Texture2 == nullptr)
+        {
+            MessageBox(nullptr, L"Texture not found!", L"Error", MB_ICONEXCLAMATION | MB_OK);
+        }
 
         const UINT64 uploadBufferSize = GetRequiredIntermediateSize(g_Texture2.Get(), 0, 1);
 
