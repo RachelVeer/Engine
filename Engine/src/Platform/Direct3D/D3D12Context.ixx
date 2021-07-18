@@ -171,7 +171,7 @@ HWND g_StoredHwnd;
 // Internal functions.
 void D3D12ContextMod()
 {
-    printf("Printing from D3D12Context module.\n");
+    CoreLogger.AddLog("Printing from D3D12Context module.\n");
 }
 
 void HelloDirectXMath()
@@ -189,8 +189,6 @@ void HelloDirectXMath()
     XMFLOAT4 result;
     XMStoreFloat4(&result, vec_transform);
     // Printing transformed vector. 
-    std::cout << "(" << result.x << ", " 
-                     << result.y << ", " 
-                     << result.z << ")" 
-                     << '\n';
+    CoreLogger.AddLog("HelloDirectXMath! Vector transform result: (%d, %d, %d).\n", 
+                     (int)result.x, (int)result.y, (int)result.z);
 }

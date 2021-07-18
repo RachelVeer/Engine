@@ -17,7 +17,7 @@ using namespace DirectX;
 void D3D12Context::Init(int32_t width, int32_t height)
 {
     D3D12ContextMod();
-    CoreLoggerDebug("Current Graphics API: Direct3D12.");
+    CoreLogger.AddLog("Current Graphics API: Direct3D12.\n");
     HelloDirectXMath();
 
     // Storing incoming/external data.

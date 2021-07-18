@@ -6,6 +6,7 @@ export module EntryPoint;
 
 import std.filesystem;
 import Application;
+import Log;
 
 // While not exactly exported in a 1 to 1 module sense, Sandbox application needs to see it.
 // Thus we export int main(), without the need to call it - just to see & link it. 
@@ -19,7 +20,7 @@ int main(int argc, char* argv[])
     if (argc >= minimalArgumentCount)
     {
         auto exeName = std::filesystem::path(argv[0]).filename();
-        printf("Launched Executable: %s\n", exeName.string().c_str());
+        CoreLogger.AddLog("Launched Executable: %s\n", exeName.string().c_str());
         // Client-side creation of application.
         CreateClientApp();
         // Our engine's actual application layer. 

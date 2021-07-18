@@ -35,15 +35,15 @@ ApplicationState appState;
 void Application::Create()
 {
     // Initialize sub-systems. 
-    Log::Init();
+    //Log::Init();
     ImGuiLocal::Init();
 
     // If instance successfully retrieved, we're 
     // officially up and running at this point. 
     appState.Running = true;
 
-    CoreLoggerWarn("Application State Running?: ");
-    CoreLoggerDebug(appState.Running ? "true" : "false");
+    CoreLogger.AddLog("Application State Running?: \n");
+    CoreLogger.AddLog(appState.Running ? "true\n" : "false\n");
 
     // App in this case simply encapsulates its configuration.
     auto app = appState.appConfig;
@@ -71,6 +71,7 @@ void Application::Run()
 {
     float color[] = { 0.086f, 0.086f, 0.086f, 1.0f }; // #161616
     bool show_demo_window = false;
+    bool show_logger = true;
     static int counter = { 0 };
     bool updatingClearColor = false;
     bool adjustOffset = false;
@@ -90,6 +91,7 @@ void Application::Run()
             {
                 ImGuiLocal::BeginFrame();
                 ImGuiLocal::DemoWindows(color, show_demo_window);
+                ShowExampleAppLog(&show_logger);
 
                 // Creating our own imgui stuff rather than just default code.
                 {
@@ -169,12 +171,12 @@ void Application::DoTime()
     {
         std::ofstream myFile;
         myFile.open("example.txt");
-        CoreLoggerInfo("Writing elapsedTime to a file.");
+        CoreLogger.AddLog("Writing elapsedTime to a file.");
         // This is what's actually written to the file.
         myFile << "Elapsed Time: "
             << appState.ElapsedTime;
         myFile.close();
     }
 
-    CoreLoggerInfo("DoTime Thread Shutting down.");
+    CoreLogger.AddLog("DoTime Thread Shutting down.");
 }
