@@ -1,3 +1,5 @@
+#include "Engine/ImGuiLocal/ImGuiBridge.h"
+
 // STL.
 import std.core;
 
@@ -5,6 +7,7 @@ import std.core;
 import Application;
 import EntryPoint;
 import Log;
+import ImGuiLocal;
 
 import Layer;
 
@@ -27,11 +30,15 @@ void Layer::Run()
         CoreLogger.AddLog("Running proof! Called %d times in application loop.\n", counter);
         counter++;
     }
+
+    ImGui::Begin("Hello Sandbox!");
+    ImGui::Text("Text.");
+    ImGui::End();
 }
 
 void Sandbox()
 {
-    CoreLogger.AddLog("Custom Sandbox constructor!\n");
+    CoreLogger.AddLog("Sandbox created!\n");
 }
 
 void CreateClientApp() {  Sandbox(); }

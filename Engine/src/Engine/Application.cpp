@@ -13,6 +13,10 @@ import Graphics;
 
 import Layer;
 
+void ImGuiUI();
+float color[] = { 0.086f, 0.086f, 0.086f, 1.0f }; // #161616
+bool adjustOffset = false;
+
 struct ApplicationConfiguration
 {
     // Note: variables could be applicable or not via platform.
@@ -71,13 +75,6 @@ void Application::Create()
 
 void Application::Run()
 {
-    float color[] = { 0.086f, 0.086f, 0.086f, 1.0f }; // #161616
-    bool show_demo_window = false;
-    bool show_logger = true;
-    static int counter = { 0 };
-    bool updatingClearColor = false;
-    bool adjustOffset = false;
-
     if (appState.Initialized)
     {
         while (appState.Running)
@@ -92,51 +89,12 @@ void Application::Run()
             else
             {
                 ImGuiLocal::BeginFrame();
-                ImGuiLocal::DemoWindows(color, show_demo_window);
-                ShowExampleAppLog(&show_logger);
-
-                // Creating our own imgui stuff rather than just default code.
-                {
-                    ImGui::Begin("Our Demo");
-                    // Track application life-time.
-                    ImGui::Text("Application life-time: = %.2f /s", appState.ElapsedTime);
-
-                    // Track mouse coords.
-                    int16_t x = Platform::GetXScreenCoordinates();
-                    int16_t y = Platform::GetYScreenCoordinates();
-                    ImGui::Text("Mouse X coords: = %d", x);
-                    ImGui::Text("Mouse Y coords: = %d", y);
-
-                    if (ImGui::Button("Screenshot"))
-                    {
-                        // Buttons return true when clicked (most widgets return true when edited/activated)
-                        Graphics::Screenshot();
-                        counter++;
-                    }
-                    ImGui::SameLine();
-                    ImGui::Text("Screenshots taken: = %d", counter);
-                    ImGui::End();
-                }
-
-                {
-                    ImGui::Begin("Resource State.");
-                    ImGui::Checkbox("Clear color over time", &updatingClearColor);
-                    ImGui::Checkbox("Enable constant (movement)", &adjustOffset);
-                    ImGui::End();
-                    // Update clear color.
-                    if (updatingClearColor)
-                    {
-                        float timeValue = static_cast<float>(Platform::GetAbsoluteTime());
-                        float greenValue = sin(timeValue) / 2.0f + 0.5f;
-                        color[1] = greenValue;
-                    }
-                }
+                ImGuiUI();
+                Layer::Run();
 
                 // Rendering
-                ImGuiLocal::EndFrame(); // Actually render imgui setup
-
-                Layer::Run();
-                Graphics::Update(color, adjustOffset, static_cast<float>(appState.ElapsedTime));
+                ImGuiLocal::EndFrame();
+                Graphics::Update(color, adjustOffset, (float)appState.ElapsedTime);
                 Graphics::Render();
             }
         }
@@ -183,4 +141,52 @@ void Application::DoTime()
     }
 
     CoreLogger.AddLog("DoTime Thread Shutting down.");
+}
+
+void ImGuiUI()
+{
+    static bool show_demo_window = false;
+    static bool show_logger = true;
+    static int counter = { 0 };
+    static bool updatingClearColor = false;
+
+    ImGuiLocal::DemoWindows(color, show_demo_window);
+    ShowExampleAppLog(&show_logger);
+
+    // Creating our own imgui stuff rather than just default code.
+    {
+        ImGui::Begin("Our Demo");
+        // Track application life-time.
+        ImGui::Text("Application life-time: = %.2f /s", appState.ElapsedTime);
+
+        // Track mouse coords.
+        int16_t x = Platform::GetXScreenCoordinates();
+        int16_t y = Platform::GetYScreenCoordinates();
+        ImGui::Text("Mouse X coords: = %d", x);
+        ImGui::Text("Mouse Y coords: = %d", y);
+
+        if (ImGui::Button("Screenshot"))
+        {
+            // Buttons return true when clicked (most widgets return true when edited/activated)
+            Graphics::Screenshot();
+            counter++;
+        }
+        ImGui::SameLine();
+        ImGui::Text("Screenshots taken: = %d", counter);
+        ImGui::End();
+    }
+
+    {
+        ImGui::Begin("Resource State.");
+        ImGui::Checkbox("Clear color over time", &updatingClearColor);
+        ImGui::Checkbox("Enable constant (movement)", &adjustOffset);
+        ImGui::End();
+        // Update clear color.
+        if (updatingClearColor)
+        {
+            float timeValue = static_cast<float>(Platform::GetAbsoluteTime());
+            float greenValue = sin(timeValue) / 2.0f + 0.5f;
+            color[1] = greenValue;
+        }
+    }
 }
