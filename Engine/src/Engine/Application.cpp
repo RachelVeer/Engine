@@ -11,6 +11,8 @@ import ImGuiLocal;
 import Platform;
 import Graphics;
 
+import Layer;
+
 struct ApplicationConfiguration
 {
     // Note: variables could be applicable or not via platform.
@@ -132,6 +134,8 @@ void Application::Run()
 
                 // Rendering
                 ImGuiLocal::EndFrame(); // Actually render imgui setup
+
+                Layer::Run();
                 Graphics::Update(color, adjustOffset, static_cast<float>(appState.ElapsedTime));
                 Graphics::Render();
             }

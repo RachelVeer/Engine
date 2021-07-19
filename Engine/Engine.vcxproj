@@ -100,6 +100,7 @@
       <FileType>Document</FileType>
     </ClCompile>
     <ClCompile Include="src\Engine\Graphics.cpp" />
+    <ClCompile Include="src\Engine\Layer.ixx" />
     <ClCompile Include="src\Platform\Direct3D\D3D12Context.ixx" />
     <ClCompile Include="src\Platform\Direct3D\Utils\DXHelper.ixx" />
     <ClInclude Include="src\Engine\ImGuiLocal\ImGuiBridge.h" />
