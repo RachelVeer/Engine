@@ -16,7 +16,7 @@ import Layer;
 
 bool shown = false;
 static int counter = 0;
-int maxCounters = 5;
+int maxCounters = 3;
 
 void Layer::Run()
 {

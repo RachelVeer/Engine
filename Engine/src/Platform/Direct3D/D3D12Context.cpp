@@ -85,7 +85,7 @@ void D3D12Context::Update(float color[], bool adjustOffset, float angle)
             g_LerpCBData.mixColor -= cbvParams.translationSpeed;
         }
         
-        // Explicit initialization of identity matrix. 
+        /*// Explicit initialization of identity matrix. 
         XMMATRIX trans = DirectX::XMMatrixIdentity();
 
         // Creating transformation matrix.
@@ -113,7 +113,7 @@ void D3D12Context::Update(float color[], bool adjustOffset, float angle)
 
         g_constantBufferData.transform = trans;
 
-        memcpy(g_pCbvDataBegin + sizeof(SceneConstantBuffer), &g_constantBufferData, sizeof(g_constantBufferData));
+        memcpy(g_pCbvDataBegin + sizeof(SceneConstantBuffer), &g_constantBufferData, sizeof(g_constantBufferData));*/
 
         memcpy(g_pLerpCbvDataBegin, &g_LerpCBData, sizeof(g_LerpCBData));
     }
@@ -641,10 +641,10 @@ void CreateVertexBuffer()
     Vertex triangleVertices[] =
     {
         // Clockwise.
-        { { -0.25f,  0.25f, 0.0f}, { 1.0f, 0.0f, 0.0f, 1.0f }, { 0.0f, 0.0f } }, // top left
-        { {  0.25f, -0.25f, 0.0f}, { 0.0f, 1.0f, 0.0f, 1.0f }, { 1.0f, 1.0f } }, // bottom right
-        { { -0.25f, -0.25f, 0.0f}, { 0.0f, 0.0f, 1.0f, 1.0f }, { 0.0f, 1.0f } }, // bottom left
-        { {  0.25f,  0.25f, 0.0f}, { 1.0f, 1.0f, 0.0f, 1.0f }, { 1.0f, 0.0f } }, // top right
+        { { -0.5f,  0.5f, 0.0f}, { 1.0f, 0.0f, 0.0f, 1.0f }, { 0.0f, 0.0f } }, // top left
+        { {  0.5f, -0.5f, 0.0f}, { 0.0f, 1.0f, 0.0f, 1.0f }, { 1.0f, 1.0f } }, // bottom right
+        { { -0.5f, -0.5f, 0.0f}, { 0.0f, 0.0f, 1.0f, 1.0f }, { 0.0f, 1.0f } }, // bottom left
+        { {  0.5f,  0.5f, 0.0f}, { 1.0f, 1.0f, 0.0f, 1.0f }, { 1.0f, 0.0f } }, // top right
     };
 
     const uint32_t vertexBufferSize = sizeof(triangleVertices);
@@ -736,7 +736,8 @@ void CreateConstantBuffers()
         CD3DX12_RANGE readRange(0, 0); // We do not intend to read from this resource of the CPU.
         ThrowIfFailed(g_ConstantBuffer->Map(0, &readRange, reinterpret_cast<void**>(&g_pCbvDataBegin)));
         memcpy(g_pCbvDataBegin, &g_constantBufferData, sizeof(g_constantBufferData));
-        memcpy(g_pCbvDataBegin + sizeof(SceneConstantBuffer), &g_constantBufferData, sizeof(g_constantBufferData));
+        // We are not calling two squares or items anymore (for now...)
+        //memcpy(g_pCbvDataBegin + sizeof(SceneConstantBuffer), &g_constantBufferData, sizeof(g_constantBufferData));
 
         // Feed data immediately to not make square appearance dependent on enabling update loop.
         // Explicit initialization of identity matrix. 
@@ -960,7 +961,28 @@ void CreateSyncObjectsAndWaitForAssetUpload()
 
 void BuildMatrices()
 {
-    // Explicit initialization of identity matrix. 
+    // Creating the model matrix.
+    XMMATRIX model = DirectX::XMMatrixIdentity();
+
+    // Rotating around the X axis. 
+    model = XMMatrixTranspose(XMMatrixRotationX(DirectX::XMConvertToRadians(55.0f)));
+
+    // Creating the view matrix.
+    XMMATRIX view = XMMatrixIdentity();
+    view = XMMatrixTranspose(XMMatrixTranslation(0.0f, 0.0f, 3.0f));
+
+    // Creating projection matrix.
+    XMMATRIX projection = XMMatrixIdentity();
+    // FOV, Aspect Ratio, Near Z, Far Z.
+    projection = XMMatrixTranspose(DirectX::XMMatrixPerspectiveFovLH(XMConvertToRadians(45.0f), g_aspectRatio, 0.1f, 100.0f));
+
+    g_constantBufferData.model = model;
+    g_constantBufferData.view = view;
+    g_constantBufferData.projection = projection;
+
+    memcpy(g_pCbvDataBegin, &g_constantBufferData, sizeof(g_constantBufferData));
+
+    /*// Explicit initialization of identity matrix. 
     XMMATRIX trans = DirectX::XMMatrixIdentity();
 
     // Creating transformation matrix.
@@ -986,5 +1008,5 @@ void BuildMatrices()
 
     g_constantBufferData.transform = trans;
 
-    memcpy(g_pCbvDataBegin + sizeof(SceneConstantBuffer), &g_constantBufferData, sizeof(g_constantBufferData));
+    memcpy(g_pCbvDataBegin + sizeof(SceneConstantBuffer), &g_constantBufferData, sizeof(g_constantBufferData));*/
 }

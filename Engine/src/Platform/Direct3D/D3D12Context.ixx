@@ -87,14 +87,16 @@ struct Vertex
 struct SceneConstantBuffer
 {
     // Each float = 4 bytes.
-    DirectX::XMFLOAT4 offset;    // 4 floats -> 16 bytes.
-    DirectX::XMFLOAT4 cbcolor;   // 4 floats -> 16 bytes. 
-    DirectX::XMMATRIX transform; // 4x4 floats -> 64 bytes. 
-    float padding[40];           // Padding so the constant buffer is 256-byte aligned. 
+    DirectX::XMFLOAT4 offset;     // 4 floats -> 16 bytes.
+    DirectX::XMFLOAT4 cbcolor;    // 4 floats -> 16 bytes. 
+    DirectX::XMMATRIX model;      // 4x4 floats -> 64 bytes. 
+    DirectX::XMMATRIX view;       // 4x4 floats -> 64 bytes. 
+    DirectX::XMMATRIX projection; // 4x4 floats -> 64 bytes. 
+    float padding[8];            // Padding so the constant buffer is 256-byte aligned. 
     // To recap:
-    // offset + cbcolor + transform = 96 bytes. 
-    // Thus 40 floats x 4 (bytes) = 160 bytes.
-    // 96 + 160 = 256. 
+    // offset + cbcolor + mvp = 224 bytes. 
+    // Thus 8 floats x 4 (bytes) = 32 bytes.
+    // 224 + 32 = 256. 
 };
 static_assert((sizeof(SceneConstantBuffer) % 256) == 0, "Constant Buffer size must be 256-byte aligned");
 

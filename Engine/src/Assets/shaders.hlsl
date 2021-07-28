@@ -12,7 +12,9 @@ cbuffer SceneConstantBuffer : register(b0)
 {
     float4 offset;
     float4 cbcolor;
-    matrix transform;
+    matrix model;
+    matrix view;
+    matrix projection;
 }
 
 cbuffer Lerp : register(b1)
@@ -36,11 +38,12 @@ Texture2D g_Texture2 : register(t1);
 PSInput VSMain(float4 position : POSITION, float4 color: COLOR, float2 uv : TEXCOORD)
 {
     PSInput result;
+    matrix mv = mul(model, view);
+    matrix mvp = mul(mv, projection);
 
-    //result.position = position;
     // For "mul" if X is a vector, it is treated as row-major (HLSL logic). 
     // Also, direct interaction with another constant - to offset direction. 
-    result.position = mul(float4(position.x + offset.x, position.y + offset.y, 0.0f, 1.0f), transform);
+    result.position = mul(float4(position.x, position.y, 0.0f, 1.0f), mvp);
     //result.position = position + offset;
     //color.y = cbcolor.y;
     result.color = color;
@@ -53,8 +56,6 @@ float4 PSMain(PSInput input) : SV_TARGET
 {
     // Linearly interpolate the textures.
     return lerp(g_Texture.Sample(g_Sampler, input.uv), g_Texture2.Sample(g_Sampler2, input.uv), mixColor);
-    // Flip overlapping texture. 
-    //return lerp(g_Texture.Sample(g_Sampler, input.uv), g_Texture2.Sample(g_Sampler2, float2(1.0f - input.uv.x, input.uv.y)), 0.2f);
     
     // Simply return first texture passed in/created.
     //return g_Texture.Sample(g_Sampler, input.uv);

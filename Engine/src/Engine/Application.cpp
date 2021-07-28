@@ -89,9 +89,10 @@ void Application::Run()
             else
             {
                 ImGuiLocal::BeginFrame();
-                ImGuiUI();
-                Layer::Run();
-
+                {
+                    ImGuiUI();
+                    Layer::Run(); // Layer utilizes Imgui.
+                }
                 // Rendering
                 ImGuiLocal::EndFrame();
                 Graphics::Update(color, adjustOffset, (float)appState.ElapsedTime);
