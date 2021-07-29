@@ -52,14 +52,18 @@ void D3D12Context::Init(int32_t width, int32_t height)
 void D3D12Context::Update(float color[], bool adjustOffset, float angle)
 {    
     clear_color = { color[0], color[1], color[2], color[3] };
-
-    g_constantBufferData.model = XMMatrixTranspose(XMMatrixRotationX(angle) * XMMatrixRotationY(angle));
-    memcpy(g_pCbvDataBegin, &g_constantBufferData, sizeof(g_constantBufferData));
     
     // Do we want to move our geometry in the first place?
     if (adjustOffset)
     {
-        
+        // Cube transformations.
+        g_constantBufferData.model = XMMatrixTranspose(XMMatrixRotationX(angle) * XMMatrixRotationY(angle));
+        memcpy(g_pCbvDataBegin, &g_constantBufferData, sizeof(g_constantBufferData));
+        // Cube 2.
+        g_constantBufferData.model = XMMatrixTranspose(XMMatrixRotationX(angle) * XMMatrixTranslation(1.0f, 0.0f, 10.0f));
+        memcpy(g_pCbvDataBegin + sizeof(SceneConstantBuffer), &g_constantBufferData, sizeof(g_constantBufferData));
+
+        // Linear interpolation.
         if (Platform::getUpArrowKey())
         {
             g_LerpCBData.mixColor += cbvParams.translationSpeed;
@@ -184,12 +188,17 @@ void PopulateCommandList()
 
     g_CommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-    // First triangle.
+    // First Cube.
     g_CommandList->IASetVertexBuffers(0, 1, &g_VertexBufferView);
     g_CommandList->IASetIndexBuffer(&g_IndexBufferView);
 
     // Constant Buffer View
     g_CommandList->SetGraphicsRootConstantBufferView(0, g_ConstantBuffer->GetGPUVirtualAddress());
+    g_CommandList->DrawIndexedInstanced(36, 1, 0, 0, 0);
+
+    // Second Cube
+    // Constant Buffer View
+    g_CommandList->SetGraphicsRootConstantBufferView(0, g_ConstantBuffer->GetGPUVirtualAddress() + sizeof(SceneConstantBuffer));
     g_CommandList->DrawIndexedInstanced(36, 1, 0, 0, 0);
 
     // Related to Imgui.
@@ -592,36 +601,35 @@ void CreateVertexBuffer()
     Vertex triangleVertices[] =
     {
         // Clockwise.
-        // Front
-        { XMFLOAT3(-0.5f, 0.5f, -0.5f), { 1.0f, 0.0f, 0.0f, 1.0f }, XMFLOAT2(1.0f, 0.0f) },
-        { XMFLOAT3(0.5f, 0.5f, -0.5f),  { 1.0f, 0.0f, 0.0f, 1.0f }, XMFLOAT2(0.0f, 0.0f) },
-        { XMFLOAT3(0.5f, 0.5f, 0.5f),   { 1.0f, 0.0f, 0.0f, 1.0f }, XMFLOAT2(0.0f, 1.0f) },
-        { XMFLOAT3(-0.5f, 0.5f, 0.5f),  { 1.0f, 0.0f, 0.0f, 1.0f }, XMFLOAT2(1.0f, 1.0f) },
+        { XMFLOAT3(-0.5f, 0.5f, -0.5f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f), XMFLOAT2(1.0f, 0.0f) },
+        { XMFLOAT3( 0.5f, 0.5f, -0.5f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f), XMFLOAT2(0.0f, 0.0f) },
+        { XMFLOAT3( 0.5f, 0.5f,  0.5f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f), XMFLOAT2(0.0f, 1.0f) },
+        { XMFLOAT3(-0.5f, 0.5f,  0.5f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f), XMFLOAT2(1.0f, 1.0f) },
 
-        { XMFLOAT3(-0.5f, -0.5f, -0.5f), { 1.0f, 0.0f, 0.0f, 1.0f }, XMFLOAT2(0.0f, 0.0f) },
-        { XMFLOAT3(0.5f, -0.5f, -0.5f),  { 1.0f, 0.0f, 0.0f, 1.0f }, XMFLOAT2(1.0f, 0.0f) },
-        { XMFLOAT3(0.5f, -0.5f,  0.5f),  { 1.0f, 0.0f, 0.0f, 1.0f }, XMFLOAT2(1.0f, 1.0f) },
-        { XMFLOAT3(-0.5f, -0.5f,  0.5f), { 1.0f, 0.0f, 0.0f, 1.0f }, XMFLOAT2(0.0f, 1.0f) },
+        { XMFLOAT3(-0.5f, -0.5f, -0.5f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f), XMFLOAT2(0.0f, 0.0f) },
+        { XMFLOAT3( 0.5f, -0.5f, -0.5f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f), XMFLOAT2(1.0f, 0.0f) },
+        { XMFLOAT3( 0.5f, -0.5f,  0.5f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f), XMFLOAT2(1.0f, 1.0f) },
+        { XMFLOAT3(-0.5f, -0.5f,  0.5f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f), XMFLOAT2(0.0f, 1.0f) },
 
-        { XMFLOAT3(-0.5f, -0.5f,  0.5f), { 1.0f, 0.0f, 0.0f, 1.0f }, XMFLOAT2(0.0f, 1.0f) },
-        { XMFLOAT3(-0.5f, -0.5f, -0.5f), { 1.0f, 0.0f, 0.0f, 1.0f }, XMFLOAT2(1.0f, 1.0f) },
-        { XMFLOAT3(-0.5f,  0.5f, -0.5f), { 1.0f, 0.0f, 0.0f, 1.0f }, XMFLOAT2(1.0f, 0.0f) },
-        { XMFLOAT3(-0.5f,  0.5f,  0.5f), { 1.0f, 0.0f, 0.0f, 1.0f }, XMFLOAT2(0.0f, 0.0f) },
+        { XMFLOAT3(-0.5f, -0.5f,  0.5f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f), XMFLOAT2(0.0f, 1.0f) },
+        { XMFLOAT3(-0.5f, -0.5f, -0.5f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f), XMFLOAT2(1.0f, 1.0f) },
+        { XMFLOAT3(-0.5f,  0.5f, -0.5f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f), XMFLOAT2(1.0f, 0.0f) },
+        { XMFLOAT3(-0.5f,  0.5f,  0.5f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f), XMFLOAT2(0.0f, 0.0f) },
 
-        { XMFLOAT3(0.5f, -0.5f,  0.5f), { 1.0f, 0.0f, 0.0f, 1.0f }, XMFLOAT2(1.0f, 1.0f) },
-        { XMFLOAT3(0.5f, -0.5f, -0.5f), { 1.0f, 0.0f, 0.0f, 1.0f }, XMFLOAT2(0.0f, 1.0f) },
-        { XMFLOAT3(0.5f,  0.5f, -0.5f), { 1.0f, 0.0f, 0.0f, 1.0f }, XMFLOAT2(0.0f, 0.0f) },
-        { XMFLOAT3(0.5f,  0.5f,  0.5f), { 1.0f, 0.0f, 0.0f, 1.0f }, XMFLOAT2(1.0f, 0.0f) },
+        { XMFLOAT3(0.5f, -0.5f,  0.5f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f), XMFLOAT2(1.0f, 1.0f) },
+        { XMFLOAT3(0.5f, -0.5f, -0.5f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f), XMFLOAT2(0.0f, 1.0f) },
+        { XMFLOAT3(0.5f,  0.5f, -0.5f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f), XMFLOAT2(0.0f, 0.0f) },
+        { XMFLOAT3(0.5f,  0.5f,  0.5f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f), XMFLOAT2(1.0f, 0.0f) },
 
-        { XMFLOAT3(-0.5f, -0.5f, -0.5f), { 1.0f, 0.0f, 0.0f, 1.0f }, XMFLOAT2(0.0f, 1.0f) },
-        { XMFLOAT3(0.5f, -0.5f, -0.5f),  { 1.0f, 0.0f, 0.0f, 1.0f }, XMFLOAT2(1.0f, 1.0f) },
-        { XMFLOAT3(0.5f,  0.5f, -0.5f),  { 1.0f, 0.0f, 0.0f, 1.0f }, XMFLOAT2(1.0f, 0.0f) },
-        { XMFLOAT3(-0.5f,  0.5f, -0.5f), { 1.0f, 0.0f, 0.0f, 1.0f }, XMFLOAT2(0.0f, 0.0f) },
+        { XMFLOAT3(-0.5f, -0.5f, -0.5f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f), XMFLOAT2(0.0f, 1.0f) },
+        { XMFLOAT3( 0.5f, -0.5f, -0.5f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f), XMFLOAT2(1.0f, 1.0f) },
+        { XMFLOAT3( 0.5f,  0.5f, -0.5f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f), XMFLOAT2(1.0f, 0.0f) },
+        { XMFLOAT3(-0.5f,  0.5f, -0.5f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f), XMFLOAT2(0.0f, 0.0f) },
 
-        { XMFLOAT3(-0.5f, -0.5f, 0.5f), { 1.0f, 0.0f, 0.0f, 1.0f }, XMFLOAT2(1.0f, 1.0f) },
-        { XMFLOAT3(0.5f, -0.5f, 0.5f),  { 1.0f, 0.0f, 0.0f, 1.0f }, XMFLOAT2(0.0f, 1.0f) },
-        { XMFLOAT3(0.5f,  0.5f, 0.5f),  { 1.0f, 0.0f, 0.0f, 1.0f }, XMFLOAT2(0.0f, 0.0f) },
-        { XMFLOAT3(-0.5f,  0.5f, 0.5f), { 1.0f, 0.0f, 0.0f, 1.0f }, XMFLOAT2(1.0f, 0.0f) },
+        { XMFLOAT3(-0.5f, -0.5f, 0.5f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f), XMFLOAT2(1.0f, 1.0f) },
+        { XMFLOAT3( 0.5f, -0.5f, 0.5f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f), XMFLOAT2(0.0f, 1.0f) },
+        { XMFLOAT3( 0.5f,  0.5f, 0.5f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f), XMFLOAT2(0.0f, 0.0f) },
+        { XMFLOAT3(-0.5f,  0.5f, 0.5f), XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f), XMFLOAT2(1.0f, 0.0f) },
     };
 
     const uint32_t vertexBufferSize = sizeof(triangleVertices);
@@ -728,20 +736,12 @@ void CreateConstantBuffers()
         CD3DX12_RANGE readRange(0, 0); // We do not intend to read from this resource of the CPU.
         ThrowIfFailed(g_ConstantBuffer->Map(0, &readRange, reinterpret_cast<void**>(&g_pCbvDataBegin)));
         memcpy(g_pCbvDataBegin, &g_constantBufferData, sizeof(g_constantBufferData));
-        // We are not calling two squares or items anymore (for now...)
-        //memcpy(g_pCbvDataBegin + sizeof(SceneConstantBuffer), &g_constantBufferData, sizeof(g_constantBufferData));
-
-        // Feed data immediately to not make square appearance dependent on enabling update loop.
-        // Explicit initialization of identity matrix. 
-        //XMMATRIX trans = DirectX::XMMatrixIdentity();
-
-        //g_constantBufferData.transform = trans;
-
-        //memcpy(g_pCbvDataBegin, &g_constantBufferData, sizeof(g_constantBufferData));
+        // Second copy for additional constants (our second cube).
+        memcpy(g_pCbvDataBegin + sizeof(SceneConstantBuffer), &g_constantBufferData, sizeof(g_constantBufferData));
     }
 
+    // Linear interpolation constant. 
     {
-        //g_LerpCBV
         const UINT constantBufferSize = sizeof(Lerp); // CB size is required to be 256-byte aligned.
         auto uploadProperties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
         auto resourceDesc = CD3DX12_RESOURCE_DESC::Buffer(constantBufferSize);
@@ -953,52 +953,52 @@ void CreateSyncObjectsAndWaitForAssetUpload()
 
 void BuildMatrices()
 {
-    // Creating the model matrix.
-    XMMATRIX model = DirectX::XMMatrixIdentity();
+    // First Cube.
+    {
+        // Creating the model matrix.
+        XMMATRIX model = DirectX::XMMatrixIdentity();
 
-    // Rotating around the X axis. 
-    model = XMMatrixTranspose(XMMatrixRotationX(DirectX::XMConvertToRadians(55.0f)));
+        // Rotating around the X axis. 
+        model = XMMatrixTranspose(XMMatrixRotationX(DirectX::XMConvertToRadians(55.0f)));
 
-    // Creating the view matrix.
-    XMMATRIX view = XMMatrixIdentity();
-    view = XMMatrixTranspose(XMMatrixTranslation(0.0f, 0.0f, 3.0f));
+        // Creating the view matrix.
+        XMMATRIX view = XMMatrixIdentity();
+        view = XMMatrixTranspose(XMMatrixTranslation(0.0f, 0.0f, 3.0f));
 
-    // Creating projection matrix.
-    XMMATRIX projection = XMMatrixIdentity();
-    // FOV, Aspect Ratio, Near Z, Far Z.
-    projection = XMMatrixTranspose(DirectX::XMMatrixPerspectiveFovLH(XMConvertToRadians(45.0f), g_aspectRatio, 0.1f, 100.0f));
+        // Creating projection matrix.
+        XMMATRIX projection = XMMatrixIdentity();
+        // FOV, Aspect Ratio, Near Z, Far Z.
+        projection = XMMatrixTranspose(DirectX::XMMatrixPerspectiveFovLH(XMConvertToRadians(45.0f), g_aspectRatio, 0.1f, 100.0f));
 
-    g_constantBufferData.model = model;
-    g_constantBufferData.view = view;
-    g_constantBufferData.projection = projection;
+        g_constantBufferData.model = model;
+        g_constantBufferData.view = view;
+        g_constantBufferData.projection = projection;
 
-    memcpy(g_pCbvDataBegin, &g_constantBufferData, sizeof(g_constantBufferData));
 
-    /*// Explicit initialization of identity matrix. 
-    XMMATRIX trans = DirectX::XMMatrixIdentity();
+        memcpy(g_pCbvDataBegin, &g_constantBufferData, sizeof(g_constantBufferData));
+    }
 
-    // Creating transformation matrix.
-    trans = DirectX::XMMatrixTranspose(
-        // Scale -> Rotation -> Translation.
-        XMMatrixScaling(1.0f, 1.0f, 1.0f) *
-        XMMatrixTranslation(0.5f, -0.5f, 0.0f)
-    );
+    // Second Cube
+    {
+        // Creating the model matrix.
+        XMMATRIX model = DirectX::XMMatrixIdentity();
 
-    g_constantBufferData.transform = trans;
+        // Rotating around the X axis. 
+        model = XMMatrixTranspose(XMMatrixRotationX(DirectX::XMConvertToRadians(55.0f)));
 
-    memcpy(g_pCbvDataBegin, &g_constantBufferData, sizeof(g_constantBufferData));
+        // Creating the view matrix.
+        XMMATRIX view = XMMatrixIdentity();
+        view = XMMatrixTranspose(XMMatrixTranslation(1.0f, 0.0f, 5.0f));
 
-    // Explicit initialization of identity matrix. 
-    trans = DirectX::XMMatrixIdentity();
+        // Creating projection matrix.
+        XMMATRIX projection = XMMatrixIdentity();
+        // FOV, Aspect Ratio, Near Z, Far Z.
+        projection = XMMatrixTranspose(DirectX::XMMatrixPerspectiveFovLH(XMConvertToRadians(45.0f), g_aspectRatio, 0.1f, 100.0f));
 
-    // Creating transformation matrix.
-    trans = DirectX::XMMatrixTranspose(
-        // Scale -> Rotation -> Translation.
-        XMMatrixScaling(1.0f, 1.0f, 1.0f) *
-        XMMatrixTranslation(-0.5f, 0.5f, 0.0f)
-    );
+        g_constantBufferData.model = model;
+        g_constantBufferData.view = view;
+        g_constantBufferData.projection = projection;
 
-    g_constantBufferData.transform = trans;
-
-    memcpy(g_pCbvDataBegin + sizeof(SceneConstantBuffer), &g_constantBufferData, sizeof(g_constantBufferData));*/
+        memcpy(g_pCbvDataBegin + sizeof(SceneConstantBuffer), &g_constantBufferData, sizeof(g_constantBufferData));
+    }
 }
