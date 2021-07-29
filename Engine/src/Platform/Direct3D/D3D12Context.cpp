@@ -76,11 +76,14 @@ void D3D12Context::Update(float color[], bool adjustOffset, float angle)
         // Loop for 10 Cubes (excluding our two starting ones).
         for(unsigned int i = 0; i < 10; i++)
         {
+            float localAngle = 20.0f * i;
+            if (i % 3 == 0) localAngle = angle; // "angle" being time.
+
             // Store each iteration of our float into a vector.
             XMVECTOR test = XMLoadFloat3(&cubePositions[i]);
             // Rotate and translate our cubes based on the currently stored Float3 (that's now a vector).
-            g_constantBufferData.model = XMMatrixTranspose(XMMatrixRotationX((angle * i) / 2) * 
-                                         XMMatrixRotationZ((angle * i) / 2) * 
+            g_constantBufferData.model = XMMatrixTranspose(XMMatrixRotationX((localAngle * i) / 2) * 
+                                         XMMatrixRotationZ((localAngle * i) / 2) * 
                                          XMMatrixTranslation(XMVectorGetX(test), XMVectorGetY(test), XMVectorGetZ(test)));
 
             // "Tricking" our constant buffer, or rather adhering to the 256 alignment rules. 
