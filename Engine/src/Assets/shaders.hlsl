@@ -43,7 +43,7 @@ PSInput VSMain(float4 position : POSITION, float4 color: COLOR, float2 uv : TEXC
 
     // For "mul" if X is a vector, it is treated as row-major (HLSL logic). 
     // Also, direct interaction with another constant - to offset direction. 
-    result.position = mul(float4(position.x, position.y, 0.0f, 1.0f), mvp);
+    result.position = mul(float4(position.x, position.y, position.z, 1.0f), mvp);
     //result.position = position + offset;
     //color.y = cbcolor.y;
     result.color = color;

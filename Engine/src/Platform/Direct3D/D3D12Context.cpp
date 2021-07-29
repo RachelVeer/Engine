@@ -7,7 +7,6 @@ module;
 // D3D12.
 #include "D3D12Bridge.h"
 // Logger.
-#include "spdlog/sinks/stdout_color_sinks.h"
 #include "Engine/ImGuiLocal/ImGuiBridge.h"
 module D3D12Context;
 
@@ -53,27 +52,13 @@ void D3D12Context::Init(int32_t width, int32_t height)
 void D3D12Context::Update(float color[], bool adjustOffset, float angle)
 {    
     clear_color = { color[0], color[1], color[2], color[3] };
+
+    g_constantBufferData.model = XMMatrixTranspose(XMMatrixRotationX(angle) * XMMatrixRotationY(angle));
+    memcpy(g_pCbvDataBegin, &g_constantBufferData, sizeof(g_constantBufferData));
     
     // Do we want to move our geometry in the first place?
     if (adjustOffset)
     {
-        // By default it moves forward, thus once we reach offsetBounds - set it false.
-        /*if (g_constantBufferData.offset.x > cbvParams.offsetBounds) { cbvParams.forward = false; }
-        // And once it reaches negative bounds, it can move forward again.
-        if (g_constantBufferData.offset.x < cbvParams.negoffsetBounds) { cbvParams.forward = true; }
-        
-        if (cbvParams.forward)
-        {
-            g_constantBufferData.offset.x += cbvParams.translationSpeed;
-        }
-
-        if (!cbvParams.forward)
-        {
-            g_constantBufferData.offset.x -= cbvParams.translationSpeed;
-        }
-
-        //g_constantBufferData.cbcolor.y = color.g;
-        */
         
         if (Platform::getUpArrowKey())
         {
@@ -84,36 +69,7 @@ void D3D12Context::Update(float color[], bool adjustOffset, float angle)
         {
             g_LerpCBData.mixColor -= cbvParams.translationSpeed;
         }
-        
-        /*// Explicit initialization of identity matrix. 
-        XMMATRIX trans = DirectX::XMMatrixIdentity();
 
-        // Creating transformation matrix.
-        trans = DirectX::XMMatrixTranspose(
-            // Scale -> Rotation -> Translation.
-            XMMatrixScaling(1.0f, 1.0f, 1.0f) *
-            XMMatrixRotationZ(angle) *
-            XMMatrixTranslation(0.5f, -0.5f, 0.0f)
-            );
-
-        g_constantBufferData.transform = trans;
-
-        memcpy(g_pCbvDataBegin, &g_constantBufferData, sizeof(g_constantBufferData));
-
-        // Explicit initialization of identity matrix. 
-        trans = DirectX::XMMatrixIdentity();
-
-        // Creating transformation matrix.
-        trans = DirectX::XMMatrixTranspose(
-            // Scale -> Rotation -> Translation.
-            XMMatrixScaling(1.0f, 1.0f, 1.0f) *
-            XMMatrixRotationZ(-angle * 0.5f) *
-            XMMatrixTranslation(-0.5f, 0.5f, 0.0f)
-        );
-
-        g_constantBufferData.transform = trans;
-
-        memcpy(g_pCbvDataBegin + sizeof(SceneConstantBuffer), &g_constantBufferData, sizeof(g_constantBufferData));*/
 
         memcpy(g_pLerpCbvDataBegin, &g_LerpCBData, sizeof(g_LerpCBData));
     }
@@ -211,7 +167,6 @@ void PopulateCommandList()
 
     CD3DX12_GPU_DESCRIPTOR_HANDLE sampleHandle(g_samplerHeap->GetGPUDescriptorHandleForHeapStart(), 1, g_samplerDescriptorSize);
     g_CommandList->SetGraphicsRootDescriptorTable(3, g_samplerHeap->GetGPUDescriptorHandleForHeapStart());
-    //g_CommandList->SetGraphicsRootDescriptorTable(3,sampleHandle);
     g_CommandList->SetGraphicsRootDescriptorTable(4, sampleHandle);
 
     g_CommandList->SetGraphicsRoot32BitConstants(5, 2, g_pLerpCbvDataBegin, 0);
@@ -235,13 +190,7 @@ void PopulateCommandList()
 
     // Constant Buffer View
     g_CommandList->SetGraphicsRootConstantBufferView(0, g_ConstantBuffer->GetGPUVirtualAddress());
-    g_CommandList->DrawIndexedInstanced(6, 1, 0, 0, 0);
-
-
-    // Second Triangle
-    // Constant Buffer View
-    g_CommandList->SetGraphicsRootConstantBufferView(0, g_ConstantBuffer->GetGPUVirtualAddress() + sizeof(SceneConstantBuffer));
-    g_CommandList->DrawIndexedInstanced(6, 1, 0, 0, 0);
+    g_CommandList->DrawIndexedInstanced(36, 1, 0, 0, 0);
 
     // Related to Imgui.
     ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), g_CommandList.Get());
@@ -495,6 +444,8 @@ void CreateRootSignatureAndHeapContents()
     // We only need one range for the shader resource view.
     // Whereas two rootparameters are used to not only account for the SRV,
     // but to describe our constant buffer as well - or RootConstant in this case. 
+
+    // These could be structs instead. 
     const int Tex1Range = 0;
     const int Tex2Range = 1;
     const int Sampler1Range = 2;
@@ -641,10 +592,36 @@ void CreateVertexBuffer()
     Vertex triangleVertices[] =
     {
         // Clockwise.
-        { { -0.5f,  0.5f, 0.0f}, { 1.0f, 0.0f, 0.0f, 1.0f }, { 0.0f, 0.0f } }, // top left
-        { {  0.5f, -0.5f, 0.0f}, { 0.0f, 1.0f, 0.0f, 1.0f }, { 1.0f, 1.0f } }, // bottom right
-        { { -0.5f, -0.5f, 0.0f}, { 0.0f, 0.0f, 1.0f, 1.0f }, { 0.0f, 1.0f } }, // bottom left
-        { {  0.5f,  0.5f, 0.0f}, { 1.0f, 1.0f, 0.0f, 1.0f }, { 1.0f, 0.0f } }, // top right
+        // Front
+        { XMFLOAT3(-0.5f, 0.5f, -0.5f), { 1.0f, 0.0f, 0.0f, 1.0f }, XMFLOAT2(1.0f, 0.0f) },
+        { XMFLOAT3(0.5f, 0.5f, -0.5f),  { 1.0f, 0.0f, 0.0f, 1.0f }, XMFLOAT2(0.0f, 0.0f) },
+        { XMFLOAT3(0.5f, 0.5f, 0.5f),   { 1.0f, 0.0f, 0.0f, 1.0f }, XMFLOAT2(0.0f, 1.0f) },
+        { XMFLOAT3(-0.5f, 0.5f, 0.5f),  { 1.0f, 0.0f, 0.0f, 1.0f }, XMFLOAT2(1.0f, 1.0f) },
+
+        { XMFLOAT3(-0.5f, -0.5f, -0.5f), { 1.0f, 0.0f, 0.0f, 1.0f }, XMFLOAT2(0.0f, 0.0f) },
+        { XMFLOAT3(0.5f, -0.5f, -0.5f),  { 1.0f, 0.0f, 0.0f, 1.0f }, XMFLOAT2(1.0f, 0.0f) },
+        { XMFLOAT3(0.5f, -0.5f,  0.5f),  { 1.0f, 0.0f, 0.0f, 1.0f }, XMFLOAT2(1.0f, 1.0f) },
+        { XMFLOAT3(-0.5f, -0.5f,  0.5f), { 1.0f, 0.0f, 0.0f, 1.0f }, XMFLOAT2(0.0f, 1.0f) },
+
+        { XMFLOAT3(-0.5f, -0.5f,  0.5f), { 1.0f, 0.0f, 0.0f, 1.0f }, XMFLOAT2(0.0f, 1.0f) },
+        { XMFLOAT3(-0.5f, -0.5f, -0.5f), { 1.0f, 0.0f, 0.0f, 1.0f }, XMFLOAT2(1.0f, 1.0f) },
+        { XMFLOAT3(-0.5f,  0.5f, -0.5f), { 1.0f, 0.0f, 0.0f, 1.0f }, XMFLOAT2(1.0f, 0.0f) },
+        { XMFLOAT3(-0.5f,  0.5f,  0.5f), { 1.0f, 0.0f, 0.0f, 1.0f }, XMFLOAT2(0.0f, 0.0f) },
+
+        { XMFLOAT3(0.5f, -0.5f,  0.5f), { 1.0f, 0.0f, 0.0f, 1.0f }, XMFLOAT2(1.0f, 1.0f) },
+        { XMFLOAT3(0.5f, -0.5f, -0.5f), { 1.0f, 0.0f, 0.0f, 1.0f }, XMFLOAT2(0.0f, 1.0f) },
+        { XMFLOAT3(0.5f,  0.5f, -0.5f), { 1.0f, 0.0f, 0.0f, 1.0f }, XMFLOAT2(0.0f, 0.0f) },
+        { XMFLOAT3(0.5f,  0.5f,  0.5f), { 1.0f, 0.0f, 0.0f, 1.0f }, XMFLOAT2(1.0f, 0.0f) },
+
+        { XMFLOAT3(-0.5f, -0.5f, -0.5f), { 1.0f, 0.0f, 0.0f, 1.0f }, XMFLOAT2(0.0f, 1.0f) },
+        { XMFLOAT3(0.5f, -0.5f, -0.5f),  { 1.0f, 0.0f, 0.0f, 1.0f }, XMFLOAT2(1.0f, 1.0f) },
+        { XMFLOAT3(0.5f,  0.5f, -0.5f),  { 1.0f, 0.0f, 0.0f, 1.0f }, XMFLOAT2(1.0f, 0.0f) },
+        { XMFLOAT3(-0.5f,  0.5f, -0.5f), { 1.0f, 0.0f, 0.0f, 1.0f }, XMFLOAT2(0.0f, 0.0f) },
+
+        { XMFLOAT3(-0.5f, -0.5f, 0.5f), { 1.0f, 0.0f, 0.0f, 1.0f }, XMFLOAT2(1.0f, 1.0f) },
+        { XMFLOAT3(0.5f, -0.5f, 0.5f),  { 1.0f, 0.0f, 0.0f, 1.0f }, XMFLOAT2(0.0f, 1.0f) },
+        { XMFLOAT3(0.5f,  0.5f, 0.5f),  { 1.0f, 0.0f, 0.0f, 1.0f }, XMFLOAT2(0.0f, 0.0f) },
+        { XMFLOAT3(-0.5f,  0.5f, 0.5f), { 1.0f, 0.0f, 0.0f, 1.0f }, XMFLOAT2(1.0f, 0.0f) },
     };
 
     const uint32_t vertexBufferSize = sizeof(triangleVertices);
@@ -684,8 +661,23 @@ void CreateIndexBuffer()
     // Define indices 
     int16_t Indices[] =
     {
-        0, 1, 2,
-        0, 3, 1
+       3,1,0,
+       2,1,3,
+       
+       6,4,5,
+       7,4,6,
+       
+       11,9,8,
+       10,9,11,
+       
+       14,12,13,
+       15,12,14,
+       
+       19,17,16,
+       18,17,19,
+       
+       22,20,21,
+       23,20,22
     };
 
     const uint32_t indexBufferSize = sizeof(Indices);
