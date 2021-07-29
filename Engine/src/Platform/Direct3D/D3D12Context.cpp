@@ -1042,54 +1042,32 @@ void CreateSyncObjectsAndWaitForAssetUpload()
 
 void BuildMatrices()
 {
-    // First Cube.
-    {
-        // Creating the model matrix.
-        XMMATRIX model = DirectX::XMMatrixIdentity();
+    // Creating the model matrix.
+    XMMATRIX model = DirectX::XMMatrixIdentity();
 
-        // Rotating around the X axis. 
-        model = XMMatrixTranspose(XMMatrixRotationX(DirectX::XMConvertToRadians(55.0f)));
+    // Rotating around the X axis. 
+    model = XMMatrixTranspose(XMMatrixRotationX(DirectX::XMConvertToRadians(55.0f)));
 
-        // Creating the view matrix.
-        XMMATRIX view = XMMatrixIdentity();
-        view = XMMatrixTranspose(XMMatrixTranslation(0.0f, 0.0f, 3.0f));
+    // Creating the view matrix.
+    XMMATRIX view = XMMatrixIdentity();
+    view = XMMatrixTranspose(XMMatrixTranslation(0.0f, 0.0f, 3.0f));
 
-        // Creating projection matrix.
-        XMMATRIX projection = XMMatrixIdentity();
-        // FOV, Aspect Ratio, Near Z, Far Z.
-        projection = XMMatrixTranspose(DirectX::XMMatrixPerspectiveFovLH(XMConvertToRadians(45.0f), g_aspectRatio, 0.1f, 100.0f));
+    // Creating projection matrix.
+    XMMATRIX projection = XMMatrixIdentity();
+    // FOV, Aspect Ratio, Near Z, Far Z.
+    projection = XMMatrixTranspose(DirectX::XMMatrixPerspectiveFovLH(XMConvertToRadians(45.0f), g_aspectRatio, 0.1f, 100.0f));
 
-        g_constantBufferData.model = model;
-        g_constantBufferData.view = view;
-        g_constantBufferData.projection = projection;
+    g_constantBufferData.model = model;
+    g_constantBufferData.view = view;
+    g_constantBufferData.projection = projection;
 
+    // First "cube".
+    memcpy(g_pCbvDataBegin, &g_constantBufferData, sizeof(g_constantBufferData));
 
-        memcpy(g_pCbvDataBegin, &g_constantBufferData, sizeof(g_constantBufferData));
-    }
-
-    // Second Cube
-    {
-        // Creating the model matrix.
-        XMMATRIX model = DirectX::XMMatrixIdentity();
-
-        // Rotating around the X axis. 
-        model = XMMatrixTranspose(XMMatrixRotationX(XMConvertToRadians(55.0f)) * XMMatrixTranslation(2.0f, 0.0f, 5.0f));
-
-        // Creating the view matrix.
-        // This alters our "camera" start position, *don't* use it to translate or change models in anyway.
-        // That's what the model matrix is for - The only matrix here determines a position. 
-        XMMATRIX view = XMMatrixIdentity();
-        view = XMMatrixTranspose(XMMatrixTranslation(0.0f, 0.0f, 3.0f));
-
-        // Creating projection matrix.
-        XMMATRIX projection = XMMatrixIdentity();
-        // FOV, Aspect Ratio, Near Z, Far Z.
-        projection = XMMatrixTranspose(DirectX::XMMatrixPerspectiveFovLH(XMConvertToRadians(45.0f), g_aspectRatio, 0.1f, 100.0f));
-
-        g_constantBufferData.model = model;
-        g_constantBufferData.view = view;
-        g_constantBufferData.projection = projection;
-
-        memcpy(g_pCbvDataBegin + sizeof(SceneConstantBuffer), &g_constantBufferData, sizeof(g_constantBufferData));
-    }
+    // Creating our second cube, with existing info, all we
+    // need to do is update what we want to actually change.
+    model = XMMatrixTranspose(XMMatrixRotationX(XMConvertToRadians(55.0f)) * XMMatrixTranslation(2.0f, 0.0f, 5.0f));
+    g_constantBufferData.model = model;
+    // Copy new data into next alignment.
+    memcpy(g_pCbvDataBegin + sizeof(SceneConstantBuffer), &g_constantBufferData, sizeof(g_constantBufferData));
 }
