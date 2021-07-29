@@ -59,14 +59,26 @@ void D3D12Context::Update(float color[], bool adjustOffset, float angle)
         // Cube transformations.
         // WARNING: We have to reset whatever values are separate to one another (i.e. position), 
         // or they inherit whatever each one set. (Fair, same constant buffer after all).
-        g_constantBufferData.model = XMMatrixTranspose(XMMatrixRotationX(angle) * XMMatrixRotationY(angle));
-        g_constantBufferData.view = XMMatrixTranspose(XMMatrixTranslation(0.0f, 0.0f, 3.0f));
-        memcpy(g_pCbvDataBegin, &g_constantBufferData, sizeof(g_constantBufferData));
+        // Cube 1
+        {
+            g_constantBufferData.model = XMMatrixTranspose(XMMatrixRotationX(angle) * XMMatrixRotationY(angle));
+            g_constantBufferData.view = XMMatrixTranspose(XMMatrixTranslation(0.0f, 0.0f, 3.0f));
+            memcpy(g_pCbvDataBegin, &g_constantBufferData, sizeof(g_constantBufferData));
+        }
         // Cube 2.
-        g_constantBufferData.model = XMMatrixTranspose(XMMatrixRotationX(angle));
-        // Originally (1.0f, 0.0f, 5.0f), more extreme now for depth test purposes.
-        g_constantBufferData.view = XMMatrixTranspose(XMMatrixTranslation(3.0f, 0.0f, 10.0f));
-        memcpy(g_pCbvDataBegin + sizeof(SceneConstantBuffer), &g_constantBufferData, sizeof(g_constantBufferData));
+        {
+            g_constantBufferData.model = XMMatrixTranspose(XMMatrixRotationY(angle));
+            // Originally (1.0f, 0.0f, 5.0f), more extreme now for depth test purposes.
+            g_constantBufferData.view = XMMatrixTranspose(XMMatrixTranslation(3.0f, 0.0f, 10.0f));
+            memcpy(g_pCbvDataBegin + sizeof(SceneConstantBuffer), &g_constantBufferData, sizeof(g_constantBufferData));
+        }
+        // Cube 3.
+        {
+            g_constantBufferData.model = XMMatrixTranspose(XMMatrixRotationZ(angle));
+            // Originally (1.0f, 0.0f, 5.0f), more extreme now for depth test purposes.
+            g_constantBufferData.view = XMMatrixTranspose(XMMatrixTranslation(-2.0f, 0.0f, 10.0f));
+            memcpy(g_pCbvDataBegin + sizeof(SceneConstantBuffer) * 2, &g_constantBufferData, sizeof(g_constantBufferData));
+        }
 
         // Linear interpolation.
         if (Platform::getUpArrowKey())
@@ -211,6 +223,11 @@ void PopulateCommandList()
     // Second Cube
     // Constant Buffer View
     g_CommandList->SetGraphicsRootConstantBufferView(0, g_ConstantBuffer->GetGPUVirtualAddress() + sizeof(SceneConstantBuffer));
+    g_CommandList->DrawIndexedInstanced(36, 1, 0, 0, 0);
+
+    // Third Cube
+    // Constant Buffer View
+    g_CommandList->SetGraphicsRootConstantBufferView(0, g_ConstantBuffer->GetGPUVirtualAddress() + sizeof(SceneConstantBuffer) * 2);
     g_CommandList->DrawIndexedInstanced(36, 1, 0, 0, 0);
 
     // Related to Imgui.
