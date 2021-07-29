@@ -52,6 +52,20 @@ void D3D12Context::Init(int32_t width, int32_t height)
 void D3D12Context::Update(float color[], bool adjustOffset, float angle)
 {    
     clear_color = { color[0], color[1], color[2], color[3] };
+
+    // Array of cube positions to iterate over.
+    static XMFLOAT3 cubePositions[] = {
+    XMFLOAT3(  0.0f,  0.0f, 0.0f  ),
+    XMFLOAT3(  2.0f,  5.0f, 15.0f ),
+    XMFLOAT3( -1.5f, -2.2f, 2.5f  ),
+    XMFLOAT3( -3.8f, -2.0f, 12.3f ),
+    XMFLOAT3(  2.4f, -0.4f, 3.5f  ),
+    XMFLOAT3( -1.7f,  3.0f, 7.5f  ),
+    XMFLOAT3(  1.3f, -2.0f, 2.5f  ),
+    XMFLOAT3(  1.5f,  2.0f, 2.5f  ),
+    XMFLOAT3(  1.5f,  0.2f, 1.5f  ),
+    XMFLOAT3( -1.3f,  1.0f, 1.5f  )
+    };
     
     // Do we want to move our geometry in the first place?
     if (adjustOffset)
@@ -59,25 +73,24 @@ void D3D12Context::Update(float color[], bool adjustOffset, float angle)
         // Cube transformations.
         // WARNING: We have to reset whatever values are separate to one another (i.e. position), 
         // or they inherit whatever each one set. (Fair, same constant buffer after all).
-        // Cube 1
+        // Loop for 10 Cubes (excluding our two starting ones).
+        for(unsigned int i = 0; i < 10; i++)
         {
-            g_constantBufferData.model = XMMatrixTranspose(XMMatrixRotationX(angle) * XMMatrixRotationY(angle));
-            g_constantBufferData.view = XMMatrixTranspose(XMMatrixTranslation(0.0f, 0.0f, 3.0f));
-            memcpy(g_pCbvDataBegin, &g_constantBufferData, sizeof(g_constantBufferData));
-        }
-        // Cube 2.
-        {
-            g_constantBufferData.model = XMMatrixTranspose(XMMatrixRotationY(angle));
-            // Originally (1.0f, 0.0f, 5.0f), more extreme now for depth test purposes.
-            g_constantBufferData.view = XMMatrixTranspose(XMMatrixTranslation(3.0f, 0.0f, 10.0f));
-            memcpy(g_pCbvDataBegin + sizeof(SceneConstantBuffer), &g_constantBufferData, sizeof(g_constantBufferData));
-        }
-        // Cube 3.
-        {
-            g_constantBufferData.model = XMMatrixTranspose(XMMatrixRotationZ(angle));
-            // Originally (1.0f, 0.0f, 5.0f), more extreme now for depth test purposes.
-            g_constantBufferData.view = XMMatrixTranspose(XMMatrixTranslation(-2.0f, 0.0f, 10.0f));
-            memcpy(g_pCbvDataBegin + sizeof(SceneConstantBuffer) * 2, &g_constantBufferData, sizeof(g_constantBufferData));
+            // Store each iteration of our float into a vector.
+            XMVECTOR test = XMLoadFloat3(&cubePositions[i]);
+            // Rotate and translate our cubes based on the currently stored Float3 (that's now a vector).
+            g_constantBufferData.model = XMMatrixTranspose(XMMatrixRotationX((angle * i) / 2) * 
+                                         XMMatrixRotationZ((angle * i) / 2) * 
+                                         XMMatrixTranslation(XMVectorGetX(test), XMVectorGetY(test), XMVectorGetZ(test)));
+
+            // "Tricking" our constant buffer, or rather adhering to the 256 alignment rules. 
+            // We multiply the latter data (within "else") to align each cube's constant.
+            // No one cube will have the same starting point. 
+            if (i == 0) { memcpy(g_pCbvDataBegin, &g_constantBufferData, sizeof(g_constantBufferData)); }
+            else
+            {
+                memcpy(g_pCbvDataBegin + (sizeof(SceneConstantBuffer) * i), &g_constantBufferData, sizeof(g_constantBufferData));
+            }
         }
 
         // Linear interpolation.
@@ -216,6 +229,7 @@ void PopulateCommandList()
     g_CommandList->IASetVertexBuffers(0, 1, &g_VertexBufferView);
     g_CommandList->IASetIndexBuffer(&g_IndexBufferView);
 
+    /*
     // Constant Buffer View
     g_CommandList->SetGraphicsRootConstantBufferView(0, g_ConstantBuffer->GetGPUVirtualAddress());
     g_CommandList->DrawIndexedInstanced(36, 1, 0, 0, 0);
@@ -223,12 +237,20 @@ void PopulateCommandList()
     // Second Cube
     // Constant Buffer View
     g_CommandList->SetGraphicsRootConstantBufferView(0, g_ConstantBuffer->GetGPUVirtualAddress() + sizeof(SceneConstantBuffer));
-    g_CommandList->DrawIndexedInstanced(36, 1, 0, 0, 0);
+    g_CommandList->DrawIndexedInstanced(36, 1, 0, 0, 0); */
 
-    // Third Cube
-    // Constant Buffer View
-    g_CommandList->SetGraphicsRootConstantBufferView(0, g_ConstantBuffer->GetGPUVirtualAddress() + sizeof(SceneConstantBuffer) * 2);
-    g_CommandList->DrawIndexedInstanced(36, 1, 0, 0, 0);
+    // Iterating through 10 Cubes, to match not only starting cubes,
+    // but our constants too.
+    for (unsigned int i = 0; i < 10; i++)
+    {
+        // Constant Buffer view.
+        if (i == 0) { g_CommandList->SetGraphicsRootConstantBufferView(0, g_ConstantBuffer->GetGPUVirtualAddress()); }
+        else
+        {
+            g_CommandList->SetGraphicsRootConstantBufferView(0, g_ConstantBuffer->GetGPUVirtualAddress() + sizeof(SceneConstantBuffer) * i);
+        }
+        g_CommandList->DrawIndexedInstanced(36, 1, 0, 0, 0);
+    }
 
     // Related to Imgui.
     ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), g_CommandList.Get());
@@ -1051,11 +1073,13 @@ void BuildMatrices()
         XMMATRIX model = DirectX::XMMatrixIdentity();
 
         // Rotating around the X axis. 
-        model = XMMatrixTranspose(XMMatrixRotationX(DirectX::XMConvertToRadians(55.0f)));
+        model = XMMatrixTranspose(XMMatrixRotationX(XMConvertToRadians(55.0f)) * XMMatrixTranslation(2.0f, 0.0f, 5.0f));
 
         // Creating the view matrix.
+        // This alters our "camera" start position, *don't* use it to translate or change models in anyway.
+        // That's what the model matrix is for - The only matrix here determines a position. 
         XMMATRIX view = XMMatrixIdentity();
-        view = XMMatrixTranspose(XMMatrixTranslation(1.0f, 0.0f, 5.0f));
+        view = XMMatrixTranspose(XMMatrixTranslation(0.0f, 0.0f, 3.0f));
 
         // Creating projection matrix.
         XMMATRIX projection = XMMatrixIdentity();
