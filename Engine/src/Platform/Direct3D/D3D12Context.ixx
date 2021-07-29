@@ -45,6 +45,7 @@ void EnableDebugLayer();
 void CreateDevice();
 void CreateCommandQueue();
 void CreateSwapChain();
+void CreateDepthBuffer();
 void CreateDescriptorHeaps();
 void CreateCommandAllocator();
 // Assets.
@@ -130,9 +131,11 @@ Microsoft::WRL::ComPtr<ID3D12Device4> g_Device;
 Microsoft::WRL::ComPtr<IDXGIFactory4> g_Factory;
 Microsoft::WRL::ComPtr<ID3D12CommandQueue> g_CommandQueue;
 Microsoft::WRL::ComPtr<ID3D12Resource> g_RenderTargets[g_FrameCount];
+Microsoft::WRL::ComPtr<ID3D12Resource> g_DepthBuffer;
 Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> g_rtvHeap; // Render Target View Heap.
 Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> g_srvHeap; // Our main Descriptor Heap.
 Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> g_samplerHeap;
+Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> g_DSVHeap;
 Microsoft::WRL::ComPtr<ID3D12CommandAllocator> g_CommandAllocator;
 Microsoft::WRL::ComPtr<ID3D12RootSignature> g_RootSignature;
 Microsoft::WRL::ComPtr<ID3D12PipelineState> g_PipelineState;
@@ -141,6 +144,7 @@ Microsoft::WRL::ComPtr<ID3D12GraphicsCommandList> g_CommandList;
 uint32_t g_rtvDescriptorSize;
 uint32_t g_srvDescriptorSize;
 uint32_t g_samplerDescriptorSize;
+uint32_t g_DSVDescriptorSize;
 
 D3D12_CPU_DESCRIPTOR_HANDLE  g_mainRenderTargetDescriptor[g_FrameCount] = {};
 

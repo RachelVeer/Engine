@@ -57,10 +57,15 @@ void D3D12Context::Update(float color[], bool adjustOffset, float angle)
     if (adjustOffset)
     {
         // Cube transformations.
+        // WARNING: We have to reset whatever values are separate to one another (i.e. position), 
+        // or they inherit whatever each one set. (Fair, same constant buffer after all).
         g_constantBufferData.model = XMMatrixTranspose(XMMatrixRotationX(angle) * XMMatrixRotationY(angle));
+        g_constantBufferData.view = XMMatrixTranspose(XMMatrixTranslation(0.0f, 0.0f, 3.0f));
         memcpy(g_pCbvDataBegin, &g_constantBufferData, sizeof(g_constantBufferData));
         // Cube 2.
-        g_constantBufferData.model = XMMatrixTranspose(XMMatrixRotationX(angle) * XMMatrixTranslation(1.0f, 0.0f, 10.0f));
+        g_constantBufferData.model = XMMatrixTranspose(XMMatrixRotationX(angle));
+        // Originally (1.0f, 0.0f, 5.0f), more extreme now for depth test purposes.
+        g_constantBufferData.view = XMMatrixTranspose(XMMatrixTranslation(3.0f, 0.0f, 10.0f));
         memcpy(g_pCbvDataBegin + sizeof(SceneConstantBuffer), &g_constantBufferData, sizeof(g_constantBufferData));
 
         // Linear interpolation.
@@ -113,6 +118,7 @@ void LoadPipeline()
     CreateSwapChain();
     CreateDescriptorHeaps();
     CreateRenderTarget();
+    CreateDepthBuffer();
     CreateCommandAllocator();
 }
 
@@ -161,6 +167,20 @@ void PopulateCommandList()
     ID3D12DescriptorHeap* ppHeaps[] = { g_srvHeap.Get(), g_samplerHeap.Get() };
     g_CommandList->SetDescriptorHeaps(_countof(ppHeaps), ppHeaps);
 
+    // Getting a handle to depth buffer.
+    CD3DX12_CPU_DESCRIPTOR_HANDLE dsvHandle(g_DSVHeap->GetCPUDescriptorHandleForHeapStart());
+
+    g_CommandList->OMSetRenderTargets(1, &g_mainRenderTargetDescriptor[backBufferIdx], FALSE, &dsvHandle);
+
+    // Record commands.
+    // Clear color with alpha blending.
+    const float clear_color_with_alpha[4] = { clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w };
+
+    // Render target view.
+    g_CommandList->ClearRenderTargetView(g_mainRenderTargetDescriptor[backBufferIdx], clear_color_with_alpha, 0, NULL);
+    // Depth Buffer.
+    g_CommandList->ClearDepthStencilView(g_DSVHeap->GetCPUDescriptorHandleForHeapStart(), D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
+
     // Set Texture 1
     CD3DX12_GPU_DESCRIPTOR_HANDLE srvHandle(g_srvHeap->GetGPUDescriptorHandleForHeapStart(), 1, g_srvDescriptorSize);
     g_CommandList->SetGraphicsRootDescriptorTable(1, srvHandle);
@@ -177,14 +197,6 @@ void PopulateCommandList()
 
     g_CommandList->RSSetViewports(1, &g_Viewport);
     g_CommandList->RSSetScissorRects(1, &g_ScissorRect);
-
-    // Record commands.
-    // Clear color with alpha blending.
-    const float clear_color_with_alpha[4] = { clear_color.x * clear_color.w, clear_color.y * clear_color.w, clear_color.z * clear_color.w, clear_color.w };
-
-    // Render target view.
-    g_CommandList->ClearRenderTargetView(g_mainRenderTargetDescriptor[backBufferIdx], clear_color_with_alpha, 0, NULL);
-    g_CommandList->OMSetRenderTargets(1, &g_mainRenderTargetDescriptor[backBufferIdx], FALSE, NULL);
 
     g_CommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
@@ -249,6 +261,35 @@ void CleanupRenderTarget()
     WaitForPreviousFrame();
     for (UINT i = 0; i < g_FrameCount; i++)
         if (g_RenderTargets[i]) { g_RenderTargets[i]->Release(); g_RenderTargets[i] = nullptr; }
+}
+
+void CreateDepthBuffer()
+{
+    D3D12_DEPTH_STENCIL_VIEW_DESC depthStencilDesc = {};
+    depthStencilDesc.Format = DXGI_FORMAT_D32_FLOAT;
+    depthStencilDesc.ViewDimension = D3D12_DSV_DIMENSION_TEXTURE2D;
+    depthStencilDesc.Flags = D3D12_DSV_FLAG_NONE;
+
+    D3D12_CLEAR_VALUE depthOptimizedClearValue = {};
+    depthOptimizedClearValue.Format = DXGI_FORMAT_D32_FLOAT;
+    depthOptimizedClearValue.DepthStencil.Depth = 1.0f;
+    depthOptimizedClearValue.DepthStencil.Stencil = 0;
+
+    auto upload = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_DEFAULT);
+    auto resource = CD3DX12_RESOURCE_DESC::Tex2D(DXGI_FORMAT_D32_FLOAT, surface.width, surface.height, 1, 0, 1, 0, D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL);
+
+    g_Device->CreateCommittedResource(
+        &upload,
+        D3D12_HEAP_FLAG_NONE,
+        &resource,
+        D3D12_RESOURCE_STATE_DEPTH_WRITE,
+        &depthOptimizedClearValue,
+        IID_PPV_ARGS(&g_DepthBuffer));
+
+    g_DepthBuffer->SetName(L"Depth Buffer ID3D12 Resource");
+    g_DSVHeap->SetName(L"Depth/Stencil Resource Heap");
+
+    g_Device->CreateDepthStencilView(g_DepthBuffer.Get(), &depthStencilDesc, g_DSVHeap->GetCPUDescriptorHandleForHeapStart());
 }
 
 // Check adapter support.
@@ -407,6 +448,15 @@ void CreateDescriptorHeaps()
             g_mainRenderTargetDescriptor[n] = rtvHandle;
             rtvHandle.ptr += g_rtvDescriptorSize;
         }
+    }
+
+    {
+        D3D12_DESCRIPTOR_HEAP_DESC dsvHeapDesc = {};
+        dsvHeapDesc.NumDescriptors = 1;
+        dsvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_DSV;
+        dsvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+        ThrowIfFailed(g_Device->CreateDescriptorHeap(&dsvHeapDesc, IID_PPV_ARGS(&g_DSVHeap)));
+        g_DSVDescriptorSize = g_Device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
     }
 
     {
@@ -578,8 +628,8 @@ void CreatePipelineState()
     psoDesc.PS = CD3DX12_SHADER_BYTECODE(pixelShader.Get());
     psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
     psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
-    psoDesc.DepthStencilState.DepthEnable = FALSE;
-    psoDesc.DepthStencilState.StencilEnable = FALSE;
+    psoDesc.DepthStencilState = CD3DX12_DEPTH_STENCIL_DESC(D3D12_DEFAULT);
+    psoDesc.DSVFormat = DXGI_FORMAT_D32_FLOAT;
     psoDesc.SampleMask = UINT_MAX;
     psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
     psoDesc.NumRenderTargets = 1;
