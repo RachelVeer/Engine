@@ -6,7 +6,6 @@ module;
 #include <string>
 #include <optional>
 // Libraries.
-#include "spdlog/sinks/stdout_color_sinks.h"
 #include "Engine/ImGuiLocal/ImGuiBridge.h"
 module Platform;
 

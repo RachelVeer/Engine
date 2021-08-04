@@ -68,6 +68,7 @@
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <ScanSourceForModuleDependencies>true</ScanSourceForModuleDependencies>
       <EnableModules>true</EnableModules>
+      <FloatingPointModel />
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -91,6 +92,7 @@
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <ScanSourceForModuleDependencies>true</ScanSourceForModuleDependencies>
       <EnableModules>true</EnableModules>
+      <FloatingPointModel />
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
