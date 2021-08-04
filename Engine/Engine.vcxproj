@@ -56,7 +56,7 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>ENGINE_PLATFORM_WINDOWS;ENGINE_GRAPHICS_DIRECTX12;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32; ENGINE_PLATFORM_WINDOWS;ENGINE_GRAPHICS_DIRECTX12;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>src;vendor;vendor\directxtk12;vendor\directxtk12\inc;vendor\spdlog\include;vendor\imgui;vendor\DirectX12Modules;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
@@ -78,7 +78,7 @@
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
-      <PreprocessorDefinitions>ENGINE_PLATFORM_WINDOWS;ENGINE_GRAPHICS_DIRECTX12;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32; ENGINE_PLATFORM_WINDOWS;ENGINE_GRAPHICS_DIRECTX12;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>src;vendor;vendor\directxtk12;vendor\directxtk12\inc;vendor\spdlog\include;vendor\imgui;vendor\DirectX12Modules;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -106,9 +106,28 @@
     <ClCompile Include="src\Engine\Layer.ixx" />
     <ClCompile Include="src\Platform\Direct3D\D3D12Context.ixx" />
     <ClCompile Include="src\Platform\Direct3D\Utils\DXHelper.ixx" />
+    <ClCompile Include="vendor\DirectX12Modules\ScreenGrab\ScreenGrab12.cpp" />
+    <ClCompile Include="vendor\DirectX12Modules\ScreenGrab\ScreenGrab12.ixx" />
+    <ClCompile Include="vendor\DirectX12Modules\WICTextureLoader\WICTextureLoader12.cpp" />
+    <ClCompile Include="vendor\DirectX12Modules\WICTextureLoader\WICTextureLoader12.ixx" />
+    <ClCompile Include="vendor\imgui\backends\imgui_impl_dx12.cpp" />
+    <ClCompile Include="vendor\imgui\backends\imgui_impl_win32.cpp" />
+    <ClCompile Include="vendor\imgui\imgui.cpp" />
+    <ClCompile Include="vendor\imgui\imgui_demo.cpp" />
+    <ClCompile Include="vendor\imgui\imgui_draw.cpp" />
+    <ClCompile Include="vendor\imgui\imgui_tables.cpp" />
+    <ClCompile Include="vendor\imgui\imgui_widgets.cpp" />
     <ClInclude Include="src\Engine\ImGuiLocal\ImGuiBridge.h" />
     <ClInclude Include="src\Platform\Direct3D\D3D12Bridge.h" />
     <ClInclude Include="src\Platform\Direct3D\Utils\d3dx12.h" />
+    <ClInclude Include="vendor\imgui\backends\imgui_impl_dx12.h" />
+    <ClInclude Include="vendor\imgui\backends\imgui_impl_win32.h" />
+    <ClInclude Include="vendor\imgui\imconfig.h" />
+    <ClInclude Include="vendor\imgui\imgui.h" />
+    <ClInclude Include="vendor\imgui\imgui_internal.h" />
+    <ClInclude Include="vendor\imgui\imstb_rectpack.h" />
+    <ClInclude Include="vendor\imgui\imstb_textedit.h" />
+    <ClInclude Include="vendor\imgui\imstb_truetype.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Engine\Application.cpp" />
@@ -128,14 +147,6 @@
       <Outputs>$(OutDir)/../Sandbox/%(Identity)</Outputs>
       <Message>Compiling %(Identity)</Message>
     </CustomBuild>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="vendor\imgui\ImGui.vcxproj">
-      <Project>{C0FF640D-2C14-8DBE-F595-301E616989EF}</Project>
-    </ProjectReference>
-    <ProjectReference Include="vendor\DirectX12Modules\DirectX12Modules.vcxproj">
-      <Project>{74CA4009-60C3-5F5B-89F5-44E0754D3F67}</Project>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
