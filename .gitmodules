@@ -1,4 +1,0 @@
-[submodule "Engine/vendor/imgui"]
-	path = Engine/vendor/imgui
-	url = https://github.com/RachelVeer/imgui.git
-	ignore = dirty
