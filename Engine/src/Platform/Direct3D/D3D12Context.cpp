@@ -13,6 +13,10 @@ module D3D12Context;
 using namespace Microsoft::WRL;
 using namespace DirectX;
 
+XMVECTOR cameraPos   = XMVectorSet(0.0f , 0.0f, -3.0f, 0.0f);
+XMVECTOR cameraFront = XMVectorSet(0.0f, 0.0f, 1.0f, 0.0f);
+XMVECTOR cameraUp    = XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+
 void D3D12Context::Init(int32_t width, int32_t height)
 {
     D3D12ContextMod();
@@ -70,6 +74,35 @@ void D3D12Context::Update(float color[], bool adjustOffset, float angle)
     // Do we want to move our geometry in the first place?
     if (adjustOffset)
     {
+
+        // Linear interpolation + Cam movement.
+        const float cameraSpeed = 0.05f; // Adjust accordingly. 
+        if (Platform::getUpArrowKey())
+        {
+            //g_LerpCBData.mixColor += cbvParams.translationSpeed;
+            cameraPos += cameraSpeed * cameraFront;
+        }
+
+        if (Platform::getDownArrowKey())
+        {
+            //g_LerpCBData.mixColor -= cbvParams.translationSpeed;
+            cameraPos -= cameraSpeed * cameraFront;
+        }
+
+        if (Platform::getLeftArrowKey())
+        {
+            //g_LerpCBData.mixColor += cbvParams.translationSpeed;
+            cameraPos += XMVector3Normalize(XMVector3Cross(cameraFront, cameraUp)) * cameraSpeed;
+        }
+
+        if (Platform::getRightArrowKey())
+        {
+            //g_LerpCBData.mixColor -= cbvParams.translationSpeed;
+            cameraPos -= XMVector3Normalize(XMVector3Cross(cameraFront, cameraUp)) * cameraSpeed;
+        }
+
+        //memcpy(g_pLerpCbvDataBegin, &g_LerpCBData, sizeof(g_LerpCBData));
+
         // Cube transformations.
         // WARNING: We have to reset whatever values are separate to one another (i.e. position), 
         // or they inherit whatever each one set. (Fair, same constant buffer after all).
@@ -78,6 +111,16 @@ void D3D12Context::Update(float color[], bool adjustOffset, float angle)
         {
             float localAngle = 20.0f * i;
             if (i % 3 == 0) localAngle = angle; // "angle" being time.
+            
+            const float radius = 10.0f;
+            float camX = sin(angle) * radius;
+            float camZ = cos(angle) * radius;
+
+
+            XMMATRIX view = XMMatrixIdentity();
+            view = XMMatrixTranspose(XMMatrixLookAtLH(cameraPos, cameraPos + cameraFront, cameraUp));
+
+            g_constantBufferData.view = view;
 
             // Store each iteration of our float into a vector.
             XMVECTOR test = XMLoadFloat3(&cubePositions[i]);
@@ -95,20 +138,6 @@ void D3D12Context::Update(float color[], bool adjustOffset, float angle)
                 memcpy(g_pCbvDataBegin + (sizeof(SceneConstantBuffer) * i), &g_constantBufferData, sizeof(g_constantBufferData));
             }
         }
-
-        // Linear interpolation.
-        if (Platform::getUpArrowKey())
-        {
-            g_LerpCBData.mixColor += cbvParams.translationSpeed;
-        }
-        
-        if (Platform::getDownArrowKey())
-        {
-            g_LerpCBData.mixColor -= cbvParams.translationSpeed;
-        }
-
-
-        memcpy(g_pLerpCbvDataBegin, &g_LerpCBData, sizeof(g_LerpCBData));
     }
 }
 

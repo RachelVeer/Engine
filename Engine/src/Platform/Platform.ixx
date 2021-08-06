@@ -20,5 +20,7 @@ namespace Platform
     export const int GetYScreenCoordinates();
     export bool getUpArrowKey();
     export bool getDownArrowKey();
+    export bool getLeftArrowKey();
+    export bool getRightArrowKey();
     export void* getAdditionalPlatformData();
 };

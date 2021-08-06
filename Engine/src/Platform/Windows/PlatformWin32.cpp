@@ -15,7 +15,7 @@ import ImGuiLocal;
 
 struct Clock
 {
-    double ClockFrequency = { 0 };
+    double ClockFrequency   = { 0 };
     LARGE_INTEGER StartTime = { 0 };
 };
 
@@ -24,15 +24,17 @@ struct Win32Props // Win32 Properties.
     HWND hWnd = nullptr;
     HINSTANCE hInstance = nullptr;
     const std::wstring wndClass = L"Engine Window Class";
-    int Width = { 0 };
+    int Width  = { 0 };
     int Height = { 0 };
-    POINTS pt = { 0 };
+    POINTS pt  = { 0 };
 };
 
 struct Keys
 {
-    bool upArrow = false;
-    bool downArrow = false;
+    bool upArrow    = false;
+    bool downArrow  = false;
+    bool leftArrow  = false;
+    bool rightArrow = false;
 };
 
 Win32Props win32props;
@@ -201,6 +203,16 @@ bool Platform::getDownArrowKey()
     return simpleKeys.downArrow;
 }
 
+bool Platform::getLeftArrowKey()
+{
+    return simpleKeys.leftArrow;
+}
+
+bool Platform::getRightArrowKey()
+{
+    return simpleKeys.rightArrow;
+}
+
 void* Platform::getAdditionalPlatformData()
 {
     return win32props.hWnd;
@@ -243,26 +255,65 @@ LRESULT CALLBACK Win32ProcessMessages(HWND lhWnd, UINT uMsg, WPARAM wParam, LPAR
                 case VK_UP:
                 {
                     CoreLogger.AddLog("Arrow key up!\n");
-                    //printf("ArrowKey up!\n");
-                    if (simpleKeys.downArrow)
-                        simpleKeys.downArrow = false;
-                    else
                         simpleKeys.upArrow = true;
                     break;
                 }
                 case VK_DOWN:
                 {
                     CoreLogger.AddLog("Arrow key down!\n");
-                    if (simpleKeys.upArrow)
-                        simpleKeys.upArrow = false;
-                    else
                         simpleKeys.downArrow = true;
+                    break;
+                }
+                case VK_LEFT:
+                {
+                    CoreLogger.AddLog("Arrow key left!\n");
+                    simpleKeys.leftArrow = true;
+                    break;
+                }
+                case VK_RIGHT:
+                {
+                    CoreLogger.AddLog("Arrow key right!\n");
+                    simpleKeys.rightArrow = true;
                     break;
                 }
                 default: break;
             }
             break;
         }
+
+        case WM_KEYUP:
+        {
+            CoreLogger.AddLog("Wm_keyup!\n");
+            switch (wParam)
+            {
+            case VK_UP:
+            {
+                    simpleKeys.upArrow = false;
+                break;
+            }
+            case VK_DOWN:
+            {
+                    simpleKeys.downArrow = false;
+                break;
+            }
+            case VK_LEFT:
+            {
+                CoreLogger.AddLog("Arrow key left!\n");
+                simpleKeys.leftArrow = false;
+                break;
+            }
+            case VK_RIGHT:
+            {
+                CoreLogger.AddLog("Arrow key right!\n");
+                simpleKeys.rightArrow = false;
+                break;
+            }
+            default: break;
+            }
+            break;
+        }
+
+
         case WM_DESTROY:
         {
             PostQuitMessage(0);
